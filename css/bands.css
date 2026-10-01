@@ -284,3 +284,28 @@
 .k-spot__buy .k-btn { flex: 1; }
 .k-spot__note { color: var(--k-ink-2); font-size: var(--text-body-sm-size); line-height: 1.3; text-box: none; }
 @media (min-width: 1024px) { .k-spot { grid-template-columns: 1fr 1fr; } .k-spot__body { padding: var(--space-3xl); } .k-spot__title { font-size: var(--text-display-md-size); } }
+
+/* Comparison on mobile: the column header (Traditional Kibble · Kismet · Fresh Subscription) stays in view while the rows scroll */
+@media (max-width: 1023.98px) {
+  .k-cmp__row--head { position: sticky; top: 0; z-index: 3; margin-inline: calc(var(--layout-margin) * -1); padding: var(--space-sm) calc(var(--layout-margin) + var(--space-sm)); margin-bottom: var(--space-sm); background: var(--band-bg, var(--color-accent-primary)); }
+}
+
+/* Story card proportions: squarer photo and calmer type on small screens; the dark hover only where there is a pointer */
+.k-storycard__img { aspect-ratio: 5 / 4; padding: var(--space-md); }
+.k-storycard__img h3 { font-size: var(--text-heading-lg-size); line-height: 1.05; }
+.k-storycard > p { font-size: var(--text-body-md-size); line-height: 1.35; min-height: 0; }
+.k-storycard__btn { height: var(--size-control-lg, 48px); }
+.k-storycard { gap: var(--space-sm); } .k-storycard > p { margin-top: var(--space-xs); }
+.k-stories__grid .k-cols, .k-band .k-cols:has(> .k-storycard) { row-gap: var(--space-xl); }
+.k-storycard:hover .k-storycard__btn { background: transparent; color: inherit; border-color: currentColor; }
+@media (hover: hover) { .k-storycard:hover .k-storycard__btn { background: var(--band-fg, var(--color-text-primary)); color: var(--band-bg, var(--color-bg-surface)); border-color: transparent; } }
+@media (min-width: 700px) { .k-stories__grid .k-cols--3, .k-band .k-cols--3:has(> .k-storycard) { grid-template-columns: repeat(3, minmax(0, 1fr)); } .k-storycard__img { aspect-ratio: 451 / 495; } .k-storycard > p { min-height: 2.7em; } }
+@media (min-width: 1024px) { .k-storycard__img { padding: var(--space-lg); } .k-storycard__img h3 { font-size: var(--text-heading-2xl-size); line-height: 1; } .k-storycard > p { font-size: var(--text-heading-xs-size); line-height: 1.25; } .k-storycard__btn { height: 51px; } }
+
+/* Wave-up: the NEXT band's colour rises into this one, so a photo anchored to the bottom (the vet) melts into the waves instead of being cut */
+.k-band--wave-up::after { content: ""; position: absolute; z-index: 2; left: 0; right: 0; bottom: -1px; height: var(--band-wave); background: var(--next-bg); pointer-events: none;
+  -webkit-mask: var(--k-shape-wave-top-sm) left bottom / 178.3px 28px repeat-x; mask: var(--k-shape-wave-top-sm) left bottom / 178.3px 28px repeat-x; }
+@media (min-width: 1024px) { .k-band--wave-up::after { -webkit-mask: var(--k-shape-wave-top-lg) left bottom / 293px 46px repeat-x; mask: var(--k-shape-wave-top-lg) left bottom / 293px 46px repeat-x; } }
+.k-band--wave-up > .k-vetproof { padding-bottom: calc(var(--band-pad) + var(--band-wave)); }
+.k-vetproof__photo { margin-bottom: calc((var(--band-pad) + var(--band-wave)) * -1); }
+@media (min-width: 1024px) { .k-vetproof__photo { margin-bottom: 0; } }

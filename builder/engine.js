@@ -189,11 +189,13 @@ export function rhythm(sections, c, theme = 'electric') {
     sinceMq = mq ? 0 : sinceMq + 1; delete s._mq;
     out.push({ s, tone, wave, mq }); prev2 = prev; prev = tone;
   });
+  /* blocks with a photo anchored to their bottom edge take the next band's wave rising into them */
+  out.forEach((o, i) => { const next = out[i + 1]; if (o.tone && o.wave && next && next.tone && o.s.id === 'stats') { o.wave = false; o.up = next.tone; } });
   return out;
 }
 const mqHtml = text => `<div class="k-marquee" aria-hidden="true"><div class="k-marquee__track"><span class="k-icon k-icon--burst"></span><span class="k-marquee__item">${String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;')}</span></div></div>`;
-export function renderBody(spec) { const c = context(spec); let lastTone = null; return rhythm(spec.sections.map(s => ({ ...s })), c, spec.theme).map(({ s, tone, wave, mq }) => (tone && (lastTone = tone), tone)
-  ? `<div data-section="${s.id}" class="k-band k-band--${tone}${wave ? ' k-band--wave' : ''}${mq ? ' k-band--mq' : ''}">${mq ? mqHtml(mq) : ''}${SECTIONS[s.id].render(c, s.variant)}</div>`
+export function renderBody(spec) { const c = context(spec); let lastTone = null; return rhythm(spec.sections.map(s => ({ ...s })), c, spec.theme).map(({ s, tone, wave, mq, up }) => (tone && (lastTone = tone), tone)
+  ? `<div data-section="${s.id}" class="k-band k-band--${tone}${wave ? ' k-band--wave' : ''}${up ? ' k-band--wave-up' : ''}${mq ? ' k-band--mq' : ''}"${up ? ` style="--next-bg:var(--color-${TONE_TOKEN[up]})"` : ''}>${mq ? mqHtml(mq) : ''}${SECTIONS[s.id].render(c, s.variant)}</div>`
   : `<div data-section="${s.id}"${s.id === 'footer' && lastTone ? ` style="--footer-top:var(--color-${TONE_TOKEN[lastTone]})"` : ''}>${SECTIONS[s.id].render(c, s.variant)}</div>`).join('\n'); }
 export function renderDoc(spec, base, { title = 'Kismet landing' } = {}) {
   return `<!doctype html>\n<html lang="en" data-theme="${spec.theme}">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>${title}</title>\n<base href="${base}">\n<link rel="stylesheet" href="css/kismet.css">\n<script src="js/kismet.js" defer><\/script>\n<style>[data-section].is-picked{outline:3px solid #00c4d6;outline-offset:-3px}</style>\n</head>\n<body><div class="k-page">\n${renderBody(spec)}\n</div></body>\n</html>`;

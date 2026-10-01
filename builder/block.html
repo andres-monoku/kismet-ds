@@ -5,6 +5,6 @@
 import { byId } from '../library/sections.js';
 const q = new URLSearchParams(location.search); document.documentElement.dataset.theme = q.get('theme') || 'electric';
 const ids = (q.get('ids') || 'compare').split(',');
-document.getElementById('root').innerHTML = ids.map((id, i) => { const b = byId[id]; return `<div class="k-band k-band--${(b.tones || ['cream'])[0]}${i < ids.length - 1 ? ' k-band--wave' : ''}">${b.render()}</div>`; }).join('');
+document.getElementById('root').innerHTML = ids.map((id, i) => { const b = byId[id]; const up = id === 'stats' && i < ids.length - 1; return `<div class="k-band k-band--${(b.tones || ['cream'])[0]}${i < ids.length - 1 && !up ? ' k-band--wave' : ''}${up ? ' k-band--wave-up' : ''}"${up ? ' style="--next-bg:var(--color-bg-hero-panel)"' : ''}>${b.render()}</div>`; }).join('');
 window.Kismet && window.Kismet.init(document); addEventListener('load', () => { window.Kismet.init(document); const d = q.get('day'); if (d) document.querySelectorAll('.k-progress__stop')[+d].click(); });
 </script></body></html>
