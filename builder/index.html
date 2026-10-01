@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en" data-theme="electric">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kismet Landing Builder</title>
+  <link rel="stylesheet" href="../css/kismet.css">
+  <link rel="stylesheet" href="builder.css">
+</head>
+<body>
+<div class="b-app">
+  <header class="b-top">
+    <span class="k-logo"></span><span class="b-top__title">Landing Builder</span>
+    <span class="b-mode" id="mode" title="Decision engine">—</span>
+  </header>
+
+  <section class="b-ask" id="ask">
+    <h1 class="k-display b-ask__title">What landing page do you need?</h1>
+    <form class="b-ask__form" id="form">
+      <label class="k-field"><span class="k-field__box"><span class="k-field__text"><span class="k-field__label">Describe the campaign</span><input class="k-field__input" id="brief" placeholder=" " autocomplete="off"></span></span></label>
+      <button class="k-btn k-btn--lg" type="submit">Generate 3 versions</button>
+    </form>
+    <div class="b-chips" id="examples"></div>
+  </section>
+
+  <section class="b-versions" id="versions" hidden></section>
+
+  <section class="b-editor" id="editor" hidden>
+    <aside class="b-panel">
+      <button class="k-btn k-btn--ghost k-btn--sm" id="back"><span class="k-icon k-icon--arrow-left"></span> All versions</button>
+      <form class="b-panel__block" id="editForm">
+        <h2 class="b-h">Iterate</h2>
+        <label class="k-field"><span class="k-field__box"><span class="k-field__text"><span class="k-field__label">Tell Jev what to change</span><input class="k-field__input" id="editText" placeholder=" " autocomplete="off"></span></span></label>
+        <p class="b-hint" id="editResult">Try: “add a store locator”, “make it shorter”, “greener colors”, “another headline”.</p>
+      </form>
+      <div class="b-panel__block"><h2 class="b-h">Theme</h2><div class="b-chips" id="themes"></div></div>
+      <div class="b-panel__block"><h2 class="b-h">Copy &amp; photo</h2><div class="b-chips"><button class="k-chip" data-cycle="headline">Next headline</button><button class="k-chip" data-cycle="cta">Next CTA</button><button class="k-chip" data-cycle="photo">Next photo</button></div></div>
+      <div class="b-panel__block"><h2 class="b-h">Sections</h2><div id="sections" class="b-sections"></div></div>
+      <div class="b-panel__block"><h2 class="b-h">Why this page <span class="b-hint">(decision · probability)</span></h2><table class="b-why" id="why"></table></div>
+      <div class="b-panel__block b-chips"><button class="k-btn k-btn--inverse" id="export">Download HTML</button><button class="k-btn k-btn--neutral" id="open">Open in new tab</button></div>
+    </aside>
+    <div class="b-stage">
+      <div class="b-stage__bar"><div class="k-seg" data-k-choice style="max-width:260px"><button class="k-seg__item" aria-pressed="true" data-device="desktop">Desktop</button><button class="k-seg__item" data-device="mobile">Mobile</button></div><span class="b-hint" id="stageInfo"></span></div>
+      <div class="b-frame" id="stage"></div>
+    </div>
+  </section>
+</div>
+<script src="../js/kismet.js" defer></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>

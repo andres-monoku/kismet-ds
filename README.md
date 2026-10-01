@@ -53,3 +53,23 @@ No build step, no dependencies.
 - States can be pinned for static mockups with `.is-hover`, `.is-pressed`, `.is-focus`, `.is-selected`, `.is-error`, `.is-disabled`.
 - Regenerate tokens after changing the Figma variables: update `tools/data/*.txt`, then run
   `node tools/build-tokens.mjs`, `node tools/build-icons.mjs`, `node tools/build-shapes.mjs`.
+
+## Landing Builder (`builder/`)
+
+Describe a campaign → get three landing pages built only from design-system components → iterate live.
+
+- **Not generative.** Decisions come from [TypeSafe's Jev](https://docs.typesafe.ai) (a System One model): one request with ~26 typed
+  questions (`choice`, `score`, `noul`) answered in parallel with calibrated probabilities. No text or HTML is generated —
+  copy comes from the copy bank and layout from the component registry.
+- `builder/registry.js` — the logic: campaigns + copy bank with `{slots}`, sections (when to use them, variants, renderer), closed entity lists.
+- `builder/engine.js` — builds the questions, composes 3 versions from the probability distributions
+  (A top choice · B only high-confidence sections · C includes lower-probability ones), renders, and maps edit instructions to operations.
+- `builder/app.js` — UI: three previews, editor (typed instruction, theme, copy, sections, desktop/mobile), "why" table, HTML export.
+
+Run it with your key (the server proxies the API so the key never reaches the browser):
+
+```bash
+TYPESAFE_API_KEY=sk_... node tools/serve.mjs   # → http://localhost:4173/builder/
+```
+
+Without a key (or on static hosting) it runs in **demo mode** with a local keyword scorer that returns answers in the same shape.
