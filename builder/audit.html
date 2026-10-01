@@ -1,0 +1,52 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>contrast audit</title><base href="../"><link rel="stylesheet" href="css/kismet.css"><script src="js/kismet.js" defer></script></head>
+<body><div class="k-page" id="root"></div><pre id="out" style="padding:16px;font:12px/1.4 monospace;white-space:pre-wrap"></pre>
+<script type="module">
+/* Contrast audit: renders every library/builder block on every band tone in every theme and measures each text against the colour
+   actually behind it. Large text (≥20px, or ≥18px bold) must reach 2.5 (the brand's white-on-coral level); smaller text 4.5.
+   /builder/audit.html → window.__audit = { fails: [...], checked } */
+import { SECTIONS, STRIPS, THEMES } from './builder/registry.js';
+import { byId } from './library/sections.js';
+const TONES = ['cream', 'sage', 'sun', 'coral', 'pink', 'aqua', 'ink'];
+const root = document.getElementById('root');
+const rgba = s => { const m = s.match(/rgba?\(([^)]+)\)/); if (!m) return null; const p = m[1].split(/[,\s/]+/).filter(Boolean).map(Number); return [p[0], p[1], p[2], p[3] ?? 1]; };
+const srgb = s => { if (s.startsWith('color(srgb')) { const p = s.match(/color\(srgb ([^)]+)\)/)[1].split(/[\s/]+/).map(Number); return [p[0] * 255, p[1] * 255, p[2] * 255, p[3] ?? 1]; } return rgba(s); };
+const over = (f, b) => [0, 1, 2].map(i => f[i] * f[3] + b[i] * (1 - f[3])).concat(1);
+const lum = c => { const v = [0, 1, 2].map(i => c[i] / 255).map(x => x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4); return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2]; };
+const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
+function bgOf(el) { // colour behind el, or null when it sits on a photo / gradient
+  const stack = [];
+  for (let n = el; n && n !== document.documentElement; n = n.parentElement) {
+    const cs = getComputedStyle(n);
+    for (const pe of ['::before', '::after']) { const ps = getComputedStyle(n, pe); if (ps.content !== 'none' && ps.position === 'absolute' && +ps.zIndex < 0) { if (ps.backgroundImage.includes('gradient') || ps.backgroundImage.includes('url')) return null; const c = srgb(ps.backgroundColor); if (c && c[3] > 0) stack.push(c); } }
+    if (cs.backgroundImage !== 'none' && n !== el) { if (/url\(|gradient/.test(cs.backgroundImage) && !(cs.maskImage && cs.maskImage !== 'none')) return null; }
+    const c = srgb(cs.backgroundColor); if (c && c[3] > 0) { stack.push(c); if (c[3] >= 0.99) break; }
+  }
+  let b = [255, 255, 255, 1]; for (const c of stack.reverse()) b = over(c, b); return b;
+}
+const fails = []; let checked = 0;
+const ids = Object.keys(SECTIONS).filter(id => !['header', 'footer'].includes(id));
+const ctx = { ...(await import('./library/sections.js')).DEFAULTS, splitTitle: 'What’s in the bowl', productsTitle: 'Shop Kismet', stepsTitle: 'From quiz to bowl in 3 steps.', steps: [['Take the quiz', 'Tell us about your dog.'], ['Get your plan', 'A recipe for their needs.'], ['Fill the bowl', 'Delivered to your door.']], signupTitle: 'Get 30% off', offerShort: '40% off', offerTitle: '40% off your first order', offerCode: '40', cardCta: 'Add to cart', faq: [['Is Kismet clinically proven?', 'Yes.']] };
+for (const theme of Object.keys(THEMES)) {
+  document.documentElement.dataset.theme = theme;
+  for (const id of ids) {
+    const sec = SECTIONS[id], variants = sec.variants ? Object.keys(sec.variants) : [null];
+    const tones = STRIPS.includes(id) ? [null] : TONES.filter(x => x !== 'ink' || (sec.tones || []).includes('ink')); // rhythm() never falls back to ink
+    for (const v of variants) for (const tone of tones) {
+      let html; try { html = sec.render(ctx, v); } catch (e) { fails.push({ theme, id, v, tone, error: String(e) }); continue; }
+      root.innerHTML = tone ? `<div class="k-band k-band--${tone} k-band--mq"><div class="k-marquee"><div class="k-marquee__track"><span class="k-icon k-icon--burst"></span><span class="k-marquee__item">Title</span></div></div>${html}</div>` : html;
+      for (const el of root.querySelectorAll('*')) {
+        if (![...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) continue;
+        const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || cs.display === 'none' || el.closest('[hidden]') || !el.getClientRects().length) continue;
+        if (el.matches('.k-btn:not(.k-btn--neutral):not(.k-btn--link):not(.k-btn--ghost):not(.k-btn--inverse):not(.k-btn--secondary), .k-card__cta, .k-card__tag, .k-wavy')) continue; // accepted brand exception: white label on the primary colour; card tag sits on a photo; the wavy label sits on its own SVG shape (dark on yellow)
+        const bg = bgOf(el); if (!bg) continue; let fg = srgb(cs.color); if (!fg) continue; fg = over(fg, bg);
+        const size = parseFloat(cs.fontSize), big = size >= 20 || (size >= 18 && +cs.fontWeight >= 700); const r = ratio(fg, bg); checked++;
+        if (r < (big ? 2.5 : 4.5)) fails.push({ theme, id, v, tone, cls: (el.className || el.tagName).toString().slice(0, 40), text: el.textContent.trim().slice(0, 24), r: +r.toFixed(2), size });
+      }
+    }
+  }
+}
+root.innerHTML = ''; window.__audit = { fails, checked };
+const group = {}; for (const f of fails) { const k = `${f.id}${f.v ? ':' + f.v : ''} · .${f.cls} “${f.text}”`; (group[k] = group[k] || []).push(`${f.theme}/${f.tone}=${f.r}`); }
+window.__summary = Object.entries(group).map(([k, v]) => `${k}  [${v.length}]  ${v.slice(0, 6).join(' ')}`);
+document.getElementById('out').textContent = `checked ${checked} texts · ${fails.length} fails\n` + window.__summary.join('\n');
+</script></body></html>
