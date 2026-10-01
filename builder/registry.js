@@ -6,6 +6,8 @@
      · ENTITIES   — closed lists Jev chooses from to fill the {slots} (retailer, product, goal…)
    Add a campaign, a headline or a section here and the builder (and Jev) can use it immediately. */
 
+import { LIBRARY, byId as LIB } from '../library/sections.js';
+
 export const THEMES = {
   electric: 'Warm and friendly: salmon, yellow, dark green. The default Kismet look.',
   submarine: 'Bold and energetic: coral red, turquoise, yellow. Good for launches and promotions.',
@@ -72,15 +74,19 @@ export const CLOSERS = { find_store: 'Now on the shelf in the pet aisle at {reta
    the three best become versions A, B and C. Each strategy has its own structure, hero, angle and rhythm. */
 export const STRATEGIES = {
   direct: { label: 'Direct response', describe: 'Get to the action fast: one message, the offer or product, and one clear button', angle: 'urgent', hero: 'split',
-    flow: ['hero', 'marquee:accent', 'products', 'offer', 'values', 'cta'] },
+    flow: ['hero', 'usp', 'marquee:accent', 'spotlight', 'products', 'offer', 'plans', 'guarantee', 'cta:accent', 'sticky_cta'] },
   story: { label: 'Storytelling', describe: 'Tell a story with emotion and lifestyle photography before asking for anything', angle: 'warm', hero: 'fold',
-    flow: ['hero', 'logos', 'split:left', 'marquee:soft', 'story', 'reviews', 'steps', 'cta'] },
+    flow: ['hero', 'logos', 'split:left', 'marquee:soft', 'story', 'founder', 'gallery', 'reviews', 'steps', 'cta'] },
   utility: { label: 'Utility first', describe: 'Be practical: help people find, locate, check or do something right away', angle: 'plain', hero: 'page',
-    flow: ['hero', 'locator', 'steps', 'products', 'faq'] },
+    flow: ['hero', 'locator', 'steps', 'products', 'retailers', 'faq', 'newsletter'] },
   proof: { label: 'Proof & trust', describe: 'Convince skeptics with evidence: reviews, numbers, science and guarantees', angle: 'clinical', hero: 'fold',
-    flow: ['hero', 'stats', 'reviews', 'split:right', 'ingredients', 'values', 'faq', 'cta'] },
-  showcase: { label: 'Product showcase', describe: 'Show the products like a catalog and let people browse', angle: 'playful', hero: 'split',
-    flow: ['hero', 'marquee:brand', 'products', 'ingredients', 'split:right', 'reviews', 'cta'] },
+    flow: ['hero', 'stats', 'press_quotes', 'compare', 'timeline', 'reviews', 'guarantee', 'faq', 'cta'] },
+  showcase: { label: 'Product showcase', describe: 'Show the products like a catalog and let people browse', angle: 'playful', hero: 'collage',
+    flow: ['hero', 'marquee:brand', 'categories', 'products', 'ingredients', 'features', 'testimonial', 'cta:panel'] },
+  launchpad: { label: 'Launch pad', describe: 'Introduce one new thing: present it, explain why it matters and let people get it', angle: 'playful', hero: 'center',
+    flow: ['announce', 'hero', 'features', 'video', 'spotlight', 'benefits', 'reviews', 'offer', 'cta:accent'] },
+  editorial: { label: 'Editorial', describe: 'Educate or explain with longer reading content, like an article or a letter', angle: 'clinical', hero: 'pagehead',
+    flow: ['hero', 'prose', 'founder', 'timeline', 'ingredients', 'stories', 'newsletter'] },
 };
 
 const PHOTOS = { picnic: 'assets/img/hero-picnic.jpg', family: 'assets/img/people-family.jpg', about: 'assets/img/about-us.jpg' };
@@ -102,8 +108,8 @@ export const SECTIONS = {
 <header class="k-header"><div class="k-header__promo"><span>Free shipping on $50+</span>${icon('burst')}<span>Subscribe &amp; Save 30% on your first order + Free Gift with order two</span>${icon('burst')}<span>Try Kismet Risk-free. 100% Money-back Guarantee</span></div>
 <div class="k-header__bar"><div class="k-header__side"><button class="k-header__action k-header__menu" aria-label="Menu">${icon('menu')}</button><nav class="k-header__links"><a href="#">Shop ${icon('chevron-down')}</a><a href="#">About</a><a href="#">Ingredients</a><a href="#">Tails ${icon('chevron-down')}</a><a href="#">Find a Store</a></nav></div><a href="#" class="k-logo k-header__logo" aria-label="Kismet"></a><div class="k-header__side k-header__side--end"><a href="#" class="k-header__action">${icon('dog')}</a><a href="#" class="k-header__action">${icon('cart')}<span class="k-header__count">2</span></a></div></div></header>` },
 
-  hero: { label: 'Hero', fixed: true, variants: { fold: 'Full photo with text on top', split: 'Text panel next to a photo', page: 'Compact photo header with buttons' },
-    render: (c, v) => v === 'split' ? `
+  hero: { label: 'Hero', fixed: true, variants: { fold: 'Full photo with text on top', split: 'Text panel next to a photo', page: 'Compact photo header with buttons', center: 'Centered on a color with product image', collage: 'Text with a photo collage', pagehead: 'Compact title header, no photo' },
+    render: (c, v) => v === 'center' ? LIB.hero_center.render(c) : v === 'collage' ? LIB.hero_collage.render(c) : v === 'pagehead' ? LIB.page_head.render(c) : v === 'split' ? `
 <section class="k-split-hero"><img class="k-media k-split-hero__photo" src="${c.photo}" alt=""><div class="k-split-hero__panel"><p class="k-eyebrow">${esc(c.eyebrow)}</p><h1 class="k-display k-split-hero__title">${br(c.headline)}</h1><p class="k-lead">${esc(c.sub)}</p>${c.offer ? `<div class="k-row k-gap-xs k-row--wrap"><span class="k-badge k-badge--promo">${esc(c.offer)}</span><span class="k-badge">Limited time</span></div>` : ''}<div class="k-split-hero__actions">${wavy(c.cta)}${wavy(c.cta2, 'k-wavy--secondary')}</div></div></section>` : v === 'page' ? `
 <section class="k-fold k-fold--page" style="background-image:url('${c.photo}')"><div class="k-fold__content"><div class="k-fold__text"><h1 class="k-fold__title">${br(c.headline)}</h1><p class="k-fold__desc">${esc(c.sub)}</p></div><div class="k-fold__actions"><a href="#" class="k-btn k-btn--lg">${esc(c.cta)}</a><a href="#" class="k-btn k-btn--neutral k-btn--lg">${esc(c.cta2)}</a></div></div></section>` : `
 <section class="k-fold" style="background-image:url('${c.photo}')"><div class="k-fold__content"><div class="k-fold__text"><h1 class="k-fold__title">${br(c.headline)}</h1><p class="k-fold__desc">${esc(c.sub)}</p></div><div class="k-fold__actions">${wavy(c.cta)}</div></div></section>` },
@@ -162,7 +168,10 @@ ${[['Supercenter · Bentonville', '2.1 mi · In stock'], ['Neighborhood Market �
 <footer class="k-footer"><div class="k-footer__wordmark"><span class="k-logo"></span></div><div class="k-footer__content"><a href="#" class="k-footer__signup">Sign Up</a><div class="k-footer__legal"><div class="k-footer__legal-links"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">*Offer T&amp;C</a></div><p class="k-footer__copy">© 2026 Kismet, Inc.</p></div><div class="k-footer__cols"><div class="k-footer__col"><h2 class="k-footer__heading">Explore</h2><div class="k-footer__links"><a href="#">Shop All</a><a href="#">About Us</a><a href="#">Ingredients</a><a href="#">Tails</a><a href="#">Quiz</a><a href="#">Find a Store</a></div></div><div class="k-footer__col"><h2 class="k-footer__heading">Support</h2><div class="k-footer__links"><a href="#">FAQs</a><a href="#">Account</a><a href="#">Shipping &amp; Returns</a><a href="#">Contact Us</a></div></div></div></div></footer>` },
 };
 
+/* Merge the section library: every non-hero block becomes available to the builder (and to Jev). Library versions replace the inline ones. */
+for (const b of LIBRARY) if (!b.hero) SECTIONS[b.id] = { label: b.label, when: b.when, prior: b.prior, variants: b.variants, cat: b.cat, render: (c, v) => b.render(c, v) };
+
 /* Page grammar: canonical order. Optional sections keep this order unless the user moves them. */
-export const ORDER = ['header', 'hero', 'logos', 'marquee', 'stats', 'split', 'products', 'locator', 'offer', 'ingredients', 'story', 'reviews', 'steps', 'values', 'faq', 'signup', 'cta', 'footer'];
+export const ORDER = ['announce', 'header', 'hero', 'countdown', 'usp', 'logos', 'marquee', 'stats', 'press_quotes', 'split', 'features', 'benefits', 'spotlight', 'products', 'categories', 'plans', 'locator', 'retailers', 'offer', 'ingredients', 'compare', 'timeline', 'video', 'story', 'founder', 'prose', 'gallery', 'reviews', 'testimonial', 'stories', 'steps', 'values', 'guarantee', 'faq', 'newsletter', 'signup', 'cta', 'footer', 'sticky_cta'];
 export const OPTIONAL = ORDER.filter(id => !SECTIONS[id].fixed);
 export { PHOTOS, PRODUCTS };

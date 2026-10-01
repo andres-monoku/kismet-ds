@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en" data-theme="electric">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Section library — Kismet Design System</title>
+  <link rel="stylesheet" href="css/kismet.css">
+  <link rel="stylesheet" href="css/docs.css">
+  <script src="js/kismet.js" defer></script>
+  <style>
+    .l-count { color: var(--color-text-secondary); font-size: 13px; line-height: 1.3; text-box: none; }
+    .l-table { width: 100%; border-collapse: collapse; font-size: 13px; line-height: 1.35; background: var(--color-bg-surface); border-radius: var(--radius-lg); overflow: hidden; }
+    .l-table th, .l-table td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--color-border-subtle); text-box: none; vertical-align: top; }
+    .l-table th { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-text-secondary); }
+    .l-table code { font-family: ui-monospace, Menlo, monospace; font-size: 12px; letter-spacing: 0; }
+    .l-block { scroll-margin-top: 72px; }
+    .l-block > h3 { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-xs); }
+    .l-block > h3 code { font-family: ui-monospace, Menlo, monospace; font-size: 12px; letter-spacing: 0; font-weight: 500; color: var(--color-text-secondary); }
+  </style>
+</head>
+<body>
+<div class="k-page">
+  <div class="d-top">
+    <a href="index.html" class="k-logo" aria-label="Kismet design system"></a><span class="d-top__title">Section library</span>
+    <div class="d-themes"><button data-k-theme="electric">electric</button><button data-k-theme="submarine">submarine</button><button data-k-theme="salad">salad</button><button data-k-theme="skittles">skittles</button><button data-k-theme="lego">lego</button></div>
+  </div>
+  <div class="d-layout">
+    <nav class="d-nav" id="nav"><a href="index.html">← Design system</a></nav>
+    <main class="d-main" id="main">
+      <div class="d-hero">
+        <p class="k-eyebrow k-c-brand">Kismet Design System</p>
+        <h1 class="k-display">Section library</h1>
+        <p class="d-p">Reusable page blocks for landing pages, grouped by the job they do. Each block is fluid, mobile first and theme-aware. The same inventory feeds the <a href="builder/" class="k-c-brand"><u>Landing Builder</u></a>: the “use it when” line is what the decision model scores for every request.</p>
+        <p class="l-count" id="count"></p>
+      </div>
+      <section class="d-section" id="inventory"><header><h2 class="k-display">Inventory</h2></header><table class="l-table" id="table"></table></section>
+    </main>
+  </div>
+</div>
+<script type="module">
+import { LIBRARY, CATEGORIES } from './library/sections.js';
+// blocks that already live in patterns.css are listed too, so the inventory is complete
+const CORE = [
+  { id: 'header', cat: 'announce', label: 'Header', when: 'Every page', css: '.k-header', core: true },
+  { id: 'fold', cat: 'hero', label: 'Hero · photo fold', when: 'An emotional, lifestyle hero with text over a photo', css: '.k-fold', core: true },
+  { id: 'fold_page', cat: 'hero', label: 'Hero · page fold', when: 'A compact photo header with buttons: collections, categories', css: '.k-fold--page', core: true },
+  { id: 'split_hero', cat: 'hero', label: 'Hero · split', when: 'A hero with a lot of information: dates, places, two buttons', css: '.k-split-hero', core: true },
+  { id: 'logos', cat: 'trust', label: 'Press logos', when: 'Press logos add credibility under the hero', css: '.k-logos', core: true },
+  { id: 'marquee', cat: 'announce', label: 'Marquee', when: 'A bold scrolling band reinforces the campaign message', css: '.k-marquee', core: true },
+  { id: 'split', cat: 'content', label: '50/50 content', when: 'Explain the product with a photo, short copy and bullets', css: '.k-split', core: true },
+  { id: 'steps', cat: 'content', label: '3 steps', when: 'Explain how it works in a few simple steps', css: '.k-steps', core: true },
+  { id: 'values', cat: 'trust', label: 'Value props', when: 'Visitors need reassurance: guarantees, cancel anytime', css: '.k-values', core: true },
+  { id: 'products', cat: 'commerce', label: 'Product row', when: 'Show specific products people can buy', css: '.k-product-row', core: true },
+  { id: 'signup', cat: 'convert', label: 'Signup band', when: 'Capture emails for an offer, a waitlist or updates', css: '.k-signup', core: true },
+  { id: 'footer', cat: 'convert', label: 'Footer', when: 'Every page', css: '.k-footer', core: true },
+];
+const all = [...CORE, ...LIBRARY];
+const main = document.getElementById('main'), nav = document.getElementById('nav');
+document.getElementById('count').textContent = `${all.length} blocks · ${LIBRARY.length} in this library + ${CORE.length} core blocks documented in the design system page.`;
+document.getElementById('table').innerHTML = '<thead><tr><th>Category</th><th>Block</th><th>Use it when…</th></tr></thead><tbody>' + Object.entries(CATEGORIES).map(([k, name]) => all.filter(b => b.cat === k).map((b, i) => `<tr><td>${i ? '' : '<b>' + name + '</b>'}</td><td>${b.core ? `<a href="index.html">${b.label}</a> <code>${b.css}</code>` : `<a href="#${b.id}">${b.label}</a>`}</td><td>${b.when}</td></tr>`).join('')).join('') + '</tbody>';
+for (const [k, name] of Object.entries(CATEGORIES)) {
+  const blocks = LIBRARY.filter(b => b.cat === k); if (!blocks.length) continue;
+  nav.insertAdjacentHTML('beforeend', `<b>${name}</b>` + blocks.map(b => `<a href="#${b.id}">${b.label}</a>`).join(''));
+  const sec = document.createElement('section'); sec.className = 'd-section'; sec.id = 'cat-' + k;
+  sec.innerHTML = `<header><h2 class="k-display">${name}</h2></header>` + blocks.map(b => { const html = b.render(); return `<div class="d-block l-block" id="${b.id}"><h3>${b.label} <code>${b.id}</code></h3><p class="l-count">Use it when: ${b.when}.</p><div class="d-demo d-demo--flush">${html}</div><details class="d-code"><summary>HTML</summary><pre></pre></details></div>`; }).join('');
+  main.appendChild(sec);
+  sec.querySelectorAll('.l-block').forEach((el, i) => { el.querySelector('pre').textContent = blocks[i].render().replace(/></g, '>\n<'); });
+}
+window.Kismet && window.Kismet.init(main);
+</script>
+</body>
+</html>
