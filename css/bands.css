@@ -1,0 +1,157 @@
+/* Kismet design system — page rhythm.
+   The brand builds pages out of full-bleed colour BANDS: each section sits on one saturated colour, neighbours never share a colour,
+   and a band ends in a WAVE that spills into the next one. Section names are MARQUEES, spacing is compact, actions are centred wavy buttons.
+   Usage: <div class="k-band k-band--sun k-band--wave"> [optional .k-marquee] <section class="k-sec">…</section> </div>
+   Tones use paired semantic tokens, so text stays legible in every theme. */
+
+:root, [data-theme] { --k-ink: var(--color-text-primary); --k-ink-2: var(--color-text-secondary); --k-brandtext: var(--color-text-brand); --band-pad: 2.5rem; --band-wave: 28px; }
+@media (min-width: 1024px) { :root, [data-theme] { --band-pad: 4rem; --band-wave: 46px; } }
+
+.k-band { position: relative; background: var(--band-bg); color: var(--band-fg); --band-fg: var(--k-ink); --band-accent: var(--color-marquee-plain-text); --band-title: var(--band-fg);
+  --color-text-primary: var(--band-fg); --color-text-secondary: color-mix(in srgb, var(--band-fg) 80%, transparent); --color-text-brand: var(--band-fg); --color-text-hero-headline: var(--band-title); }
+.k-band--cream { --band-bg: var(--color-bg-hero-panel); }
+.k-band--sage { --band-bg: var(--color-bg-quiz); --band-accent: var(--k-ink); }
+.k-band--sun { --band-bg: var(--color-marquee-accent-bg); --band-accent: var(--color-marquee-accent-text); }
+.k-band--coral { --band-bg: var(--color-accent-primary); --band-accent: var(--color-text-on-accent); --band-title: var(--color-text-on-accent); }
+.k-band--pink { --band-bg: var(--color-bg-promo-subtle); --band-accent: var(--k-ink); }
+.k-band--aqua { --band-bg: var(--color-bg-brand-secondary); --band-accent: var(--k-ink); }
+.k-band--ink { --band-bg: var(--color-bg-inverse); --band-fg: var(--color-text-inverse); --band-accent: var(--color-accent-primary); --band-title: var(--color-text-on-accent); --color-border-default: color-mix(in srgb, var(--color-text-inverse) 30%, transparent); --color-border-strong: var(--color-text-inverse); }
+
+/* the band owns colour and spacing; blocks inside give theirs up */
+.k-band > :is(section, .k-sec, .k-section, .k-usp) { background: transparent !important; color: inherit; padding-block: var(--band-pad); }
+.k-band > .k-marquee { --marquee-fg: var(--band-accent); background: transparent; padding-block: var(--space-md) 0; }
+.k-band--wave + * > .k-marquee:first-child, .k-band--wave + .k-band > :first-child { margin-top: 0; }
+.k-band > .k-marquee + :is(section, .k-sec, .k-section) { padding-top: var(--space-lg); }
+.k-band--mq .k-head .k-eyebrow, .k-band--mq .k-product-row__title, .k-band--mq .k-steps__head .k-eyebrow, .k-band--mq .k-split__content > .k-eyebrow { display: none; }
+.k-band .k-eyebrow { color: inherit; }
+.k-band :is(.k-head__title, .k-title, .k-steps__title, .k-split__title, .k-signup__title, .k-statement) { color: var(--band-title); }
+.k-band .k-sec__inner { gap: var(--space-xl); }
+.k-band .k-accordion > summary:hover { background: color-mix(in srgb, var(--band-fg) 8%, transparent); }
+
+/* white surfaces inside a band get the page ink back */
+.k-band :is(.k-card, .k-tile, .k-rev, .k-review, .k-plan, .k-mcard, .k-feature:not(.k-feature--center), .k-event, .k-locator, .k-uspcard, .k-ratingsum, .k-bundle, .k-contact__form, .k-beforeafter__side, .k-callout, .k-values__card, .k-spotlight, .k-hero-quiz__form, .k-press, .k-compare-wrap, .k-cmp__us, .k-newsletter, .k-slider-nav__btn, .k-btn, .k-field, .k-guarantee, .k-retailers__item, .k-timeline__step) {
+  --color-text-primary: var(--k-ink); --color-text-secondary: var(--k-ink-2); --color-text-brand: var(--k-brandtext); --color-text-hero-headline: var(--k-ink); }
+
+/* wave: the band's own colour spills into whatever follows */
+.k-band--wave::after { content: ""; position: absolute; z-index: 2; left: 0; right: 0; top: calc(100% - 1px); height: var(--band-wave); background: var(--band-bg); pointer-events: none;
+  -webkit-mask: var(--k-shape-wave-bottom-sm) left top / 178.3px 28px repeat-x; mask: var(--k-shape-wave-bottom-sm) left top / 178.3px 28px repeat-x; }
+.k-band--wave + * { padding-top: var(--band-wave); }
+@media (min-width: 1024px) { .k-band--wave::after { -webkit-mask: var(--k-shape-wave-bottom-lg) left top / 293px 46px repeat-x; mask: var(--k-shape-wave-bottom-lg) left top / 293px 46px repeat-x; } }
+
+/* ---------- shared brand pieces ---------- */
+/* Upright display title, centred — "What 50,000+ dog parents are saying" */
+.k-title { font-family: var(--font-display); font-style: normal; font-weight: 400; letter-spacing: 0; text-align: center; font-size: var(--text-display-sm-size); line-height: 1.05; text-box: trim-both cap alphabetic; }
+@media (min-width: 1024px) { .k-title { font-size: var(--text-display-md-size); } }
+.k-center { align-items: center; text-align: center; }
+
+/* Photo band — full-bleed photo whose top and bottom edges are waves in the band colour */
+.k-photo-band { position: relative; isolation: isolate; display: flex; align-items: center; justify-content: center; min-height: 260px; padding: calc(var(--band-wave) + var(--space-lg)) var(--layout-margin); background: var(--color-bg-inverse) center / cover no-repeat; }
+.k-photo-band::before, .k-photo-band::after { content: ""; position: absolute; z-index: 1; left: 0; right: 0; height: var(--band-wave); background: var(--band-bg, var(--color-bg-page)); pointer-events: none; }
+.k-photo-band::before { top: -1px; -webkit-mask: var(--k-shape-wave-bottom-sm) left top / 178.3px 28px repeat-x; mask: var(--k-shape-wave-bottom-sm) left top / 178.3px 28px repeat-x; }
+.k-photo-band::after { bottom: -1px; -webkit-mask: var(--k-shape-wave-top-sm) left bottom / 178.3px 28px repeat-x; mask: var(--k-shape-wave-top-sm) left bottom / 178.3px 28px repeat-x; }
+.k-photo-band--flat-top::before { display: none; }
+.k-photo-band--tall { min-height: 300px; }
+.k-photo-band--start { justify-content: flex-start; }
+@media (min-width: 1024px) {
+  .k-photo-band { min-height: 400px; } .k-photo-band--tall { min-height: 560px; }
+  .k-photo-band::before { -webkit-mask: var(--k-shape-wave-bottom-lg) left top / 293px 46px repeat-x; mask: var(--k-shape-wave-bottom-lg) left top / 293px 46px repeat-x; }
+  .k-photo-band::after { -webkit-mask: var(--k-shape-wave-top-lg) left bottom / 293px 46px repeat-x; mask: var(--k-shape-wave-top-lg) left bottom / 293px 46px repeat-x; }
+}
+.k-band > .k-photo-band { padding-block: calc(var(--band-wave) + var(--space-lg)); }
+.k-band > .k-marquee + .k-photo-band { margin-top: var(--space-md); }
+
+/* Scalloped quote badge on a photo */
+.k-scallop { --r: 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-md); width: min(100%, 360px); min-height: calc(var(--r) * 12); padding: var(--space-xl) calc(var(--r) * 2 + var(--space-sm)); background: color-mix(in srgb, var(--color-bg-inverse) 78%, transparent); color: var(--color-text-on-accent); text-align: center;
+  -webkit-mask: linear-gradient(#000 0 0) center / calc(100% - var(--r) * 2) 100% no-repeat, radial-gradient(circle closest-side, #000 97%, #0000) left top / calc(var(--r) * 2) calc(var(--r) * 2) repeat-y, radial-gradient(circle closest-side, #000 97%, #0000) right top / calc(var(--r) * 2) calc(var(--r) * 2) repeat-y;
+  mask: linear-gradient(#000 0 0) center / calc(100% - var(--r) * 2) 100% no-repeat, radial-gradient(circle closest-side, #000 97%, #0000) left top / calc(var(--r) * 2) calc(var(--r) * 2) repeat-y, radial-gradient(circle closest-side, #000 97%, #0000) right top / calc(var(--r) * 2) calc(var(--r) * 2) repeat-y; }
+.k-scallop .k-icon { color: var(--color-accent-secondary); width: 24px; height: 24px; }
+.k-scallop blockquote { font-weight: 500; font-size: var(--text-body-lg-size); line-height: 1.3; text-box: none; }
+
+/* Review card — avatar, name, date, stars, text */
+.k-rev { display: flex; flex-direction: column; gap: var(--space-md); padding: var(--space-md); border-radius: var(--radius-sm); background: var(--color-bg-surface); color: var(--color-text-primary); border: var(--border-width-sm) solid var(--color-border-subtle); }
+.k-rev__top { display: flex; align-items: center; gap: var(--space-sm); }
+.k-rev__avatar { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-full); background: var(--color-orange-400); color: var(--k-ink); font-weight: 700; font-size: 14px; line-height: 1; }
+.k-rev__who { flex: 1; display: flex; flex-direction: column; gap: 4px; line-height: 1; }
+.k-rev__who b { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; font-size: var(--text-body-sm-size); }
+.k-rev__who b::after { content: ""; width: 10px; height: 10px; border-radius: var(--radius-full); background: var(--color-feedback-info-text); -webkit-mask: none; }
+.k-rev__who time { color: var(--color-text-tertiary); font-size: var(--text-body-xs-size); }
+.k-rev__stars { display: inline-flex; gap: 1px; color: var(--color-orange-500); }
+.k-rev__stars .k-icon { width: 16px; height: 16px; }
+.k-rev p { font-size: var(--text-body-sm-size); line-height: 1.4; text-box: none; }
+
+/* About — photo band + big centred copy */
+.k-about { padding: 0 !important; }
+.k-about__text { display: flex; flex-direction: column; align-items: center; gap: var(--space-lg); max-width: 1000px; margin-inline: auto; padding: var(--space-xl) var(--layout-margin) var(--band-pad); text-align: center; }
+.k-about__text p { font-weight: 500; font-size: var(--text-heading-sm-size); line-height: 1.3; text-box: none; }
+@media (min-width: 1024px) { .k-about__text p { font-size: var(--text-heading-lg-size); } }
+
+/* Stories — photo banner + cards with the title on the photo */
+.k-stories { padding: 0 !important; }
+.k-stories__banner { min-height: 280px; }
+.k-stories__banner::before { display: none; }
+.k-stories__intro { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-lg); max-width: 28ch; color: var(--color-text-on-accent); }
+.k-stories__intro p { font-weight: 500; font-size: var(--text-heading-md-size); line-height: 1.2; text-box: none; text-shadow: 0 1px 12px rgb(0 0 0 / 0.35); }
+.k-stories__banner::marker { content: none; }
+.k-stories__grid { padding: var(--space-xl) var(--layout-margin) var(--band-pad); }
+.k-storycard { display: flex; flex-direction: column; gap: var(--space-md); }
+.k-storycard__img { position: relative; isolation: isolate; display: flex; align-items: flex-end; aspect-ratio: 1 / 1.08; padding: var(--space-md); border-radius: var(--radius-xl); overflow: hidden; background: var(--color-bg-inverse) center / cover no-repeat; color: var(--color-text-on-accent); }
+.k-storycard__img::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(0deg, rgb(0 0 0 / 0.6), rgb(0 0 0 / 0) 55%); }
+.k-storycard__img h3 { font-weight: 500; font-size: var(--text-heading-xl-size); line-height: 1.05; text-box: none; letter-spacing: -0.03em; }
+.k-storycard > p { padding-inline: var(--space-sm); font-weight: 500; font-size: var(--text-body-lg-size); line-height: 1.3; text-box: none; min-height: 2.6em; }
+.k-storycard__btn { display: flex; align-items: center; justify-content: center; height: var(--size-control-lg); margin-inline: var(--space-xs); border-radius: var(--radius-full); border: 1.5px solid currentColor; font-weight: 700; font-size: var(--text-label-md-size); line-height: 1; }
+.k-storycard:hover .k-storycard__btn { background: var(--band-fg, var(--color-text-primary)); color: var(--band-bg, var(--color-bg-surface)); border-color: transparent; }
+
+/* Comparison — Kismet column lifted on white, burst checks */
+.k-cmp-head { display: flex; flex-direction: column; align-items: center; gap: var(--space-md); text-align: center; }
+.k-cmp-head small { font-weight: 500; font-size: var(--text-body-sm-size); line-height: 1; }
+.k-cmp-head h2 { color: var(--band-title, inherit); font-size: var(--text-display-md-size); line-height: var(--text-display-md-line-height); }
+.k-cmp-head p { max-width: 30ch; color: var(--band-title, inherit); font-weight: 500; font-size: var(--text-heading-sm-size); line-height: 1.25; text-box: none; }
+.k-cmp { width: 100%; max-width: 880px; margin-inline: auto; border-collapse: separate; border-spacing: 0; table-layout: fixed; }
+.k-cmp col:first-child { width: 40%; }
+.k-cmp th, .k-cmp td { padding: var(--space-md) var(--space-xs); text-align: center; vertical-align: middle; border-bottom: 1px solid color-mix(in srgb, var(--color-white) 35%, transparent); text-box: none; }
+.k-cmp thead th { border-bottom: 0; font-weight: 500; font-size: var(--text-body-xs-size); line-height: 1.15; }
+.k-cmp tbody th { text-align: left; font-weight: 700; font-size: var(--text-body-sm-size); line-height: 1.2; }
+.k-cmp tbody th small { display: block; margin-top: 4px; font-weight: 500; font-size: var(--text-body-xs-size); line-height: 1.25; }
+.k-cmp .k-cmp__us { background: var(--color-bg-surface); color: var(--k-ink); border-bottom-color: transparent; }
+.k-cmp thead .k-cmp__us { border-radius: var(--radius-xl) var(--radius-xl) 0 0; padding-block: var(--space-lg) var(--space-md); }
+.k-cmp thead .k-cmp__us .k-logo { display: block; width: 78%; max-width: 110px; margin-inline: auto; color: var(--k-ink); }
+.k-cmp tbody tr:last-child :is(th, td) { border-bottom: 0; }
+.k-cmp tbody tr:last-child .k-cmp__us { border-radius: 0 0 var(--radius-xl) var(--radius-xl); padding-bottom: var(--space-lg); }
+.k-cmp__yes { position: relative; display: inline-grid; place-items: center; width: 40px; height: 40px; }
+.k-cmp__yes .k-icon { grid-area: 1 / 1; }
+.k-cmp__yes .k-icon--burst { width: 40px; height: 40px; color: var(--color-accent-secondary); }
+.k-cmp__yes .k-icon--check { width: 18px; height: 18px; color: var(--color-accent-primary); }
+.k-cmp__no, .k-cmp__ok { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: var(--radius-full); background: color-mix(in srgb, var(--color-white) 35%, transparent); }
+.k-cmp__ok { background: color-mix(in srgb, var(--k-ink) 22%, transparent); }
+.k-cmp__no .k-icon, .k-cmp__ok .k-icon { width: 16px; height: 16px; }
+.k-cmp__price { font-weight: 700; font-size: var(--text-body-sm-size); line-height: 1.15; }
+.k-cmp__price small { display: block; font-weight: 500; font-size: var(--text-body-xs-size); opacity: 0.8; }
+.k-cmp__us .k-cmp__price b { display: block; font-family: var(--font-display); font-style: oblique; font-weight: 400; letter-spacing: 0; font-size: var(--text-heading-lg-size); line-height: 1.1; color: var(--color-marquee-plain-text); }
+@media (min-width: 1024px) { .k-cmp tbody th { font-size: var(--text-heading-xs-size); padding-left: var(--space-md); } .k-cmp thead th { font-size: var(--text-body-sm-size); } }
+
+/* Proof line — big upright statement with highlighted words, reviewer and one wavy action */
+.k-proof { display: flex; flex-direction: column; align-items: center; gap: var(--space-lg); max-width: 900px; margin-inline: auto; text-align: center; }
+.k-proof mark, .k-kicker em { background: none; color: var(--band-accent, var(--color-marquee-plain-text)); font-style: inherit; }
+.k-proof__by { font-weight: 500; font-size: var(--text-body-lg-size); line-height: 1.3; text-box: none; }
+.k-proof--italic .k-title { font-style: oblique; }
+
+/* Ingredients + promise card */
+.k-kicker { font-weight: 500; font-size: var(--text-heading-md-size); line-height: 1.2; text-box: none; }
+.k-ingr { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-lg) var(--space-md); width: 100%; max-width: 760px; }
+.k-ingr__item { display: flex; flex-direction: column; align-items: center; gap: var(--space-sm); font-weight: 500; font-size: var(--text-body-lg-size); line-height: 1.2; text-align: center; }
+.k-ingr__item img { width: 104px; height: 104px; object-fit: contain; }
+.k-ingr__item span { max-width: 14ch; }
+@media (min-width: 700px) { .k-ingr { grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); } }
+.k-uspcard { display: grid; width: 100%; max-width: 880px; margin-inline: auto; padding: var(--space-sm) var(--space-md); border-radius: var(--radius-xl); background: var(--color-bg-surface); color: var(--color-text-primary); text-align: center; }
+.k-uspcard__item { display: flex; flex-direction: column; align-items: center; gap: var(--space-sm); padding: var(--space-md) var(--space-sm); }
+.k-uspcard__item + .k-uspcard__item { border-top: 1px solid var(--color-border-default); }
+.k-uspcard__item b { color: var(--color-marquee-plain-text); font-weight: 500; font-size: var(--text-heading-md-size); line-height: 1; letter-spacing: -0.03em; }
+.k-uspcard__item span { font-size: var(--text-body-sm-size); line-height: 1; }
+@media (min-width: 700px) { .k-uspcard { grid-template-columns: repeat(3, minmax(0, 1fr)); padding: var(--space-md) 0; } .k-uspcard__item + .k-uspcard__item { border-top: 0; border-left: 1px solid var(--color-border-default); } .k-uspcard__item { padding-block: var(--space-sm); } }
+
+/* FAQ — centred title, lined accordion */
+.k-faq2 { width: 100%; max-width: 1030px; margin-inline: auto; }
+
+/* Product row inside a band: description left, link and arrows right */
+.k-band .k-product-row__desc { color: var(--band-fg); font-weight: 500; font-size: var(--text-body-lg-size); }
+.k-band .k-product-row__list { margin-top: var(--space-lg); }

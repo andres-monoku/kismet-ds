@@ -62,9 +62,9 @@ for (const [k, name] of Object.entries(CATEGORIES)) {
   const blocks = LIBRARY.filter(b => b.cat === k); if (!blocks.length) continue;
   nav.insertAdjacentHTML('beforeend', `<b>${name}</b>` + blocks.map(b => `<a href="#${b.id}">${b.label}</a>`).join(''));
   const sec = document.createElement('section'); sec.className = 'd-section'; sec.id = 'cat-' + k;
-  sec.innerHTML = `<header><h2 class="k-display">${name}</h2></header>` + blocks.map(b => { const html = b.render(); return `<div class="d-block l-block" id="${b.id}"><h3>${b.label} <code>${b.id}</code></h3><p class="l-count">Use it when: ${b.when}.</p><div class="d-demo d-demo--flush">${html}</div><details class="d-code"><summary>HTML</summary><pre></pre></details></div>`; }).join('');
+  sec.innerHTML = `<header><h2 class="k-display">${name}</h2></header>` + blocks.map(b => { const strip = b.hero || ['announce', 'countdown', 'number_strip', 'sticky_cta'].includes(b.id); const html = strip ? b.render() : `<div class="k-band k-band--${(b.tones || ['cream'])[0]}">${b.render()}</div>`; return `<div class="d-block l-block" id="${b.id}"><h3>${b.label} <code>${b.id}</code></h3><p class="l-count">Use it when: ${b.when}.</p><div class="d-demo d-demo--flush">${html}</div><details class="d-code"><summary>HTML</summary><pre></pre></details></div>`; }).join('');
   main.appendChild(sec);
-  sec.querySelectorAll('.l-block').forEach((el, i) => { el.querySelector('pre').textContent = blocks[i].render().replace(/></g, '>\n<'); });
+  sec.querySelectorAll('.l-block').forEach((el, i) => { el.querySelector('pre').textContent = (el.querySelector('.d-demo').innerHTML).replace(/></g, '>\n<'); });
 }
 window.Kismet && window.Kismet.init(main);
 </script>

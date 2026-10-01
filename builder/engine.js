@@ -4,7 +4,7 @@
    3. render(spec)      → HTML made only of design-system components.
    4. editQuestions / applyEdit → live iteration: Jev classifies the instruction, code applies it.
    If the Jev endpoint is not available, a local keyword scorer returns answers in the same shape ("demo mode"). */
-import { CAMPAIGNS, SECTIONS, ENTITIES, THEMES, ORDER, OPTIONAL, PHOTOS, PRODUCTS, ANGLES, LEADS, CLOSERS, STRATEGIES } from './registry.js';
+import { CAMPAIGNS, SECTIONS, ENTITIES, THEMES, ORDER, OPTIONAL, PHOTOS, PRODUCTS, ANGLES, LEADS, CLOSERS, STRATEGIES, STRIPS } from './registry.js';
 
 const MODEL = 'jev-latest';
 
@@ -151,7 +151,28 @@ function context(spec) {
     signupTitle: sl.offer ? `Get ${sl.offer}` : 'Get our launch offer',
     faq: [[store ? `Which ${sl.retailerLabel} stores carry Kismet?` : 'Is Kismet clinically proven?', store ? 'Use the store locator to check stock before you go.' : 'Yes — 96% of dogs showed improved gut health in 45 days.'], ['Is it the same recipe as online?', 'Yes — the same vet-developed recipes, made in the U.S.A.'], ['Can I still subscribe?', 'Of course. Subscribe on kismetpets.com to save 30%.']] };
 }
-export function renderBody(spec) { const c = context(spec); return spec.sections.map(s => `<div data-section="${s.id}">${SECTIONS[s.id].render(c, s.variant)}</div>`).join('\n'); }
+/* Page rhythm: a standalone marquee becomes the title of the section after it; every body section gets a colour band that differs
+   from its neighbours, a wave into the next band, and — every other section at most — a marquee that names it. */
+export function rhythm(sections, c) {
+  const out = []; let prev = null, prev2 = null, sinceMq = 9;
+  const titles = (s, i) => s.id === 'marquee' && sections[i + 1] && !STRIPS.includes(sections[i + 1].id);
+  sections.forEach((s, i) => { if (titles(s, i)) sections[i + 1]._mq = true; });
+  const list = sections.filter((s, i) => !titles(s, i));
+  list.forEach((s, i) => {
+    if (STRIPS.includes(s.id)) { out.push({ s }); prev2 = prev; prev = null; sinceMq++; return; }
+    const sec = SECTIONS[s.id], tones = sec.tones;
+    const tone = tones.find(t => t !== prev && t !== prev2) || tones.find(t => t !== prev) || tones[0];
+    const next = list[i + 1], wave = !!next && !STRIPS.includes(next.id);
+    const label = typeof sec.mq === 'function' ? sec.mq(c) : sec.mq; const mq = label && (s._mq || sinceMq >= 2) ? (s._mq && c.marquee && s.id !== 'reviews' && s.id !== 'story' && s.id !== 'stories' ? c.marquee : label) : null;
+    sinceMq = mq ? 0 : sinceMq + 1; delete s._mq;
+    out.push({ s, tone, wave, mq }); prev2 = prev; prev = tone;
+  });
+  return out;
+}
+const mqHtml = text => `<div class="k-marquee" aria-hidden="true"><div class="k-marquee__track"><span class="k-icon k-icon--burst"></span><span class="k-marquee__item">${String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;')}</span></div></div>`;
+export function renderBody(spec) { const c = context(spec); return rhythm(spec.sections.map(s => ({ ...s })), c).map(({ s, tone, wave, mq }) => tone
+  ? `<div data-section="${s.id}" class="k-band k-band--${tone}${wave ? ' k-band--wave' : ''}${mq ? ' k-band--mq' : ''}">${mq ? mqHtml(mq) : ''}${SECTIONS[s.id].render(c, s.variant)}</div>`
+  : `<div data-section="${s.id}">${SECTIONS[s.id].render(c, s.variant)}</div>`).join('\n'); }
 export function renderDoc(spec, base, { title = 'Kismet landing' } = {}) {
   return `<!doctype html>\n<html lang="en" data-theme="${spec.theme}">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>${title}</title>\n<base href="${base}">\n<link rel="stylesheet" href="css/kismet.css">\n<script src="js/kismet.js" defer><\/script>\n<style>[data-section].is-picked{outline:3px solid #00c4d6;outline-offset:-3px}</style>\n</head>\n<body><div class="k-page">\n${renderBody(spec)}\n</div></body>\n</html>`;
 }

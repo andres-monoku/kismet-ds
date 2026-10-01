@@ -30,6 +30,7 @@ No build step, no dependencies.
 | `css/base.css` | Reset, layout helpers, cap-height text trimming. |
 | `css/components.css` | Button, Icon button, Badge, Checkbox, Radio, Check row, Input field, Textarea, Select, Chip, Segmented control, Tabs, Accordion, Price, Rating, List item, Alert, Quantity stepper. |
 | `css/patterns.css` | Brand (organic button, marquee, logo marquee, wave edge, sticker), Header, Fold, Product card + product row, Footer, account (Saved item, Order line), cart (Cart line, Cart summary, purchase bar) and landing sections (Split hero, Split content, Signup band, Steps, Value props). |
+| `css/bands.css` | **Page rhythm**: full-bleed colour bands (`.k-band--cream|sage|sun|coral|pink|aqua|ink`), wave transitions (`.k-band--wave`), marquee section titles, photo bands, and the signature blocks from the final designs (review cards, about, stories, comparison, proof line, promise card). |
 | `css/sections.css` + `library/sections.js` | **Section library**: 60 landing blocks, 10 of them heroes (announce, heroes, trust, content, social proof, commerce, conversion). The JS file is the inventory: id, category, “use it when”, and a renderer with sample content. Browse it in `sections.html`. |
 | `css/kismet.css` | Entry point — imports all of the above. |
 | `js/kismet.js` | Organic button shape, looping marquees, theme switch, slider navigation, stepper, single-choice groups. |

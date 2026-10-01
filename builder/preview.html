@@ -1,0 +1,8 @@
+<!doctype html><meta charset="utf-8"><title>preview</title>
+<script type="module">
+/* Dev helper: /builder/preview.html?brief=...&v=0 renders one generated version full page. */
+import { decide, compose, renderDoc } from './engine.js';
+const q = new URLSearchParams(location.search); const brief = q.get('brief') || 'landing page para Walmart';
+const res = await decide(brief); const spec = compose(brief, res)[+q.get('v') || 0]; if (q.get('theme')) spec.theme = q.get('theme');
+window.__spec = spec; document.open(); document.write(renderDoc(spec, '../')); document.close();
+</script>
