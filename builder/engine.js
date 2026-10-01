@@ -91,19 +91,21 @@ export function structure(strategyId, sig) {
   let list = st.flow.map(x => { const [id, variant] = x.split(':'); return { id, variant: id === 'hero' ? st.hero : variant || null }; });
   const has = id => list.some(x => x.id === id), put = (id, afterId, variant = null) => { if (has(id)) return; const i = list.findIndex(x => x.id === afterId); list.splice(i < 0 ? list.length : i + 1, 0, { id, variant }); };
   if (sig.goal === 'find_store') put('locator', strategyId === 'story' ? 'reviews' : 'hero');
+  else if (sig.physical) put('locator', list[list.length - 2]?.id || 'hero'); // a store is named but it is not the main goal → locator near the end
   if (sig.hasOffer > 0.6) put('offer', has('products') ? 'products' : 'hero');
   if (sig.goal === 'signup' || (sig.campaign === 'promo' && strategyId !== 'utility')) { list = list.filter(x => x.id !== 'cta'); put('signup', list[list.length - 1].id); }
-  if (sig.goal !== 'find_store') list = list.filter(x => x.id !== 'locator' || sig.use.locator > 0.5);
-  list = list.filter(x => SECTIONS[x.id].fixed || (sig.use[x.id] ?? 0.5) >= 0.12);                    // Jev is nearly sure it does not belong
+  if (sig.goal !== 'find_store' && !sig.physical) list = list.filter(x => x.id !== 'locator' || sig.use.locator > 0.5);
+  list = list.filter(x => SECTIONS[x.id].fixed || (sig.use[x.id] ?? 0.5) >= 0.3 || x.id === 'locator' && (sig.goal === 'find_store' || sig.physical));                    // Jev is nearly sure it does not belong
   if (sig.hasOffer < 0.4) list = list.filter(x => x.id !== 'offer');
-  for (const id of OPTIONAL) if ((sig.use[id] ?? 0) >= 0.9 && !has(id)) { const end = list.findIndex(x => x.id === 'cta' || x.id === 'signup'); list.splice(end < 0 ? list.length : end, 0, { id, variant: SECTIONS[id].variants ? Object.keys(SECTIONS[id].variants)[0] : null }); } // nearly sure it does
+  for (const id of OPTIONAL) if ((sig.use[id] ?? 0) >= 0.7 && !has(id)) { const end = list.findIndex(x => x.id === 'cta' || x.id === 'signup'); list.splice(end < 0 ? list.length : end, 0, { id, variant: SECTIONS[id].variants ? Object.keys(SECTIONS[id].variants)[0] : null }); } // nearly sure it does
   const head = list.filter(x => x.id === 'hero'), body = list.filter(x => x.id !== 'hero');
   return [{ id: 'header', variant: null }, ...head, ...body, { id: 'footer', variant: null }];
 }
 export function compose(brief, res) {
   const a = res.answers, sl = slots(brief, a), camp = a.campaign.choice;
   const goalP = a.goal.probabilities[a.goal.choice]; const DEFAULT_GOAL = { retail: 'find_store', launch: 'buy', promo: 'subscribe', event: 'register', subscription: 'quiz', story: 'buy' };
-  const sig = { campaign: camp, goal: goalP >= 0.35 ? a.goal.choice : DEFAULT_GOAL[camp], hasOffer: a.has_offer.noul, use: Object.fromEntries(OPTIONAL.filter(id => a['use_' + id]).map(id => [id, a['use_' + id].noul])) };
+  const physical = !['none', 'chewy', 'amazon'].includes(a.retailer.choice) && a.retailer.confidence > 0.5; const inStore = camp === 'retail' && physical; // a physical retailer always means "help me find it"
+  const sig = { physical, campaign: camp, goal: inStore ? 'find_store' : goalP >= 0.35 ? a.goal.choice : DEFAULT_GOAL[camp], hasOffer: a.has_offer.noul, use: Object.fromEntries(OPTIONAL.filter(id => a['use_' + id]).map(id => [id, a['use_' + id].noul])) };
   const ranked = Object.keys(STRATEGIES).map(k => [k, a['fit_' + k].noul]).sort((x, y) => y[1] - x[1]);
   const themes = rank(a.theme); if (top(a.theme.probabilities)[0][1] < 0.35) themes.unshift(CAMPAIGNS[camp].theme);
   const usedThemes = [], usedAngles = [];

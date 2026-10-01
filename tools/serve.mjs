@@ -6,7 +6,9 @@ import { fileURLToPath } from 'node:url';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const port = Number(process.argv[2] || 4173);
 const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.json': 'application/json', '.svg': 'image/svg+xml', '.jpg': 'image/jpeg', '.png': 'image/png', '.woff2': 'font/woff2', '.md': 'text/plain; charset=utf-8' };
-const KEY = process.env.TYPESAFE_API_KEY;
+// The key is read from the environment or from a local .env file (git-ignored). It never reaches the browser.
+let KEY = process.env.TYPESAFE_API_KEY;
+if (!KEY) { try { KEY = ((await readFile(join(root, '.env'), 'utf8')).match(/^TYPESAFE_API_KEY=(.+)$/m) || [])[1]?.trim(); } catch {} }
 createServer(async (req, res) => {
   // Landing Builder: proxy to TypeSafe (Jev) so the API key never reaches the browser.
   if (req.url === '/api/jev') {
