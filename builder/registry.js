@@ -73,28 +73,30 @@ export const CLOSERS = { find_store: 'Now on the shelf in the pet aisle at {reta
 /* Page strategies: five different ways to tell the same campaign. Jev scores how well each fits the request;
    the three best become versions A, B and C. Each strategy has its own structure, hero, angle and rhythm. */
 export const STRATEGIES = {
+  /* flow: the strategy's backbone, built on the blocks from the final designs. `!` = always there; the rest are kept or dropped
+     per generation with a probability that follows Jev's score, so no two generations are the same. */
   direct: { label: 'Direct response', describe: 'Get to the action fast: one message, the offer or product, and one clear button', angle: 'urgent', hero: 'split',
-    flow: ['hero', 'usp', 'marquee:accent', 'spotlight', 'products', 'offer', 'plans', 'guarantee', 'cta:accent', 'sticky_cta'] },
+    flow: ['hero!', 'usp', 'products!', 'offer', 'stats', 'compare', 'reviews', 'plans', 'guarantee', 'faq', 'cta!', 'sticky_cta'] },
   story: { label: 'Storytelling', describe: 'Tell a story with emotion and lifestyle photography before asking for anything', angle: 'warm', hero: 'fold',
-    flow: ['hero', 'logos', 'ingredients', 'progress', 'zigzag', 'marquee:soft', 'founder', 'gallery', 'reviews', 'steps', 'cta'] },
+    flow: ['hero!', 'logos', 'story!', 'ingredients', 'progress', 'reviews:photo', 'products', 'stories', 'cta!'] },
   utility: { label: 'Utility first', describe: 'Be practical: help people find, locate, check or do something right away', angle: 'plain', hero: 'page',
-    flow: ['hero', 'locator', 'steps', 'products', 'retailers', 'callout', 'faq', 'newsletter'] },
+    flow: ['hero!', 'locator', 'products!', 'steps', 'usp', 'retailers', 'reviews', 'faq!', 'newsletter'] },
   proof: { label: 'Proof & trust', describe: 'Convince skeptics with evidence: reviews, numbers, science and guarantees', angle: 'clinical', hero: 'fold',
-    flow: ['hero', 'number_strip', 'press_quotes', 'before_after', 'compare', 'progress', 'rating_summary', 'reviews', 'guarantee', 'faq', 'cta'] },
-  showcase: { label: 'Product showcase', describe: 'Show the products like a catalog and let people browse', angle: 'playful', hero: 'collage',
-    flow: ['hero', 'marquee:brand', 'categories', 'products', 'bundle', 'ingredients', 'tabbed', 'testimonial', 'cta:panel'] },
-  launchpad: { label: 'Launch pad', describe: 'Introduce one new thing: present it, explain why it matters and let people get it', angle: 'playful', hero: 'center',
-    flow: ['announce', 'hero', 'features', 'video', 'spotlight', 'accordion_media', 'benefits', 'ugc', 'offer', 'cta:accent'] },
-  editorial: { label: 'Editorial', describe: 'Educate or explain with longer reading content, like an article or a letter', angle: 'clinical', hero: 'pagehead',
-    flow: ['hero', 'figure', 'prose', 'founder', 'text_cols', 'specs', 'stories', 'newsletter'] },
-  guide: { label: 'Guide', describe: 'Teach people how to do something step by step, with practical tips and answers', angle: 'plain', hero: 'stack',
-    flow: ['hero', 'text_cols', 'process', 'icon_list', 'callout', 'media_cards', 'faq', 'banner'] },
-  gathering: { label: 'Gathering', describe: 'Invite people to an event or community moment: when, where, who and how to join', angle: 'warm', hero: 'event',
-    flow: ['hero', 'countdown', 'event_details', 'image_duo', 'team', 'ugc', 'signup', 'faq', 'cta:panel'] },
-  buybox: { label: 'Buy box', describe: 'Sell one specific product right at the top like a product page, then remove every doubt', angle: 'urgent', hero: 'product',
-    flow: ['hero', 'usp', 'icon_list', 'accordion_media', 'specs', 'rating_summary', 'reviews', 'bundle', 'guarantee', 'faq', 'sticky_cta'] },
-  manifesto: { label: 'Manifesto', describe: 'Lead with a bold brand statement and beliefs, then back them up', angle: 'playful', hero: 'minimal',
-    flow: ['hero', 'marquee:accent', 'zigzag', 'number_strip', 'statement', 'team', 'stories', 'cta:accent'] },
+    flow: ['hero!', 'logos', 'stats!', 'progress', 'compare!', 'before_after', 'reviews:photo', 'guarantee', 'faq', 'cta!'] },
+  showcase: { label: 'Product showcase', describe: 'Show the products like a catalog and let people browse', angle: 'playful', hero: 'page',
+    flow: ['hero!', 'products!', 'ingredients', 'categories', 'bundle', 'stats', 'reviews', 'stories', 'cta!'] },
+  launchpad: { label: 'Launch pad', describe: 'Introduce one new thing: present it, explain why it matters and let people get it', angle: 'playful', hero: 'stack',
+    flow: ['announce', 'hero!', 'spotlight!', 'ingredients', 'progress', 'products', 'ugc', 'offer', 'reviews:photo', 'cta!'] },
+  editorial: { label: 'Editorial', describe: 'Educate or explain with longer reading content, like an article or a letter', angle: 'clinical', hero: 'stack',
+    flow: ['hero!', 'story', 'zigzag', 'progress', 'founder', 'compare', 'stories!', 'newsletter'] },
+  guide: { label: 'Guide', describe: 'Teach people how to do something step by step, with practical tips and answers', angle: 'plain', hero: 'page',
+    flow: ['hero!', 'process!', 'ingredients', 'icon_list', 'progress', 'media_cards', 'faq!', 'cta'] },
+  gathering: { label: 'Gathering', describe: 'Invite people to an event or community moment: when, where, who and how to join', angle: 'warm', hero: 'split',
+    flow: ['hero!', 'countdown', 'event_details!', 'story', 'gallery', 'team', 'stories', 'signup!', 'faq'] },
+  buybox: { label: 'Buy box', describe: 'Sell one specific product right at the top like a product page, then remove every doubt', angle: 'urgent', hero: 'split',
+    flow: ['hero!', 'usp', 'spotlight!', 'ingredients', 'compare', 'reviews', 'bundle', 'guarantee', 'faq', 'sticky_cta'] },
+  manifesto: { label: 'Manifesto', describe: 'Lead with a bold brand statement and beliefs, then back them up', angle: 'playful', hero: 'video',
+    flow: ['hero!', 'statement!', 'story', 'zigzag', 'stats', 'team', 'stories', 'cta!'] },
 };
 
 const PHOTOS = { picnic: 'assets/img/hero-picnic.jpg', family: 'assets/img/people-family.jpg', about: 'assets/img/about-us.jpg' };
@@ -111,16 +113,17 @@ const icon = n => `<span class="k-icon k-icon--${n}"></span>`;
 const wavy = (label, mod = '') => `<a href="#" class="k-wavy ${mod}">${esc(label)}</a>`;
 
 /* Each section: when (plain-English statement Jev scores with a Noul), fixed (always / never asked), render(ctx, variant). */
-const HERO_KEY = { hero_center: 'center', hero_collage: 'collage', page_head: 'pagehead', hero_offer: 'offer', hero_video: 'video', hero_product: 'product', hero_minimal: 'minimal', hero_stack: 'stack', hero_quiz: 'quiz', hero_event: 'event' };
+/* Heroes the builder may use: Kismet heroes are always photo-led. The other library heroes stay in the catalogue only. */
+const HERO_KEY = { hero_video: 'video', hero_stack: 'stack' };
 const HERO_LIB = Object.fromEntries(Object.entries(HERO_KEY).map(([k, v]) => [v, k]));
 export const SECTIONS = {
   header: { label: 'Header', fixed: true, render: () => `
 <header class="k-header"><div class="k-header__promo"><span>Free shipping on $50+</span>${icon('burst')}<span>Subscribe &amp; Save 30% on your first order + Free Gift with order two</span>${icon('burst')}<span>Try Kismet Risk-free. 100% Money-back Guarantee</span></div>
 <div class="k-header__bar"><div class="k-header__side"><button class="k-header__action k-header__menu" aria-label="Menu">${icon('menu')}</button><nav class="k-header__links"><a href="#">Shop ${icon('chevron-down')}</a><a href="#">About</a><a href="#">Ingredients</a><a href="#">Tails ${icon('chevron-down')}</a><a href="#">Find a Store</a></nav></div><a href="#" class="k-logo k-header__logo" aria-label="Kismet"></a><div class="k-header__side k-header__side--end"><a href="#" class="k-header__action">${icon('dog')}</a><a href="#" class="k-header__action">${icon('cart')}<span class="k-header__count">2</span></a></div></div></header>` },
 
-  hero: { label: 'Hero', fixed: true, variants: { fold: 'Full photo with text on top', split: 'Text panel next to a photo', page: 'Compact photo header with buttons', center: 'Centered on a color with product image', collage: 'Text with a photo collage', pagehead: 'Compact title header, no photo', offer: 'The discount as the headline', video: 'Video poster with play button', product: 'One product with price and buy button', minimal: 'Words only on a dark color', stack: 'Headline over a wide photo card with facts', quiz: 'Starts a quiz or sign-up in the hero', event: 'Date block with event details' },
+  hero: { label: 'Hero', fixed: true, variants: { fold: 'Full photo with text on top', split: 'Text panel next to a photo', page: 'Compact photo header with buttons', video: 'Video poster with play button', stack: 'Headline over a wide photo card with facts' },
     /* which hero fits — Jev answers this as one choice question */
-    variantWhen: { fold: 'A full lifestyle photo with the headline on top works best: emotional, brand-led campaigns', split: 'A text panel beside a photo works best: a message that needs a sentence of explanation and two actions', page: 'A compact photo header with buttons is enough: practical pages where the task matters more than the image', ...Object.fromEntries(LIBRARY.filter(b => b.hero).map(b => [HERO_KEY[b.id], b.when])) },
+    variantWhen: { fold: 'A full lifestyle photo with the headline on top works best: emotional, brand-led campaigns', split: 'A text panel beside a photo works best: a message that needs a sentence of explanation and two actions', page: 'A compact photo header with buttons is enough: practical pages where the task matters more than the image', ...Object.fromEntries(LIBRARY.filter(b => b.hero && HERO_KEY[b.id]).map(b => [HERO_KEY[b.id], b.when])) },
     render: (c, v) => HERO_LIB[v] ? LIB[HERO_LIB[v]].render(c) : v === 'split' ? `
 <section class="k-split-hero"><img class="k-media k-split-hero__photo" src="${c.photo}" alt=""><div class="k-split-hero__panel"><p class="k-eyebrow">${esc(c.eyebrow)}</p><h1 class="k-display k-split-hero__title">${br(c.headline)}</h1><p class="k-lead">${esc(c.sub)}</p>${c.offer ? `<div class="k-row k-gap-xs k-row--wrap"><span class="k-badge k-badge--promo">${esc(c.offer)}</span><span class="k-badge">Limited time</span></div>` : ''}<div class="k-split-hero__actions">${wavy(c.cta)}${wavy(c.cta2, 'k-wavy--secondary')}</div></div></section>` : v === 'page' ? `
 <section class="k-fold k-fold--page" style="background-image:url('${c.photo}')"><div class="k-fold__content"><div class="k-fold__text"><h1 class="k-fold__title">${br(c.headline)}</h1><p class="k-fold__desc">${esc(c.sub)}</p></div><div class="k-fold__actions"><a href="#" class="k-btn k-btn--lg">${esc(c.cta)}</a><a href="#" class="k-btn k-btn--neutral k-btn--lg">${esc(c.cta2)}</a></div></div></section>` : `
@@ -186,6 +189,7 @@ for (const b of LIBRARY) if (!b.hero) SECTIONS[b.id] = { label: b.label, when: b
 /* Page rhythm (see css/bands.css): every body section sits on a colour band. `tones` is the order of preference per section,
    `mq` the marquee that can name it. Strips keep their own look and are never wrapped. */
 export const STRIPS = ['announce', 'header', 'hero', 'logos', 'marquee', 'countdown', 'number_strip', 'footer', 'sticky_cta'];
+export const TONE_TOKEN = { cream: 'bg-hero-panel', sage: 'bg-quiz', sun: 'marquee-accent-bg', coral: 'accent-primary', pink: 'bg-promo-subtle', aqua: 'bg-brand-secondary', ink: 'bg-inverse' };
 export const DEFAULT_TONES = ['cream', 'sage', 'pink', 'sun'];
 const TONES = { products: ['sage', 'sun', 'coral', 'ink', 'cream'], split: ['cream', 'pink', 'sage'], steps: ['cream', 'sage', 'pink'], values: ['sage', 'cream'], signup: ['ink', 'coral', 'sun'], locator: ['sage', 'cream', 'pink'], offer: ['sun', 'coral'], plans: ['sage', 'cream'], spotlight: ['cream', 'pink', 'sage'], bundle: ['sun', 'pink', 'sage'], features: ['cream', 'sage'], benefits: ['sage', 'cream'], timeline: ['cream', 'pink'], founder: ['ink', 'coral'], statement: ['ink', 'coral', 'sun'], gallery: ['cream', 'aqua'], ugc: ['pink', 'cream', 'aqua'], categories: ['sage', 'cream'], guarantee: ['pink', 'sun', 'cream'], retailers: ['sage', 'cream'], press_quotes: ['cream', 'sage'], before_after: ['cream', 'pink'], rating_summary: ['sun', 'sage'], newsletter: ['sun', 'pink', 'ink'], banner: ['cream', 'sage'], team: ['pink', 'cream'], event_details: ['sun', 'sage'], zigzag: ['cream', 'sage'], icon_list: ['sage', 'pink'], media_cards: ['aqua', 'sage', 'cream'], process: ['cream', 'sage'], video: ['ink', 'cream'] };
 const MQ = { products: c => c.marquee, steps: 'How it works', locator: 'Find a store', plans: 'Pick your plan', features: 'Why Kismet', benefits: 'Happy dogs', timeline: 'What to expect', gallery: 'Kismet dogs', ugc: 'Seen on the feed', categories: 'Shop all', bundle: 'Better together', team: 'The pack', offer: c => c.offer || 'The deal', media_cards: 'Good to know', spotlight: c => c.marquee, split: c => c.marquee, event_details: 'Save the date', before_after: 'The difference', guarantee: 'Risk free' };

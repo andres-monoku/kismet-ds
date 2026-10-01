@@ -7,7 +7,8 @@ export const TONE_COLORS = {
   "coral": "#ff7b6f",
   "pink": "#f8b1a4",
   "aqua": "#00c4d6",
-  "ink": "#0f2b2b"
+  "ink": "#0f2b2b",
+  "footer": "#f6d85f"
  },
  "submarine": {
   "cream": "#f9dab2",
@@ -16,7 +17,8 @@ export const TONE_COLORS = {
   "coral": "#f95736",
   "pink": "#f8b1a4",
   "aqua": "#00c4d6",
-  "ink": "#0f2b2b"
+  "ink": "#0f2b2b",
+  "footer": "#f6d85f"
  },
  "salad": {
   "cream": "#f9dab2",
@@ -25,7 +27,8 @@ export const TONE_COLORS = {
   "coral": "#e0ba22",
   "pink": "#f8b1a4",
   "aqua": "#00c4d6",
-  "ink": "#0f2b2b"
+  "ink": "#0f2b2b",
+  "footer": "#f9dab2"
  },
  "skittles": {
   "cream": "#fdd3ca",
@@ -34,7 +37,8 @@ export const TONE_COLORS = {
   "coral": "#00c4d6",
   "pink": "#f8b1a4",
   "aqua": "#00c4d6",
-  "ink": "#0f2b2b"
+  "ink": "#0f2b2b",
+  "footer": "#fdd3ca"
  },
  "lego": {
   "cream": "#fff2e4",
@@ -43,6 +47,7 @@ export const TONE_COLORS = {
   "coral": "#f95736",
   "pink": "#f8b1a4",
   "aqua": "#00c4d6",
-  "ink": "#0f2b2b"
+  "ink": "#0f2b2b",
+  "footer": "#a7e3cc"
  }
 };

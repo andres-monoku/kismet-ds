@@ -238,3 +238,49 @@
 .k-band > .k-marquee + .k-about, .k-band > .k-marquee + .k-stories { margin-top: var(--band-gap); padding-top: 0 !important; }
 .k-progress { gap: var(--band-gap); }
 .k-band .k-guarantee__seal { color: var(--k-ink); } .k-band .k-guarantee__seal::before { background: var(--color-bg-surface); }
+
+/* =====================================================================
+   Photo-led sections (Figma 3450:2780 Our stories · 3446:2491 About us · 3446:2492 Reviews)
+   The marquee sits tight on the photo; the photo is flat on top and ends in a wave.
+   ===================================================================== */
+.k-band:has(> .k-photo-led) > .k-marquee { padding-block: var(--space-lg) var(--space-lg); }
+.k-band--wave + .k-band:has(> .k-photo-led) > .k-marquee { padding-top: var(--space-sm); }
+.k-band:has(> .k-photo-led) > .k-marquee + * { margin-top: 0 !important; padding-top: 0 !important; }
+.k-band:has(> .k-photo-led) .k-photo-band::before { display: none; }
+.k-photo-band { min-height: 240px; }
+@media (min-width: 1024px) { .k-photo-band { min-height: 363px; } .k-photo-band--tall { min-height: 400px; } }
+.k-scallop { position: relative; isolation: isolate; background: none; -webkit-mask: none; mask: none; min-height: 0; width: min(100%, 380px); padding: var(--space-xl) calc(var(--r) * 2 + var(--space-md)); align-self: stretch; margin-block: calc((var(--band-wave) + var(--space-lg)) * -1); justify-content: center; }
+.k-scallop::before, .k-scallop::after { content: ""; position: absolute; inset: 0; z-index: -1;
+  -webkit-mask: linear-gradient(#000 0 0) center / calc(100% - var(--r) * 2) 100% no-repeat, radial-gradient(circle closest-side, #000 97%, #0000) left top / calc(var(--r) * 2) calc(var(--r) * 2) repeat-y, radial-gradient(circle closest-side, #000 97%, #0000) right top / calc(var(--r) * 2) calc(var(--r) * 2) repeat-y;
+  mask: linear-gradient(#000 0 0) center / calc(100% - var(--r) * 2) 100% no-repeat, radial-gradient(circle closest-side, #000 97%, #0000) left top / calc(var(--r) * 2) calc(var(--r) * 2) repeat-y, radial-gradient(circle closest-side, #000 97%, #0000) right top / calc(var(--r) * 2) calc(var(--r) * 2) repeat-y; }
+.k-scallop::before { inset: 0 -4px; background: var(--color-accent-secondary); z-index: -2; }
+.k-scallop::after { background: color-mix(in srgb, var(--color-bg-inverse) 82%, transparent); }
+.k-scallop blockquote { font-size: var(--text-heading-xs-size); line-height: 1.25; }
+.k-scallop .k-icon { width: 28px; height: 28px; }
+
+/* Story cards — exact card from the design: 451×495 photo with the title on it, text, outline button */
+.k-stories__banner { min-height: 260px; padding-block: var(--space-xl) calc(var(--band-wave) + var(--space-xl)); }
+.k-stories__intro { max-width: 690px; }
+.k-stories__intro p { font-size: var(--text-heading-md-size); line-height: 1.2; }
+.k-stories__grid { padding: var(--band-gap) var(--layout-margin) var(--band-pad); max-width: calc(1400px + 2 * var(--layout-margin)); margin-inline: auto; }
+.k-storycard__img { aspect-ratio: 451 / 495; padding: var(--space-lg); }
+.k-storycard__img h3 { font-size: var(--text-heading-xl-size); line-height: 1; max-width: 12em; }
+.k-storycard > p { padding-inline: var(--space-md); font-size: var(--text-heading-xs-size); line-height: 1.25; }
+.k-storycard__btn { height: 51px; margin-inline: var(--space-md); border-width: 1.5px; }
+@media (min-width: 1024px) { .k-stories__intro p { font-size: var(--text-heading-xl-size); } .k-storycard__img h3 { font-size: var(--text-heading-2xl-size); } }
+
+/* Product spotlight — one product on a white card: photo left, everything needed to buy on the right */
+.k-spot { display: grid; width: 100%; max-width: 1180px; margin-inline: auto; border-radius: var(--radius-2xl); overflow: hidden; background: var(--color-bg-surface); color: var(--k-ink); --color-text-primary: var(--k-ink); --color-text-secondary: var(--k-ink-2); --color-text-brand: var(--k-brandtext); }
+.k-spot__media { position: relative; background: var(--color-bg-product-3); }
+.k-spot__media img { display: block; width: 100%; height: 100%; aspect-ratio: 1; object-fit: cover; }
+.k-spot__media .k-card__rating { position: absolute; top: var(--space-md); left: var(--space-md); }
+.k-spot__body { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: var(--space-lg); padding: var(--space-xl) var(--space-lg); }
+.k-spot__title { font-size: var(--text-display-sm-size); line-height: 1; }
+.k-spot__body .k-lead { color: var(--k-ink); }
+.k-spot__body .k-bullets { font-weight: 500; }
+.k-spot__buy { display: flex; align-items: center; gap: var(--space-lg); width: 100%; padding-top: var(--space-md); border-top: 1px solid var(--color-border-default); }
+.k-spot__price { display: flex; flex-direction: column; gap: 6px; color: var(--k-brandtext); font-family: var(--font-display); font-style: oblique; font-size: var(--text-display-sm-size); line-height: 1; }
+.k-spot__price small { color: var(--k-ink-2); font-family: var(--font-body); font-style: normal; font-size: var(--text-body-xs-size); letter-spacing: 0; }
+.k-spot__buy .k-btn { flex: 1; }
+.k-spot__note { color: var(--k-ink-2); font-size: var(--text-body-sm-size); line-height: 1.3; text-box: none; }
+@media (min-width: 1024px) { .k-spot { grid-template-columns: 1fr 1fr; } .k-spot__body { padding: var(--space-3xl); } .k-spot__title { font-size: var(--text-display-md-size); } }

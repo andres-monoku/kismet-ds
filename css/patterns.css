@@ -180,8 +180,9 @@
    FOOTER
    ===================================================================== */
 .k-footer { background: var(--color-bg-footer); color: var(--color-text-primary); overflow: hidden; }
-.k-footer__wordmark { height: 112px; overflow: hidden; display: flex; justify-content: center; align-items: flex-end; color: var(--color-accent-footer-logo); }
-.k-footer__wordmark .k-logo { width: 108%; max-width: none; flex: none; margin-bottom: -6px; }
+/* Wordmark: full logo, never cropped, in the footer colour, standing on the colour of the section above (--footer-top). */
+.k-footer__wordmark { display: flex; align-items: flex-end; padding: var(--space-lg) var(--layout-margin) 0; background: var(--footer-top, var(--color-accent-primary)); color: var(--color-bg-footer); overflow: hidden; }
+.k-footer__wordmark .k-logo { width: 100%; max-width: none; flex: none; margin-bottom: -1px; }
 .k-footer__content { display: flex; flex-direction: column; align-items: center; gap: var(--space-2xl); padding: var(--space-xl) var(--layout-margin) var(--space-3xl); text-align: center; }
 .k-footer__signup { display: flex; align-items: center; justify-content: center; width: 100%; min-height: var(--size-field); border-radius: var(--radius-full); background: var(--color-bg-brand); color: var(--color-text-inverse-warm); font-weight: 700; font-size: var(--text-label-xl-size); line-height: var(--text-label-xl-line-height); }
 .k-footer__legal { display: flex; flex-direction: column; align-items: center; gap: var(--space-lg); order: 1; }
@@ -192,8 +193,6 @@
 .k-footer__heading { color: var(--color-text-brand); font-weight: 700; font-size: var(--text-label-xl-size); line-height: var(--text-label-xl-line-height); }
 .k-footer__links { display: flex; flex-direction: column; align-items: center; gap: var(--space-lg); font-size: var(--text-body-md-size); line-height: var(--text-body-md-line-height); }
 @media (min-width: 1024px) {
-  .k-footer__wordmark { height: auto; }
-  .k-footer__wordmark .k-logo { width: 100%; margin-bottom: -1.2%; }
   .k-footer__content { display: grid; grid-template-columns: 1fr auto; align-items: start; gap: var(--space-2xl); padding: var(--space-4xl) var(--layout-margin); text-align: left; }
   .k-footer__cols { display: flex; gap: var(--space-4xl); grid-column: 1; grid-row: 1 / span 2; }
   .k-footer__col { align-items: flex-start; gap: var(--space-xl); }

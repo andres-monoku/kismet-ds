@@ -5,7 +5,7 @@
    4. editQuestions / applyEdit → live iteration: Jev classifies the instruction, code applies it.
    If the Jev endpoint is not available, a local keyword scorer returns answers in the same shape ("demo mode"). */
 import { TONE_COLORS } from './theme-colors.js';
-import { CAMPAIGNS, SECTIONS, ENTITIES, THEMES, ORDER, OPTIONAL, PHOTOS, PRODUCTS, ANGLES, LEADS, CLOSERS, STRATEGIES, STRIPS } from './registry.js';
+import { CAMPAIGNS, SECTIONS, ENTITIES, THEMES, ORDER, OPTIONAL, PHOTOS, PRODUCTS, ANGLES, LEADS, CLOSERS, STRATEGIES, STRIPS, TONE_TOKEN } from './registry.js';
 
 const MODEL = 'jev-latest';
 
@@ -89,18 +89,34 @@ const fill = (s, sl, camp) => s.replace(/\{retailer\}/g, sl.retailerLabel).repla
 const TONE_ANGLE = { playful: 'playful', clinical: 'clinical', urgent: 'urgent', warm: 'warm' };
 /* Build the section list of one strategy, then let the evidence adjust it:
    goal and offer inject sections, very low probabilities remove them, very high ones add them. */
+/* blocks rebuilt 1:1 from the final Figma designs — the builder leans on them */
+const SIGNATURE = ['products', 'ingredients', 'stats', 'compare', 'progress', 'reviews', 'story', 'stories', 'usp', 'faq', 'spotlight', 'media_cards'];
+/* weighted random draw */
+const draw = (items, weights) => { let r = Math.random() * weights.reduce((x, y) => x + y, 0); for (let i = 0; i < items.length; i++) if ((r -= weights[i]) <= 0) return items[i]; return items[items.length - 1]; };
 export function structure(strategyId, sig) {
   const st = STRATEGIES[strategyId];
-  let list = st.flow.map(x => { const [id, variant] = x.split(':'); return { id, variant: id === 'hero' ? st.hero : variant || null }; });
+  /* optional blocks of the backbone stay with probability 0.45–0.95 following Jev's score: every generation is a new draw */
+  let list = st.flow.map(x => { const must = x.includes('!'); const [id, variant] = x.replace('!', '').split(':'); return { id, must, variant: id === 'hero' ? st.hero : variant || null }; })
+    .filter(x => x.must || Math.random() < (SIGNATURE.includes(x.id) ? 0.7 : 0.45) + 0.5 * (sig.use[x.id] ?? SECTIONS[x.id].prior ?? 0.4));
+  const rv = list.find(x => x.id === 'reviews'); if (rv && !rv.variant) rv.variant = Math.random() < 0.5 ? 'photo' : 'cards';
   const has = id => list.some(x => x.id === id), put = (id, afterId, variant = null) => { if (has(id)) return; const i = list.findIndex(x => x.id === afterId); list.splice(i < 0 ? list.length : i + 1, 0, { id, variant }); };
   if (sig.goal === 'find_store') put('locator', strategyId === 'story' ? 'reviews' : 'hero');
   else if (sig.physical) put('locator', list[list.length - 2]?.id || 'hero'); // a store is named but it is not the main goal → locator near the end
   if (sig.hasOffer > 0.6) put('offer', has('products') ? 'products' : 'hero');
   if (sig.goal === 'signup' || (sig.campaign === 'promo' && strategyId !== 'utility')) { list = list.filter(x => x.id !== 'cta'); put('signup', list[list.length - 1].id); }
   if (sig.goal !== 'find_store' && !sig.physical) list = list.filter(x => x.id !== 'locator' || sig.use.locator > 0.5);
-  list = list.filter(x => SECTIONS[x.id].fixed || (sig.use[x.id] ?? 0.5) >= 0.3 || x.id === 'locator' && (sig.goal === 'find_store' || sig.physical));                    // Jev is nearly sure it does not belong
+  list = list.filter(x => SECTIONS[x.id].fixed || x.must || (sig.use[x.id] ?? 0.5) >= 0.3 || x.id === 'locator' && (sig.goal === 'find_store' || sig.physical));                    // Jev is nearly sure it does not belong
   if (sig.hasOffer < 0.4) list = list.filter(x => x.id !== 'offer');
-  let extra = 0; for (const id of [...OPTIONAL].sort((x, y) => (sig.use[y] ?? 0) - (sig.use[x] ?? 0))) if ((sig.use[id] ?? 0) >= 0.7 && !has(id) && !(sig.taken && sig.taken.has(id)) && !['announce', 'sticky_cta', 'countdown'].includes(id) && extra++ < 2) { if (sig.taken) sig.taken.add(id); const end = list.findIndex(x => ['cta', 'signup', 'newsletter', 'sticky_cta'].includes(x.id)); list.splice(end < 0 ? list.length : end, 0, { id, variant: SECTIONS[id].variants ? Object.keys(SECTIONS[id].variants)[0] : null }); } // nearly sure it does
+  /* two more blocks drawn from the whole library, weighted by Jev's score (squared): likely ones come up often, every block can come up */
+  const SKIP = ['announce', 'sticky_cta', 'countdown', 'marquee', 'testimonial', 'offer', 'locator', 'signup', 'contact', 'event_details', 'specs', 'callout', 'prose', 'figure', 'image_duo', 'text_cols'];
+  for (let n = 0; n < 2; n++) {
+    const pool = OPTIONAL.filter(id => !has(id) && !SKIP.includes(id) && !(sig.taken && sig.taken.has(id)) && (sig.use[id] ?? 0) >= 0.2); if (!pool.length) break;
+    const id = draw(pool, pool.map(id => (sig.use[id] ?? 0.3) ** 2 * (SIGNATURE.includes(id) ? 4 : 1))); if (sig.taken) sig.taken.add(id);
+    const end = list.findIndex(x => ['cta', 'signup', 'newsletter', 'sticky_cta', 'faq'].includes(x.id)); const stop = end < 0 ? list.length : end; let at = list.findIndex((x, n) => n > 0 && ORDER.indexOf(x.id) > ORDER.indexOf(id)); at = at < 0 ? stop : Math.max(1, Math.min(at, stop)); // where it reads naturally in a page
+    list.splice(at, 0, { id, variant: SECTIONS[id].variants ? Object.keys(SECTIONS[id].variants)[0] : null });
+  }
+  if (has('ingredients')) list = list.filter(x => x.id !== 'usp'); // the ingredients block already carries the promise card
+  list = list.map(({ id, variant }) => ({ id, variant }));
   const pick = id => list.filter(x => x.id === id), body = list.filter(x => !['hero', 'announce', 'sticky_cta'].includes(x.id));
   return [...pick('announce'), { id: 'header', variant: null }, ...pick('hero'), ...body, { id: 'footer', variant: null }, ...pick('sticky_cta')];
 }
@@ -109,23 +125,24 @@ export function compose(brief, res) {
   const goalP = a.goal.probabilities[a.goal.choice]; const DEFAULT_GOAL = { retail: 'find_store', launch: 'buy', promo: 'subscribe', event: 'register', subscription: 'quiz', story: 'buy' };
   const physical = !['none', 'chewy', 'amazon'].includes(a.retailer.choice) && a.retailer.confidence > 0.5; const inStore = camp === 'retail' && physical; // a physical retailer always means "help me find it"
   const sig = { taken: new Set(), physical, campaign: camp, goal: inStore ? 'find_store' : goalP >= 0.35 ? a.goal.choice : DEFAULT_GOAL[camp], hasOffer: a.has_offer.noul, use: Object.fromEntries(OPTIONAL.filter(id => a['use_' + id]).map(id => [id, a['use_' + id].noul])) };
-  const ranked = Object.keys(STRATEGIES).map(k => [k, a['fit_' + k].noul]).sort((x, y) => y[1] - x[1]);
+  /* version A is Jev's best fit; B and C are drawn from the rest, weighted by fit — so a new generation explores other approaches */
+  const byFit = Object.keys(STRATEGIES).map(k => [k, a['fit_' + k].noul]).sort((x, y) => y[1] - x[1]); const ranked = [byFit.shift()];
+  while (ranked.length < 3) { const ok = byFit.filter(x => x[1] >= 0.3), pool = ok.length ? ok : byFit.slice(0, 1); const s = draw(pool, pool.map(x => x[1] ** 3 + 0.001)); ranked.push(s); byFit.splice(byFit.indexOf(s), 1); }
+  const shift = Math.floor(Math.random() * 3);
   const themes = rank(a.theme); if (top(a.theme.probabilities)[0][1] < 0.35) themes.unshift(CAMPAIGNS[camp].theme);
-  const heroes = top(a.hero_kind.probabilities).filter(h => h[1] >= 0.15).map(h => h[0]).filter(h => h !== 'offer' || sig.hasOffer > 0.5), usedHeroes = sig.hasOffer > 0.5 ? [] : ['offer'];
+  const heroP = a.hero_kind.probabilities, heroKeys = Object.keys(SECTIONS.hero.variants), usedHeroes = [];
   const usedThemes = [], usedAngles = [];
   return ranked.slice(0, 3).map(([sid, fit], i) => {
     const st = STRATEGIES[sid];
-    const theme = themes.find(t => !usedThemes.includes(t)) || themes[0]; usedThemes.push(theme);
+    const freeThemes = themes.filter(t => !usedThemes.includes(t)); const theme = i === 0 ? freeThemes[0] : draw(freeThemes, freeThemes.map((t, n) => 1 / (n + 1))); usedThemes.push(theme);
     const toneAngle = TONE_ANGLE[a.tone.choice];
     let angle = i === 0 && a.tone.confidence > 0.5 && toneAngle ? toneAngle : st.angle;
     if (usedAngles.includes(angle)) angle = [st.angle, ...Object.keys(ANGLES)].find(x => !usedAngles.includes(x)); usedAngles.push(angle);
     const spec = { key: 'ABC'[i], label: st.label, note: st.describe, fit, brief, campaign: camp, strategy: sid, slots: sl, signals: sig, theme,
-      copy: { angle, cta: i, eyebrow: i, marquee: i }, photo: i, sections: structure(sid, sig) };
-    /* hero: version A opens with Jev's pick; the others keep their strategy's hero unless it is taken, then the next best pick */
-    const h = spec.sections.find(x => x.id === 'hero'); let hero = i === 0 && heroes[0] ? heroes[0] : st.hero;
-    if (usedHeroes.includes(hero)) hero = [st.hero, ...heroes, ...Object.keys(SECTIONS.hero.variants)].find(x => !usedHeroes.includes(x));
-    usedHeroes.push(hero); h.variant = hero;
-    if (hero === 'product') spec.sections = spec.sections.filter(x => x.id !== 'spotlight'); // the hero already is the product spotlight
+      copy: { angle, cta: i + shift, eyebrow: i + shift, marquee: i + shift }, photo: i + shift, sections: structure(sid, sig) };
+    /* hero: drawn from Jev's distribution over the Kismet heroes, nudged toward the strategy's own; never repeated across versions */
+    const h = spec.sections.find(x => x.id === 'hero'); const free = heroKeys.filter(k => !usedHeroes.includes(k));
+    const hero = draw(free, free.map(k => (heroP[k] ?? 0) + (k === st.hero ? 0.35 : 0.05))); usedHeroes.push(hero); h.variant = hero;
     spec.why = explain(a, spec);
     return spec;
   });
@@ -164,18 +181,20 @@ export function rhythm(sections, c, theme = 'electric') {
     if (STRIPS.includes(s.id)) { out.push({ s }); prev2 = prev; prev = null; sinceMq++; return; }
     const sec = SECTIONS[s.id], tones = sec.tones;
     const all = [...tones, ...Object.keys(hex).filter(t => !tones.includes(t) && t !== 'ink')];
-    const tone = all.find(t => !same(t, prev) && !same(t, prev2)) || all.find(t => !same(t, prev)) || tones[0];
+    const last = !list.slice(i + 1).some(x => !STRIPS.includes(x.id)), okEnd = t => !last || hex[t] !== hex.footer; // the last band meets the footer wordmark: it cannot be the footer's colour
+    const tone = all.find(t => !same(t, prev) && !same(t, prev2) && okEnd(t)) || all.find(t => !same(t, prev) && okEnd(t)) || tones[0];
     const next = list[i + 1], wave = !!next && !STRIPS.includes(next.id);
-    const label = typeof sec.mq === 'function' ? sec.mq(c) : sec.mq; const mq = label && (s._mq || sinceMq >= 2) ? (s._mq && c.marquee && s.id !== 'reviews' && s.id !== 'story' && s.id !== 'stories' ? c.marquee : label) : null;
+    const label = typeof sec.mq === 'function' ? sec.mq(c) : sec.mq; const photoLed = ['story', 'stories', 'testimonial'].includes(s.id) || (s.id === 'reviews' && s.variant === 'photo'); // photo-led sections always carry their marquee
+    const mq = label && (s._mq || photoLed || sinceMq >= 2) ? (s._mq && c.marquee && s.id !== 'reviews' && s.id !== 'story' && s.id !== 'stories' ? c.marquee : label) : null;
     sinceMq = mq ? 0 : sinceMq + 1; delete s._mq;
     out.push({ s, tone, wave, mq }); prev2 = prev; prev = tone;
   });
   return out;
 }
 const mqHtml = text => `<div class="k-marquee" aria-hidden="true"><div class="k-marquee__track"><span class="k-icon k-icon--burst"></span><span class="k-marquee__item">${String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;')}</span></div></div>`;
-export function renderBody(spec) { const c = context(spec); return rhythm(spec.sections.map(s => ({ ...s })), c, spec.theme).map(({ s, tone, wave, mq }) => tone
+export function renderBody(spec) { const c = context(spec); let lastTone = null; return rhythm(spec.sections.map(s => ({ ...s })), c, spec.theme).map(({ s, tone, wave, mq }) => (tone && (lastTone = tone), tone)
   ? `<div data-section="${s.id}" class="k-band k-band--${tone}${wave ? ' k-band--wave' : ''}${mq ? ' k-band--mq' : ''}">${mq ? mqHtml(mq) : ''}${SECTIONS[s.id].render(c, s.variant)}</div>`
-  : `<div data-section="${s.id}">${SECTIONS[s.id].render(c, s.variant)}</div>`).join('\n'); }
+  : `<div data-section="${s.id}"${s.id === 'footer' && lastTone ? ` style="--footer-top:var(--color-${TONE_TOKEN[lastTone]})"` : ''}>${SECTIONS[s.id].render(c, s.variant)}</div>`).join('\n'); }
 export function renderDoc(spec, base, { title = 'Kismet landing' } = {}) {
   return `<!doctype html>\n<html lang="en" data-theme="${spec.theme}">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>${title}</title>\n<base href="${base}">\n<link rel="stylesheet" href="css/kismet.css">\n<script src="js/kismet.js" defer><\/script>\n<style>[data-section].is-picked{outline:3px solid #00c4d6;outline-offset:-3px}</style>\n</head>\n<body><div class="k-page">\n${renderBody(spec)}\n</div></body>\n</html>`;
 }
@@ -208,7 +227,7 @@ export function applyEdit(spec, a) {
   if (op === 'theme') s.theme = top(a.theme.probabilities)[0][1] > 0.3 ? a.theme.choice : cyc(THEMES, s.theme);
   else if (op === 'hero_layout') { const h = s.sections[has('hero')]; h.variant = cyc(SECTIONS.hero.variants, h.variant); }
   else if (op === 'headline_next') s.copy.angle = cyc(ANGLES, s.copy.angle);
-  else if (op === 'restructure') { s.strategy = cyc(STRATEGIES, s.strategy); s.label = STRATEGIES[s.strategy].label; s.copy.angle = STRATEGIES[s.strategy].angle; s.sections = structure(s.strategy, s.signals); }
+  else if (op === 'restructure') { s.signals.taken = new Set(); s.strategy = cyc(STRATEGIES, s.strategy); s.label = STRATEGIES[s.strategy].label; s.copy.angle = STRATEGIES[s.strategy].angle; s.sections = structure(s.strategy, s.signals); }
   else if (op === 'cta_next') s.copy.cta++;
   else if (op === 'photo_next') s.photo++;
   else if (op === 'marquee_style') { add('marquee'); const m = s.sections[has('marquee')]; m.variant = cyc(SECTIONS.marquee.variants, m.variant); }
