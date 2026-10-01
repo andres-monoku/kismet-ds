@@ -49,12 +49,21 @@
     document.addEventListener('change', function (e) { if (e.target.matches('[data-k-theme-select]')) setTheme(e.target.value); });
   }
 
+  function progress(root, i) {
+    var stops = root.querySelectorAll('.k-progress__stop'), panels = root.querySelectorAll('.k-progress__panel');
+    if (i == null) { i = 0; [].forEach.call(stops, function (s, n) { if (s.getAttribute('aria-selected') === 'true') i = n; }); }
+    [].forEach.call(stops, function (s, n) { s.setAttribute('aria-selected', String(n === i)); s.classList.toggle('is-done', n < i); });
+    [].forEach.call(panels, function (p, n) { p.hidden = n !== i; });
+    stops[i].parentElement.style.setProperty('--p', stops[i].offsetLeft + 'px');
+  }
   function interactions() {
     document.addEventListener('click', function (e) {
       var t;
       /* single-choice groups: chips, segmented control, card sizes → aria-pressed; tabs → aria-selected */
       if ((t = e.target.closest('[data-k-choice] > *'))) { each(':scope > *', function (x) { x.setAttribute('aria-pressed', String(x === t)); }, t.parentElement); }
       if ((t = e.target.closest('.k-tabs > .k-tab'))) { each(':scope > .k-tab', function (x) { x.setAttribute('aria-selected', String(x === t)); }, t.parentElement); if (t.parentElement.hasAttribute('data-k-panels')) { var tabs = [].slice.call(t.parentElement.children), ps = t.parentElement.parentElement.querySelectorAll(':scope > [data-k-panel]'); [].forEach.call(ps, function (x, i) { x.hidden = i !== tabs.indexOf(t); }); } }
+      /* 45 days progress: pick a day → show its panel, fill the track up to it */
+      if ((t = e.target.closest('.k-progress__stop'))) progress(t.closest('[data-k-progress]'), [].indexOf.call(t.parentElement.children, t));
       if ((t = e.target.closest('.k-menu > .k-option'))) { each(':scope > .k-option', function (x) { x.setAttribute('aria-selected', String(x === t)); }, t.parentElement); }
       /* quantity stepper: trash at 1 */
       if ((t = e.target.closest('.k-stepper__btn'))) {
@@ -80,7 +89,8 @@
     });
   }
 
-  function init() { wavy(); marquees(); themes(); interactions(); }
+  function progresses(root) { each('[data-k-progress]', function (el) { progress(el); }, root); }
+  function init() { wavy(); marquees(); themes(); interactions(); progresses(); window.addEventListener('resize', function () { progresses(); }); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
-  window.Kismet = { init: function (root) { wavy(root); marquees(root); }, setTheme: setTheme, themes: THEMES };
+  window.Kismet = { init: function (root) { wavy(root); marquees(root); progresses(root); }, setTheme: setTheme, themes: THEMES };
 })();

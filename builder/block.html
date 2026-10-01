@@ -1,0 +1,10 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>block</title><base href="../"><link rel="stylesheet" href="css/kismet.css"><script src="js/kismet.js" defer></script></head>
+<body><div class="k-page" id="root"></div>
+<script type="module">
+/* Dev helper: /builder/block.html?ids=compare,progress&theme=electric&day=2 renders library blocks on their first tone. */
+import { byId } from '../library/sections.js';
+const q = new URLSearchParams(location.search); document.documentElement.dataset.theme = q.get('theme') || 'electric';
+const ids = (q.get('ids') || 'compare').split(',');
+document.getElementById('root').innerHTML = ids.map((id, i) => { const b = byId[id]; return `<div class="k-band k-band--${(b.tones || ['cream'])[0]}${i < ids.length - 1 ? ' k-band--wave' : ''}">${b.render()}</div>`; }).join('');
+window.Kismet && window.Kismet.init(document); addEventListener('load', () => { window.Kismet.init(document); const d = q.get('day'); if (d) document.querySelectorAll('.k-progress__stop')[+d].click(); });
+</script></body></html>

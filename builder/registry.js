@@ -76,11 +76,11 @@ export const STRATEGIES = {
   direct: { label: 'Direct response', describe: 'Get to the action fast: one message, the offer or product, and one clear button', angle: 'urgent', hero: 'split',
     flow: ['hero', 'usp', 'marquee:accent', 'spotlight', 'products', 'offer', 'plans', 'guarantee', 'cta:accent', 'sticky_cta'] },
   story: { label: 'Storytelling', describe: 'Tell a story with emotion and lifestyle photography before asking for anything', angle: 'warm', hero: 'fold',
-    flow: ['hero', 'logos', 'statement:light', 'zigzag', 'marquee:soft', 'founder', 'gallery', 'reviews', 'steps', 'cta'] },
+    flow: ['hero', 'logos', 'ingredients', 'progress', 'zigzag', 'marquee:soft', 'founder', 'gallery', 'reviews', 'steps', 'cta'] },
   utility: { label: 'Utility first', describe: 'Be practical: help people find, locate, check or do something right away', angle: 'plain', hero: 'page',
     flow: ['hero', 'locator', 'steps', 'products', 'retailers', 'callout', 'faq', 'newsletter'] },
   proof: { label: 'Proof & trust', describe: 'Convince skeptics with evidence: reviews, numbers, science and guarantees', angle: 'clinical', hero: 'fold',
-    flow: ['hero', 'number_strip', 'press_quotes', 'before_after', 'compare', 'timeline', 'rating_summary', 'reviews', 'guarantee', 'faq', 'cta'] },
+    flow: ['hero', 'number_strip', 'press_quotes', 'before_after', 'compare', 'progress', 'rating_summary', 'reviews', 'guarantee', 'faq', 'cta'] },
   showcase: { label: 'Product showcase', describe: 'Show the products like a catalog and let people browse', angle: 'playful', hero: 'collage',
     flow: ['hero', 'marquee:brand', 'categories', 'products', 'bundle', 'ingredients', 'tabbed', 'testimonial', 'cta:panel'] },
   launchpad: { label: 'Launch pad', describe: 'Introduce one new thing: present it, explain why it matters and let people get it', angle: 'playful', hero: 'center',
@@ -192,6 +192,6 @@ const MQ = { products: c => c.marquee, steps: 'How it works', locator: 'Find a s
 for (const id of Object.keys(SECTIONS)) { SECTIONS[id].tones = SECTIONS[id].tones || TONES[id] || DEFAULT_TONES; SECTIONS[id].mq = SECTIONS[id].mq || MQ[id]; }
 
 /* Page grammar: canonical order. Optional sections keep this order unless the user moves them. */
-export const ORDER = ['announce', 'header', 'hero', 'countdown', 'usp', 'logos', 'marquee', 'stats', 'number_strip', 'press_quotes', 'statement', 'split', 'text_cols', 'features', 'icon_list', 'benefits', 'zigzag', 'event_details', 'spotlight', 'products', 'bundle', 'categories', 'plans', 'locator', 'retailers', 'offer', 'banner', 'ingredients', 'accordion_media', 'tabbed', 'specs', 'compare', 'before_after', 'timeline', 'process', 'video', 'figure', 'image_duo', 'story', 'founder', 'team', 'prose', 'callout', 'media_cards', 'gallery', 'ugc', 'rating_summary', 'reviews', 'testimonial', 'stories', 'steps', 'values', 'guarantee', 'faq', 'contact', 'newsletter', 'signup', 'cta', 'footer', 'sticky_cta'];
+export const ORDER = ['announce', 'header', 'hero', 'countdown', 'usp', 'logos', 'marquee', 'stats', 'number_strip', 'press_quotes', 'statement', 'split', 'text_cols', 'features', 'icon_list', 'benefits', 'zigzag', 'event_details', 'spotlight', 'products', 'bundle', 'categories', 'plans', 'locator', 'retailers', 'offer', 'banner', 'ingredients', 'accordion_media', 'tabbed', 'specs', 'compare', 'before_after', 'progress', 'timeline', 'process', 'video', 'figure', 'image_duo', 'story', 'founder', 'team', 'prose', 'callout', 'media_cards', 'gallery', 'ugc', 'rating_summary', 'reviews', 'testimonial', 'stories', 'steps', 'values', 'guarantee', 'faq', 'contact', 'newsletter', 'signup', 'cta', 'footer', 'sticky_cta'];
 export const OPTIONAL = ORDER.filter(id => !SECTIONS[id].fixed);
 export { PHOTOS, PRODUCTS };
