@@ -4,7 +4,7 @@
    3. render(spec)      → HTML made only of design-system components.
    4. editQuestions / applyEdit → live iteration: Jev classifies the instruction, code applies it.
    If the Jev endpoint is not available, a local keyword scorer returns answers in the same shape ("demo mode"). */
-import { CAMPAIGNS, SECTIONS, ENTITIES, THEMES, ORDER, OPTIONAL, PHOTOS, PRODUCTS } from './registry.js';
+import { CAMPAIGNS, SECTIONS, ENTITIES, THEMES, ORDER, OPTIONAL, PHOTOS, PRODUCTS, ANGLES, LEADS, CLOSERS, STRATEGIES } from './registry.js';
 
 const MODEL = 'jev-latest';
 
@@ -19,7 +19,7 @@ export function questions() {
   for (const [k, e] of Object.entries(ENTITIES)) q[k] = { type: 'choice', instructions: e.instructions, criteria: e.options };
   for (const id of OPTIONAL) q['use_' + id] = { type: 'noul', instructions: SECTIONS[id].when };
   for (const [id, s] of Object.entries(SECTIONS)) if (s.variants && s.variantQuestion) q['variant_' + id] = { type: 'choice', instructions: s.variantQuestion, criteria: s.variants };
-  for (const [k, c] of Object.entries(CAMPAIGNS)) q['headline_' + k] = { type: 'choice', instructions: 'Which headline fits this request best? Curly-brace words are placeholders.', criteria: Object.fromEntries(c.headline.map((h, i) => ['h' + i, h.replace(/\n/g, ' ')])) };
+  for (const [k, st] of Object.entries(STRATEGIES)) q['fit_' + k] = { type: 'noul', instructions: 'The best approach for this landing page is to: ' + st.describe };
   return q;
 }
 
@@ -62,6 +62,7 @@ export function localAnswers(brief, qs) {
     else if (id === 'length') { const n = Math.min(2, Math.floor(text.split(/\s+/).length / 9)); const p = { 0: 0.25, 1: 0.5, 2: 0.25 }; p[n] += 0.4; const s = p[0] + p[1] + p[2]; for (const k in p) p[k] /= s; a[id] = { type: 'score', score: +(p[1] + 2 * p[2]).toFixed(2), probabilities: p, confidence: 0.4 }; }
     else if (id === 'has_offer') a[id] = { type: 'noul', noul: KW.use.offer.test(text) ? 0.95 : 0.08 };
     else if (id.startsWith('use_')) { const s = id.slice(4); const hits = KW.use[s] ? (text.match(new RegExp(KW.use[s].source, 'gi')) || []).length : 0; a[id] = { type: 'noul', noul: Math.min(0.97, (SECTIONS[s].prior ?? 0.4) + hits * 0.3) }; }
+    else if (id.startsWith('fit_')) { const F = { direct: [/promo|offer|oferta|descuento|\d+ ?%|sale|black friday|buy|coupon|cup[oó]n|deal/, 0.45], story: [/story|historia|brand|marca|launch|lanzamiento|family|community|event|evento|parade|campaign|campa[ñn]a/, 0.5], utility: [/store|tienda|walmart|target|petco|costco|find|locator|register|punto de venta|near|cerca/, 0.3], proof: [/science|ciencia|clinical|vet|proof|trust|review|health|salud|gut/, 0.4], showcase: [/product|producto|catalog|range|topper|treat|collection|new|nuevo|vender|sell/, 0.42] }[id.slice(4)]; const hits = (text.match(new RegExp(F[0].source, 'gi')) || []).length; a[id] = { type: 'noul', noul: Math.min(0.97, F[1] + hits * 0.22) }; }
     else if (id === 'variant_hero') a[id] = choiceAnswer(/event|evento|parade|date|fecha|detail|register/.test(text) ? { fold: 0.3, split: 0.7 } : { fold: 0.72, split: 0.28 });
     else if (id === 'variant_marquee') a[id] = choiceAnswer({ accent: 0.45, ink: 0.25, soft: 0.15, brand: 0.15 });
     else if (id.startsWith('headline_')) { const p = {}; keys.forEach((k, i) => { const line = q.criteria[k].toLowerCase(); p[k] = 1 / (i + 1.5) + (/\{retailer\}/.test(line) && KW.goal.find_store.test(text) ? 0.5 : 0) + (/\{offer\}/.test(line) && KW.use.offer.test(text) ? 0.5 : 0); }); const s = Object.values(p).reduce((x, y) => x + y, 0); for (const k in p) p[k] /= s; a[id] = choiceAnswer(p); }
@@ -82,28 +83,46 @@ function slots(brief, a) {
 }
 const fill = (s, sl, camp) => s.replace(/\{retailer\}/g, sl.retailerLabel).replace(/\{product\}/g, sl.productLabel).replace(/\{offer\}/g, sl.offer || 'Save 30%').replace(/\{name\}/g, sl.name || (camp === 'event' ? 'The Kismet Dog Parade' : 'the new ' + sl.productLabel));
 
-const PLANS = [
-  { key: 'A', label: 'Recommended', note: 'Top choice for every decision', pick: 0, threshold: 0.5 },
-  { key: 'B', label: 'Compact', note: 'Only high-confidence sections · second-best hero and copy', pick: 1, threshold: 0.72 },
-  { key: 'C', label: 'Full story', note: 'Includes lower-probability sections · third option for copy and theme', pick: 2, threshold: 0.3 },
-];
+const TONE_ANGLE = { playful: 'playful', clinical: 'clinical', urgent: 'urgent', warm: 'warm' };
+/* Build the section list of one strategy, then let the evidence adjust it:
+   goal and offer inject sections, very low probabilities remove them, very high ones add them. */
+export function structure(strategyId, sig) {
+  const st = STRATEGIES[strategyId];
+  let list = st.flow.map(x => { const [id, variant] = x.split(':'); return { id, variant: id === 'hero' ? st.hero : variant || null }; });
+  const has = id => list.some(x => x.id === id), put = (id, afterId, variant = null) => { if (has(id)) return; const i = list.findIndex(x => x.id === afterId); list.splice(i < 0 ? list.length : i + 1, 0, { id, variant }); };
+  if (sig.goal === 'find_store') put('locator', strategyId === 'story' ? 'reviews' : 'hero');
+  if (sig.hasOffer > 0.6) put('offer', has('products') ? 'products' : 'hero');
+  if (sig.goal === 'signup' || (sig.campaign === 'promo' && strategyId !== 'utility')) { list = list.filter(x => x.id !== 'cta'); put('signup', list[list.length - 1].id); }
+  if (sig.goal !== 'find_store') list = list.filter(x => x.id !== 'locator' || sig.use.locator > 0.5);
+  list = list.filter(x => SECTIONS[x.id].fixed || (sig.use[x.id] ?? 0.5) >= 0.12);                    // Jev is nearly sure it does not belong
+  if (sig.hasOffer < 0.4) list = list.filter(x => x.id !== 'offer');
+  for (const id of OPTIONAL) if ((sig.use[id] ?? 0) >= 0.9 && !has(id)) { const end = list.findIndex(x => x.id === 'cta' || x.id === 'signup'); list.splice(end < 0 ? list.length : end, 0, { id, variant: SECTIONS[id].variants ? Object.keys(SECTIONS[id].variants)[0] : null }); } // nearly sure it does
+  const head = list.filter(x => x.id === 'hero'), body = list.filter(x => x.id !== 'hero');
+  return [{ id: 'header', variant: null }, ...head, ...body, { id: 'footer', variant: null }];
+}
 export function compose(brief, res) {
   const a = res.answers, sl = slots(brief, a), camp = a.campaign.choice;
-  return PLANS.map(plan => {
-    const lengthShift = (a.length.score - 1) * 0.08; // longer request → lower bar
-    const sections = ORDER.filter(id => SECTIONS[id].fixed || a['use_' + id].noul >= plan.threshold - lengthShift || (id === 'offer' && a.has_offer.noul > 0.6 && plan.key !== 'B') || (id === 'locator' && a.goal.choice === 'find_store'))
-      .map(id => ({ id, variant: a['variant_' + id] ? nth(a['variant_' + id], id === 'hero' ? (plan.pick ? 1 : 0) : plan.pick) : (id === 'split' ? (plan.pick % 2 ? 'right' : 'left') : null) }));
-    const spec = { key: plan.key, label: plan.label, note: plan.note, brief, campaign: camp, slots: sl,
-      theme: plan.pick === 0 ? (top(a.theme.probabilities)[0][1] > 0.4 ? a.theme.choice : CAMPAIGNS[camp].theme) : nth(a.theme, plan.pick),
-      copy: { headline: +nth(a['headline_' + camp], plan.pick).slice(1), sub: plan.pick % 2, cta: plan.pick, eyebrow: plan.pick, marquee: plan.pick }, photo: plan.pick, sections };
+  const goalP = a.goal.probabilities[a.goal.choice]; const DEFAULT_GOAL = { retail: 'find_store', launch: 'buy', promo: 'subscribe', event: 'register', subscription: 'quiz', story: 'buy' };
+  const sig = { campaign: camp, goal: goalP >= 0.35 ? a.goal.choice : DEFAULT_GOAL[camp], hasOffer: a.has_offer.noul, use: Object.fromEntries(OPTIONAL.filter(id => a['use_' + id]).map(id => [id, a['use_' + id].noul])) };
+  const ranked = Object.keys(STRATEGIES).map(k => [k, a['fit_' + k].noul]).sort((x, y) => y[1] - x[1]);
+  const themes = rank(a.theme); if (top(a.theme.probabilities)[0][1] < 0.35) themes.unshift(CAMPAIGNS[camp].theme);
+  const usedThemes = [], usedAngles = [];
+  return ranked.slice(0, 3).map(([sid, fit], i) => {
+    const st = STRATEGIES[sid];
+    const theme = themes.find(t => !usedThemes.includes(t)) || themes[0]; usedThemes.push(theme);
+    const toneAngle = TONE_ANGLE[a.tone.choice];
+    let angle = i === 0 && a.tone.confidence > 0.5 && toneAngle ? toneAngle : st.angle;
+    if (usedAngles.includes(angle)) angle = [st.angle, ...Object.keys(ANGLES)].find(x => !usedAngles.includes(x)); usedAngles.push(angle);
+    const spec = { key: 'ABC'[i], label: st.label, note: st.describe, fit, brief, campaign: camp, strategy: sid, slots: sl, signals: sig, theme,
+      copy: { angle, cta: i, eyebrow: i, marquee: i }, photo: i, sections: structure(sid, sig) };
     spec.why = explain(a, spec);
     return spec;
   });
 }
 function explain(a, spec) {
   const pct = x => Math.round(x * 100) + '%';
-  const rows = [['Campaign', a.campaign.choice, a.campaign.probabilities[a.campaign.choice]], ['Retailer', a.retailer.choice, a.retailer.probabilities[a.retailer.choice]], ['Product', a.product.choice, a.product.probabilities[a.product.choice]], ['Goal', a.goal.choice, a.goal.probabilities[a.goal.choice]], ['Theme', spec.theme, a.theme.probabilities[spec.theme]]];
-  for (const id of OPTIONAL) rows.push([SECTIONS[id].label, spec.sections.some(s => s.id === id) ? 'included' : 'left out', a['use_' + id].noul]);
+  const rows = [['Campaign', a.campaign.choice, a.campaign.probabilities[a.campaign.choice]], ['Strategy', STRATEGIES[spec.strategy].label, spec.fit], ['Retailer', a.retailer.choice, a.retailer.probabilities[a.retailer.choice]], ['Product', a.product.choice, a.product.probabilities[a.product.choice]], ['Goal', a.goal.choice, a.goal.probabilities[a.goal.choice]], ['Tone', a.tone.choice, a.tone.probabilities[a.tone.choice]], ['Theme', spec.theme, a.theme.probabilities[spec.theme]], ['Has offer', a.has_offer.noul > 0.6 ? 'yes' : 'no', a.has_offer.noul]];
+  for (const [k, st] of Object.entries(STRATEGIES)) if (k !== spec.strategy) rows.push(['· ' + st.label, 'not used here', a['fit_' + k].noul]);
   return rows.map(r => ({ what: r[0], pick: r[1], p: pct(r[2]) }));
 }
 
@@ -111,7 +130,8 @@ function explain(a, spec) {
 function context(spec) {
   const c = CAMPAIGNS[spec.campaign], sl = spec.slots, pick = (arr, i) => fill(arr[i % arr.length], sl, spec.campaign);
   const photos = Object.values(PHOTOS), products = PRODUCTS[sl.product] || PRODUCTS.food, store = sl.retailer !== 'none';
-  return { eyebrow: pick(c.eyebrow, spec.copy.eyebrow), headline: pick(c.headline, spec.copy.headline), sub: pick(c.sub, spec.copy.sub), cta: pick(c.cta, spec.copy.cta), marquee: pick(c.marquee, spec.copy.marquee),
+  const goal = spec.signals.goal, CLOSING = { find_store: 'See you in the pet aisle.', buy: 'Ready when you are.', subscribe: 'Better bowls start today.', signup: 'Be the first to know.', quiz: 'Find their perfect recipe.', register: 'See you there.' };
+  return { eyebrow: pick(c.eyebrow, spec.copy.eyebrow), headline: fill(c.headline[spec.copy.angle], sl, spec.campaign), sub: fill(LEADS[spec.copy.angle] + ' ' + CLOSERS[goal], sl, spec.campaign), cta: pick(c.cta, spec.copy.cta), cta2: store ? 'Shop online' : 'Shop Kismet', offer: sl.offer, closing: CLOSING[goal], marquee: pick(c.marquee, spec.copy.marquee),
     photo: photos[spec.photo % photos.length], products, retailerLabel: sl.retailerLabel,
     productsTitle: store ? `On the shelf at ${sl.retailerLabel}` : `Shop ${sl.productLabel}`, cardCta: store ? 'Find in store' : 'Add to cart', cardTag: store ? 'In store' : null,
     splitTitle: spec.campaign === 'launch' ? `Meet ${sl.name || 'the new ' + sl.productLabel}.` : 'Start feeding better from day one.',
@@ -131,6 +151,7 @@ export const OPS = {
   theme: 'Change the colors, palette, theme or mood of the page', hero_layout: 'Change the hero layout: photo with text on top versus text panel beside a photo',
   headline_next: 'Change, rewrite or try another headline or title', cta_next: 'Change the button text or call to action', photo_next: 'Change the hero photo or image',
   add_section: 'Add a section or block to the page', remove_section: 'Remove or delete a section or block from the page', move_up: 'Move a section higher or earlier on the page', move_down: 'Move a section lower or later on the page',
+  restructure: 'Try a completely different page structure, layout, approach or version',
   shorter: 'Make the whole page shorter, simpler or more focused', longer: 'Make the whole page longer or more complete', marquee_style: 'Change the marquee or scrolling text band style', none: 'None of these; unclear request',
 };
 export function editQuestions() {
@@ -138,7 +159,7 @@ export function editQuestions() {
     section: { type: 'choice', instructions: 'Which section of the page does the request refer to?', criteria: { ...Object.fromEntries(OPTIONAL.map(id => [id, SECTIONS[id].label + ': ' + SECTIONS[id].when])), hero: 'The hero at the top of the page', none: 'No specific section' } },
     theme: { type: 'choice', instructions: 'Which visual mood is the user asking for?', criteria: THEMES } };
 }
-const EKW = { op: { theme: /color|tema|theme|palette|paleta|mood|verde|green|azul|blue|rojo|red|electric|submarine|salad|skittles|lego/, hero_layout: /hero|header|encabezado|fold|layout|dise[ñn]o del/, headline_next: /headline|title|t[ií]tulo|titular|copy|texto/, cta_next: /button|bot[oó]n|cta|call to action/, photo_next: /photo|foto|image|imagen/, add_section: /add|agrega|a[ñn]ad|incluye|include|pon |suma/, remove_section: /remove|quita|elimina|delete|borra|sin /, move_up: /up|sube|arriba|earlier|antes/, move_down: /down|baja|abajo|later|despu[eé]s/, shorter: /short|corto|corta|simple|menos|compact/, longer: /long|largo|larga|m[aá]s completo|more|full/, marquee_style: /marquee|marquesina|band|banda/ },
+const EKW = { op: { theme: /color|tema|theme|palette|paleta|mood|verde|green|azul|blue|rojo|red|electric|submarine|salad|skittles|lego/, hero_layout: /hero|header|encabezado|fold/, restructure: /structure|estructura|layout|approach|enfoque|different|diferente|otra versi[oó]n|distint/, headline_next: /headline|title|t[ií]tulo|titular|copy|texto/, cta_next: /button|bot[oó]n|cta|call to action/, photo_next: /photo|foto|image|imagen/, add_section: /add|agrega|a[ñn]ad|incluye|include|pon |suma/, remove_section: /remove|quita|elimina|delete|borra|sin /, move_up: /up|sube|arriba|earlier|antes/, move_down: /down|baja|abajo|later|despu[eé]s/, shorter: /short|corto|corta|simple|menos|compact/, longer: /long|largo|larga|m[aá]s completo|more|full/, marquee_style: /marquee|marquesina|band|banda/ },
   section: { locator: /store|tienda|locator|mapa|zip/, offer: /offer|oferta|descuento|coupon|cup[oó]n|deal/, signup: /email|correo|sign ?up|newsletter|registro/, steps: /steps|pasos|how it works|c[oó]mo funciona/, values: /guarantee|garant|values|confianza/, faq: /faq|preguntas|questions/, products: /product|producto|cards|tarjetas/, split: /50|split|bullets|explica/, logos: /logos|press|prensa/, marquee: /marquee|marquesina/, hero: /hero|fold|encabezado/ },
   theme: { electric: /electric|salm[oó]n|default|c[aá]lid/, submarine: /submarine|coral|rojo|red|bold|turquesa/, salad: /salad|verde|green|natural|kale/, skittles: /skittles|oscuro|dark|night|rosa|pink/, lego: /lego|mint|menta|playful|divert/ } };
 export async function decideEdit(text) {
@@ -151,8 +172,9 @@ export function applyEdit(spec, a) {
   const add = id => { if (has(id) < 0 && !SECTIONS[id].fixed) { const v = SECTIONS[id].variants ? Object.keys(SECTIONS[id].variants)[0] : null; s.sections.push({ id, variant: v }); s.sections.sort((x, y) => ORDER.indexOf(x.id) - ORDER.indexOf(y.id)); } };
   let done = OPS[op];
   if (op === 'theme') s.theme = top(a.theme.probabilities)[0][1] > 0.3 ? a.theme.choice : cyc(THEMES, s.theme);
-  else if (op === 'hero_layout') { const h = s.sections[has('hero')]; h.variant = h.variant === 'fold' ? 'split' : 'fold'; }
-  else if (op === 'headline_next') s.copy.headline++;
+  else if (op === 'hero_layout') { const h = s.sections[has('hero')]; h.variant = cyc(SECTIONS.hero.variants, h.variant); }
+  else if (op === 'headline_next') s.copy.angle = cyc(ANGLES, s.copy.angle);
+  else if (op === 'restructure') { s.strategy = cyc(STRATEGIES, s.strategy); s.label = STRATEGIES[s.strategy].label; s.copy.angle = STRATEGIES[s.strategy].angle; s.sections = structure(s.strategy, s.signals); }
   else if (op === 'cta_next') s.copy.cta++;
   else if (op === 'photo_next') s.photo++;
   else if (op === 'marquee_style') { add('marquee'); const m = s.sections[has('marquee')]; m.variant = cyc(SECTIONS.marquee.variants, m.variant); }
@@ -164,4 +186,4 @@ export function applyEdit(spec, a) {
   else done = null;
   return { spec: s, done, op, confidence: a.op.confidence };
 }
-export { SECTIONS, THEMES, OPTIONAL, ORDER, CAMPAIGNS };
+export { SECTIONS, THEMES, OPTIONAL, ORDER, CAMPAIGNS, STRATEGIES, ANGLES };

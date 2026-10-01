@@ -35,62 +35,52 @@ export const ENTITIES = {
   },
 };
 
-/* Copy bank. Lines are written once by a human, on brand; Jev only picks. Slots: {retailer} {product} {offer} {name} */
+/* Copy bank. Lines are written once by a human, on brand; Jev only picks. Slots: {retailer} {product} {offer} {name}
+   Every campaign has one headline per ANGLE, so two versions of the same brief never say the same thing. */
+export const ANGLES = { urgent: 'Act now, limited time, direct', warm: 'Emotional, family, community', plain: 'Practical, clear, helpful', clinical: 'Evidence, science, vets', playful: 'Fun, cheeky, dog-loving' };
 export const CAMPAIGNS = {
-  retail: {
-    describe: 'Kismet is now sold at a retailer or in physical stores; help people find it there',
+  retail: { describe: 'Kismet is now sold at a retailer or in physical stores; help people find it there', theme: 'electric',
     eyebrow: ['Now in stores', 'New at {retailer}', 'In the pet aisle'],
-    headline: ['Kismet is now\nat {retailer}', 'Find us at\n{retailer}', 'Fresh from the\npet aisle', 'Now on the shelf\nat {retailer}'],
-    sub: ['Gut-healthy, fresh-baked dog food — now on the shelf in the pet aisle. Same recipes, same vets, no subscription needed.', 'Your dog’s favorite {product} is now a quick trip away. Look for the coral bag at {retailer}.'],
-    cta: ['Find a store', 'Find {retailer} near you', 'Shop at {retailer}'],
-    marquee: ['Now at {retailer}', 'In stores now', 'Find us in the pet aisle'],
-    theme: 'electric',
-  },
-  launch: {
-    describe: 'A new product is launching or being introduced',
+    headline: { urgent: 'Run, don’t walk,\nto {retailer}', warm: 'Kismet is now\nat {retailer}', plain: 'Find Kismet\nat {retailer}', clinical: 'Vet-approved,\nnow at {retailer}', playful: 'Sniff us out\nat {retailer}' },
+    cta: ['Find a store', 'Find {retailer} near you', 'Shop at {retailer}'], marquee: ['Now at {retailer}', 'In stores now', 'Find us in the pet aisle'] },
+  launch: { describe: 'A new product is launching or being introduced', theme: 'submarine',
     eyebrow: ['New', 'Just dropped', 'New · {product}'],
-    headline: ['Meet {name}', 'Pour on\nthe good stuff', 'Something new\nfor the bowl', 'The newest way\nto fuel the dog'],
-    sub: ['A new way to add flavor and gut support to every bowl. Made with real ingredients, pre + probiotics and nothing weird.', 'New from Kismet: {name}. Pairs perfectly with the rest of the bowl.'],
-    cta: ['Shop the launch', 'Try {name}', 'Add to my bowl'],
-    marquee: ['New {product}', 'Just launched', '{offer} launch week'],
-    theme: 'submarine',
-  },
-  promo: {
-    describe: 'A discount, sale, coupon or limited-time offer',
+    headline: { urgent: '{name}\nis here', warm: 'Made for the\nbowl they love', plain: 'Meet {name}', clinical: 'New. Proven.\nGut-approved.', playful: 'Pour on\nthe good stuff' },
+    cta: ['Shop the launch', 'Try {name}', 'Add to my bowl'], marquee: ['New {product}', 'Just launched', 'Meet {name}'] },
+  promo: { describe: 'A discount, sale, coupon or limited-time offer', theme: 'submarine',
     eyebrow: ['Limited time', 'This week only', 'Special offer'],
-    headline: ['{offer}\nyour first order', 'Bowl goals,\n{offer}', 'Save big on\nbetter food', 'Treat them.\n{offer}.'],
-    sub: ['Clinically proven food with pre + probiotics. For a limited time, get {offer} when you subscribe.', 'Stock the pantry: {offer} on {product}, while supplies last.'],
-    cta: ['Get {offer}', 'Claim the offer', 'Shop the sale'],
-    marquee: ['{offer}', 'Limited time only', 'Subscribe & save'],
-    theme: 'submarine',
-  },
-  event: {
-    describe: 'An event, parade, pop-up, meetup or sponsorship with a date and place',
+    headline: { urgent: '{offer}.\nThis week only.', warm: 'A little treat\nfor your best friend', plain: '{offer}\nyour first order', clinical: 'Proven food,\n{offer}', playful: 'Bowl goals,\n{offer}' },
+    cta: ['Get {offer}', 'Claim the offer', 'Shop the sale'], marquee: ['{offer}', 'Limited time only', 'Subscribe & save'] },
+  event: { describe: 'An event, parade, pop-up, meetup or sponsorship with a date and place', theme: 'skittles',
     eyebrow: ['Save the date', 'Presented by Kismet', 'Join us'],
-    headline: ['{name}', 'See you\nat the parade', 'Dogs, people,\none big party', 'Come hang\nwith Kismet'],
-    sub: ['Presented by Kismet. A celebration for dogs and their people — come for the costumes, stay for the snacks.', 'Join us for {name}. Free to attend, treats on us.'],
-    cta: ['Register now', 'Save my spot', 'Get the details'],
-    marquee: ['{name}', 'Presented by Kismet', 'Dogs welcome'],
-    theme: 'skittles',
-  },
-  subscription: {
-    describe: 'Getting new customers to subscribe to dog food; the quiz, personalized plans',
+    headline: { urgent: 'Save your spot\nbefore it’s gone', warm: 'Dogs, people,\none big party', plain: '{name}', clinical: 'Come meet\nthe vets', playful: 'Costumes on.\nTails up.' },
+    cta: ['Register now', 'Save my spot', 'Get the details'], marquee: ['{name}', 'Presented by Kismet', 'Dogs welcome'] },
+  subscription: { describe: 'Getting new customers to subscribe to dog food; the quiz, personalized plans', theme: 'electric',
     eyebrow: ['Personalized plans', 'Subscribe & save', 'Made for your dog'],
-    headline: ['Fix the gut\nfuel the dog', 'Better bowls,\ndelivered', 'From quiz\nto bowl', 'A plan as unique\nas your dog'],
-    sub: ['Clinically proven food with pre + probiotics. 96% of dogs see improved gut health in 45 days.', 'Tell us about your dog and we’ll build the right plan. Skip or cancel anytime.'],
-    cta: ['Take the quiz', 'Build my plan', 'Get 30% off today'],
-    marquee: ['Clinically proven food', 'Bowl goals', 'Subscribe & save 30%'],
-    theme: 'electric',
-  },
-  story: {
-    describe: 'Brand story, mission, ingredients, science, about us, partnerships',
+    headline: { urgent: 'Start today,\nsave {offer}', warm: 'A plan as unique\nas your dog', plain: 'From quiz\nto bowl', clinical: 'Fix the gut\nfuel the dog', playful: 'Better bowls,\nwaggier tails' },
+    cta: ['Take the quiz', 'Build my plan', 'Get 30% off today'], marquee: ['Clinically proven food', 'Bowl goals', 'Subscribe & save 30%'] },
+  story: { describe: 'Brand story, mission, ingredients, science, about us, partnerships', theme: 'salad',
     eyebrow: ['Our story', 'Why Kismet', 'The science'],
-    headline: ['Made by\ndog people', 'Real food,\nreal results', 'The good stuff,\nexplained', 'Better for dogs.\nProven.'],
-    sub: ['Founded by longtime dog lovers, formulated with vets, and proven in clinical trials.', 'Real ingredients, gently baked, with pre + probiotics in every bowl.'],
-    cta: ['Meet the food', 'See the science', 'Shop Kismet'],
-    marquee: ['About us', 'Our stories', 'Clinically proven'],
-    theme: 'salad',
-  },
+    headline: { urgent: 'Better food\ncan’t wait', warm: 'Made by\ndog people', plain: 'The good stuff,\nexplained', clinical: 'Real food,\nreal results', playful: 'We’re obsessed\nwith your dog' },
+    cta: ['Meet the food', 'See the science', 'Shop Kismet'], marquee: ['About us', 'Our stories', 'Clinically proven'] },
+};
+/* Sub-copy is assembled from two picked parts (opening by angle + closing by goal): 5 × 6 combinations, zero generation. */
+export const LEADS = { urgent: 'For a limited time only.', warm: 'Made with love by longtime dog people.', plain: 'Fresh-baked, gut-healthy dog food.', clinical: 'Clinically proven: 96% of dogs showed improved gut health in 45 days.', playful: 'Real food your dog will actually lose it over.' };
+export const CLOSERS = { find_store: 'Now on the shelf in the pet aisle at {retailer} — no subscription needed.', buy: 'Add it to your cart and it ships free over $50.', subscribe: 'Subscribe to save 30% and skip or cancel anytime.', signup: 'Leave your email and we’ll send the details.', quiz: 'Take the 30-second quiz and we’ll match the right recipe.', register: 'Free to attend — treats are on us.' };
+
+/* Page strategies: five different ways to tell the same campaign. Jev scores how well each fits the request;
+   the three best become versions A, B and C. Each strategy has its own structure, hero, angle and rhythm. */
+export const STRATEGIES = {
+  direct: { label: 'Direct response', describe: 'Get to the action fast: one message, the offer or product, and one clear button', angle: 'urgent', hero: 'split',
+    flow: ['hero', 'marquee:accent', 'products', 'offer', 'values', 'cta'] },
+  story: { label: 'Storytelling', describe: 'Tell a story with emotion and lifestyle photography before asking for anything', angle: 'warm', hero: 'fold',
+    flow: ['hero', 'logos', 'split:left', 'marquee:soft', 'story', 'reviews', 'steps', 'cta'] },
+  utility: { label: 'Utility first', describe: 'Be practical: help people find, locate, check or do something right away', angle: 'plain', hero: 'page',
+    flow: ['hero', 'locator', 'steps', 'products', 'faq'] },
+  proof: { label: 'Proof & trust', describe: 'Convince skeptics with evidence: reviews, numbers, science and guarantees', angle: 'clinical', hero: 'fold',
+    flow: ['hero', 'stats', 'reviews', 'split:right', 'ingredients', 'values', 'faq', 'cta'] },
+  showcase: { label: 'Product showcase', describe: 'Show the products like a catalog and let people browse', angle: 'playful', hero: 'split',
+    flow: ['hero', 'marquee:brand', 'products', 'ingredients', 'split:right', 'reviews', 'cta'] },
 };
 
 const PHOTOS = { picnic: 'assets/img/hero-picnic.jpg', family: 'assets/img/people-family.jpg', about: 'assets/img/about-us.jpg' };
@@ -112,17 +102,16 @@ export const SECTIONS = {
 <header class="k-header"><div class="k-header__promo"><span>Free shipping on $50+</span>${icon('burst')}<span>Subscribe &amp; Save 30% on your first order + Free Gift with order two</span>${icon('burst')}<span>Try Kismet Risk-free. 100% Money-back Guarantee</span></div>
 <div class="k-header__bar"><div class="k-header__side"><button class="k-header__action k-header__menu" aria-label="Menu">${icon('menu')}</button><nav class="k-header__links"><a href="#">Shop ${icon('chevron-down')}</a><a href="#">About</a><a href="#">Ingredients</a><a href="#">Tails ${icon('chevron-down')}</a><a href="#">Find a Store</a></nav></div><a href="#" class="k-logo k-header__logo" aria-label="Kismet"></a><div class="k-header__side k-header__side--end"><a href="#" class="k-header__action">${icon('dog')}</a><a href="#" class="k-header__action">${icon('cart')}<span class="k-header__count">2</span></a></div></div></header>` },
 
-  hero: { label: 'Hero', fixed: true, variants: { fold: 'Full photo with text on top: emotional, lifestyle, big brand moment', split: 'Text panel next to a photo: lots of information such as dates, places, details or two buttons' },
-    variantQuestion: 'Which hero layout fits this landing page better?',
+  hero: { label: 'Hero', fixed: true, variants: { fold: 'Full photo with text on top', split: 'Text panel next to a photo', page: 'Compact photo header with buttons' },
     render: (c, v) => v === 'split' ? `
-<section class="k-split-hero"><img class="k-media k-split-hero__photo" src="${c.photo}" alt=""><div class="k-split-hero__panel"><p class="k-eyebrow">${esc(c.eyebrow)}</p><h1 class="k-display k-split-hero__title">${br(c.headline)}</h1><p class="k-lead">${esc(c.sub)}</p><div class="k-split-hero__actions">${wavy(c.cta)}${wavy('Shop Kismet', 'k-wavy--secondary')}</div></div></section>` : `
+<section class="k-split-hero"><img class="k-media k-split-hero__photo" src="${c.photo}" alt=""><div class="k-split-hero__panel"><p class="k-eyebrow">${esc(c.eyebrow)}</p><h1 class="k-display k-split-hero__title">${br(c.headline)}</h1><p class="k-lead">${esc(c.sub)}</p>${c.offer ? `<div class="k-row k-gap-xs k-row--wrap"><span class="k-badge k-badge--promo">${esc(c.offer)}</span><span class="k-badge">Limited time</span></div>` : ''}<div class="k-split-hero__actions">${wavy(c.cta)}${wavy(c.cta2, 'k-wavy--secondary')}</div></div></section>` : v === 'page' ? `
+<section class="k-fold k-fold--page" style="background-image:url('${c.photo}')"><div class="k-fold__content"><div class="k-fold__text"><h1 class="k-fold__title">${br(c.headline)}</h1><p class="k-fold__desc">${esc(c.sub)}</p></div><div class="k-fold__actions"><a href="#" class="k-btn k-btn--lg">${esc(c.cta)}</a><a href="#" class="k-btn k-btn--neutral k-btn--lg">${esc(c.cta2)}</a></div></div></section>` : `
 <section class="k-fold" style="background-image:url('${c.photo}')"><div class="k-fold__content"><div class="k-fold__text"><h1 class="k-fold__title">${br(c.headline)}</h1><p class="k-fold__desc">${esc(c.sub)}</p></div><div class="k-fold__actions">${wavy(c.cta)}</div></div></section>` },
 
   logos: { label: 'Press logos', when: 'The page benefits from showing press logos and credibility right under the hero', prior: 0.6, render: () => `
 <div class="k-logos"><div class="k-logos__track">${['today', 'drew', 'tonight-show', 'parade', 'fast-company', 'people'].map(n => `<img src="assets/img/press-${n}.svg" alt="">`).join('')}</div></div>` },
 
   marquee: { label: 'Marquee', when: 'A bold scrolling text band would reinforce the campaign message', prior: 0.75, variants: { accent: 'Colored band, loud', ink: 'Dark text on the page, calm', soft: 'Soft pink band, friendly', brand: 'Turquoise band, fresh' },
-    variantQuestion: 'Which marquee style fits the tone of this campaign?',
     render: (c, v) => `
 <div class="k-marquee k-marquee--${v || 'accent'}" aria-hidden="true"><div class="k-marquee__track">${icon('burst')}<span class="k-marquee__item">${esc(c.marquee)}</span></div></div>` },
 
@@ -154,11 +143,26 @@ ${[['Supercenter · Bentonville', '2.1 mi · In stock'], ['Neighborhood Market �
   signup: { label: 'Email signup', when: 'The page should capture email addresses, for an offer, a waitlist or updates', prior: 0.3, render: c => `
 <section class="k-signup"><p class="k-eyebrow">${esc(c.eyebrow)}</p><h2 class="k-display k-signup__title">${esc(c.signupTitle)}</h2><p class="k-lead">We’ll email it to you.</p><form class="k-signup__form" onsubmit="return false"><label class="k-field"><span class="k-field__box"><span class="k-field__text"><span class="k-field__label">Enter your email</span><input class="k-field__input" type="email" placeholder=" "></span></span></label><button class="k-wavy" type="submit">Send it to me</button></form><p class="k-signup__legal">By signing up you agree to receive emails from Kismet. Unsubscribe anytime.</p></section>` },
 
+  story: { label: 'Brand story', when: 'The page should share who Kismet is: founders, mission, community', prior: 0.25, render: c => `
+<section class="k-split k-split--reverse" style="background:var(--color-bg-page)"><img class="k-media k-split__media" src="assets/img/people-family.jpg" alt=""><div class="k-split__content"><p class="k-eyebrow">Our story</p><h2 class="k-display k-split__title">Made by dog people, for dog people.</h2><p class="k-lead">Founded by longtime dog lovers who understand the reality of being a pet parent today — and what you both need to feel your best.</p><a href="#" class="k-btn k-btn--inverse k-btn--lg">Read our story ${icon('arrow-right')}</a></div></section>` },
+
+  stats: { label: 'Proof numbers', when: 'The page should show clinical results, numbers or statistics as proof', prior: 0.3, render: () => `
+<section class="k-section" style="background:var(--color-bg-highlight)"><div class="k-container k-grid" style="--k-cols-desktop:3;text-align:center">${[['96%', 'of dogs showed improved gut health'], ['45 days', 'to see the difference, or your money back'], ['#1', 'ingredient is always real protein']].map(x => `<div class="k-stack k-gap-sm" style="align-items:center"><span class="k-display text-display-xl k-text" style="color:var(--color-text-primary)">${x[0]}</span><p class="k-lead" style="max-width:24ch">${x[1]}</p></div>`).join('')}</div></section>` },
+
+  reviews: { label: 'Reviews', when: 'The page should include customer reviews or testimonials', prior: 0.35, render: () => `
+<section class="k-section" style="background:var(--color-accent-secondary)"><div class="k-container k-stack k-gap-xl"><div class="k-stack k-gap-md" style="align-items:center;text-align:center"><span class="k-rating k-rating--md k-rating--pill"><span class="k-rating__score">4.9</span><span class="k-rating__stars">${icon('star').repeat(5)}</span><span class="k-rating__count">(578 reviews)</span></span><h2 class="k-display text-display-md k-text">Dogs (and their humans) love Kismet.</h2></div><div class="k-grid" style="--k-cols-desktop:3">${[['Chopper C.', 'Fantastic food! Two weeks in and no more tummy troubles.'], ['Shiny P.', 'A topper like this is hard to find. Bowl licked clean, every time.'], ['Benji T.', 'My picky eater finally finishes dinner. The vets were right.']].map(r => `<div class="k-values__card"><span class="k-rating"><span class="k-rating__stars">${icon('star').repeat(5)}</span></span><p class="k-lead" style="color:var(--color-text-primary)">${r[1]}</p><p class="k-eyebrow">${r[0]}</p></div>`).join('')}</div></div></section>` },
+
+  ingredients: { label: 'Ingredients strip', when: 'The page should highlight real ingredients and what the food is made of', prior: 0.25, render: () => `
+<section class="k-section k-bg-surface"><div class="k-container k-stack k-gap-xl" style="align-items:center;text-align:center"><h2 class="k-display text-display-sm k-text">Antioxidant-rich superfoods, gut-loving pre- and probiotics.</h2><div class="k-grid" style="--k-cols:3;--k-cols-desktop:3;width:100%;max-width:900px">${[['apples', 'Source of vitamin C'], ['grain', 'Fiber and B vitamins'], ['carrots', 'Beta-carotene and vitamin A']].map(x => `<div class="k-stack k-gap-sm" style="align-items:center"><img src="assets/img/ingredient-${x[0]}.png" alt="" style="width:120px;height:120px;object-fit:contain"><p class="k-c-secondary" style="text-box:none;line-height:1.3">${x[1]}</p></div>`).join('')}</div></div></section>` },
+
+  cta: { label: 'Closing CTA', when: 'The page should end with one last strong call to action', prior: 0.6, render: c => `
+<section class="k-signup"><p class="k-eyebrow">${esc(c.eyebrow)}</p><h2 class="k-display k-signup__title">${esc(c.closing)}</h2>${wavy(c.cta)}</section>` },
+
   footer: { label: 'Footer', fixed: true, render: () => `
 <footer class="k-footer"><div class="k-footer__wordmark"><span class="k-logo"></span></div><div class="k-footer__content"><a href="#" class="k-footer__signup">Sign Up</a><div class="k-footer__legal"><div class="k-footer__legal-links"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">*Offer T&amp;C</a></div><p class="k-footer__copy">© 2026 Kismet, Inc.</p></div><div class="k-footer__cols"><div class="k-footer__col"><h2 class="k-footer__heading">Explore</h2><div class="k-footer__links"><a href="#">Shop All</a><a href="#">About Us</a><a href="#">Ingredients</a><a href="#">Tails</a><a href="#">Quiz</a><a href="#">Find a Store</a></div></div><div class="k-footer__col"><h2 class="k-footer__heading">Support</h2><div class="k-footer__links"><a href="#">FAQs</a><a href="#">Account</a><a href="#">Shipping &amp; Returns</a><a href="#">Contact Us</a></div></div></div></div></footer>` },
 };
 
 /* Page grammar: canonical order. Optional sections keep this order unless the user moves them. */
-export const ORDER = ['header', 'hero', 'logos', 'marquee', 'split', 'products', 'locator', 'offer', 'steps', 'values', 'faq', 'signup', 'footer'];
+export const ORDER = ['header', 'hero', 'logos', 'marquee', 'stats', 'split', 'products', 'locator', 'offer', 'ingredients', 'story', 'reviews', 'steps', 'values', 'faq', 'signup', 'cta', 'footer'];
 export const OPTIONAL = ORDER.filter(id => !SECTIONS[id].fixed);
 export { PHOTOS, PRODUCTS };
