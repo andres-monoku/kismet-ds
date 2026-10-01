@@ -155,29 +155,7 @@ function explain(a, spec) {
 }
 
 /* ---------- 3 · render ---------- */
-/* Copywriting (optional): Claude writes the texts for the blocks on the page. The page is usable before it answers; when it does,
-   spec.ai = { page: {...}, <blockId>: {...} } and the next render uses it. Returns { ok, reason } and never throws. */
-import { COPY } from '../library/copy.js';
-export async function writeCopy(spec, only) {
-  const ids = spec.sections.map(s => s.id).filter(id => COPY[id] || ['hero', 'cta', 'steps', 'signup', 'offer'].includes(id));
-  const want = (only || ids).filter(id => COPY[id]); if (!want.length && only) return { ok: true, skipped: true };
-  const t0 = performance.now();
-  try {
-    const r = await fetch('/api/copy', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ brief: spec.brief, strategy: `${spec.label} — ${spec.note}`, voice: ANGLES[spec.copy.angle] || spec.copy.angle, sections: only ? want : spec.sections.map(s => s.id) }) });
-    const j = await r.json().catch(() => ({})); if (!r.ok) return { ok: false, status: r.status, reason: j.error || 'HTTP ' + r.status };
-    spec.ai = only ? { ...(spec.ai || {}), ...Object.fromEntries(Object.entries(j.copy).filter(([k]) => k !== 'page')) } : j.copy;
-    return { ok: true, ms: Math.round(performance.now() - t0), model: j.model };
-  } catch (e) { return { ok: false, reason: String(e) }; }
-}
-function context(spec) { const c = baseContext(spec), ai = spec.ai; if (!ai) return c;
-  const pg = ai.page || {}, s = v => typeof v === 'string' && v.trim() ? v.trim() : null;
-  for (const k of ['eyebrow', 'headline', 'sub', 'cta', 'marquee', 'closing']) if (s(pg[k])) c[k] = k === 'headline' ? s(pg[k]).replace(/\\n/g, '\n') : s(pg[k]);
-  if (ai.faq && Array.isArray(ai.faq.items) && ai.faq.items.length) c.faq = ai.faq.items.filter(x => x && x.q && x.a).map(x => [x.q, x.a]);
-  if (ai.products && s(ai.products.desc)) c.productsDesc = s(ai.products.desc);
-  if (ai.split) { if (s(ai.split.title)) c.splitTitle = s(ai.split.title); if (s(ai.split.lead)) c.splitLead = s(ai.split.lead); if (Array.isArray(ai.split.bullets) && ai.split.bullets.length) c.splitBullets = ai.split.bullets.map(String); }
-  c.copy = ai; return c;
-}
-function baseContext(spec) {
+function context(spec) {
   const c = CAMPAIGNS[spec.campaign], sl = spec.slots, pick = (arr, i) => fill(arr[i % arr.length], sl, spec.campaign);
   const photos = Object.values(PHOTOS), products = PRODUCTS[sl.product] || PRODUCTS.food, store = sl.retailer !== 'none';
   const goal = spec.signals.goal, CLOSING = { find_store: 'See you in the pet aisle.', buy: 'Ready when you are.', subscribe: 'Better bowls start today.', signup: 'Be the first to know.', quiz: 'Find their perfect recipe.', register: 'See you there.' };

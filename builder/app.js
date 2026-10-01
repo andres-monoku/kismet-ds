@@ -1,27 +1,12 @@
 /* Kismet Landing Builder — UI. State lives in memory; every change re-renders the preview instantly (no model call
    for manual edits; one Jev call per generated brief and per typed instruction). */
-import { decide, compose, renderDoc, decideEdit, applyEdit, structure, writeCopy, SECTIONS, THEMES, OPTIONAL, ORDER, CAMPAIGNS, STRATEGIES, ANGLES } from './engine.js';
+import { decide, compose, renderDoc, decideEdit, applyEdit, structure, SECTIONS, THEMES, OPTIONAL, ORDER, CAMPAIGNS, STRATEGIES, ANGLES } from './engine.js';
 
 const $ = s => document.querySelector(s);
 const BASE = new URL('../', location.href).href;
 const PUBLIC_BASE = 'https://andres-monoku.github.io/kismet-ds/';
 const EXAMPLES = ['Landing page for Walmart: Kismet is now in stores', 'Launch of a new topper called "Gut Gravy" with 20% off', 'Black Friday promo, 40% off subscriptions', 'Halloween dog parade in New York presented by Kismet', 'Petco in-store campaign for treats with a $5 coupon'];
 let specs = [], current = -1, device = 'desktop', last = null;
-
-/* Copy: Jev decides the page in milliseconds and it shows right away with template copy; Claude then writes the real copy for
-   the blocks on the page (a few seconds) and the preview refreshes. Without ANTHROPIC_API_KEY the template copy stays. */
-import { COPY } from '../library/copy.js';
-const copyLabel = s => !s._copy ? '' : s._copy.state === 'writing' ? 'Writing copy…' : s._copy.state === 'ok' ? `Copy by Claude · ${(s._copy.ms / 1000).toFixed(0)} s` : s._copy.state === 'off' ? 'Template copy (no copywriter configured)' : `Template copy (copywriter failed: ${s._copy.reason})`;
-function showCopy(s) { const i = specs.indexOf(s); const el = document.querySelector(`[data-copy="${i}"]`); if (el) el.textContent = copyLabel(s); if (i === current && !$('#editor').hidden) $('#copyInfo').textContent = copyLabel(s); }
-async function copyFor(s, only) {
-  if (only && (!s.ai || !only.length)) return; // nothing to add, or the copywriter is not available
-  const prev = s._copy; s._copy = { state: 'writing' }; showCopy(s);
-  const r = await writeCopy(s, only);
-  s._copy = r.ok ? { state: 'ok', ms: r.ms ?? (prev && prev.ms) ?? 0 } : r.status === 501 ? { state: 'off' } : { state: 'error', reason: String(r.reason).slice(0, 80) };
-  if (specs.indexOf(s) < 0) return; showCopy(s);
-  if (r.ok) { const i = specs.indexOf(s); if (i === current && !$('#editor').hidden) paint(); else { const h = document.querySelector(`#versions .b-frame[data-i="${i}"]`); if (h && !$('#versions').hidden) frame(h, s, 1512); } }
-}
-const missingCopy = s => s.sections.map(x => x.id).filter(id => COPY[id] && s.ai && !s.ai[id]);
 
 $('#examples').innerHTML = EXAMPLES.map(e => `<button class="k-chip" type="button">${e}</button>`).join('');
 $('#examples').addEventListener('click', e => { const b = e.target.closest('.k-chip'); if (b) { $('#brief').value = b.textContent; generate(b.textContent); } });
@@ -41,9 +26,8 @@ window.addEventListener('resize', () => document.querySelectorAll('.b-frame').fo
 async function generate(brief) {
   $('#ask').classList.add('is-compact'); $('#editor').hidden = true; const v = $('#versions'); v.hidden = false; v.innerHTML = '<p class="b-hint">Deciding…</p>';
   const res = await decide(brief); last = res; mode(res); specs = compose(brief, res);
-  v.innerHTML = specs.map((s, i) => `<article class="b-version"><div class="b-version__head"><span class="b-version__name">${s.key} · ${s.label}</span><span class="k-badge k-badge--sm k-badge--brand">fit ${Math.round(s.fit * 100)}%</span><span class="k-badge k-badge--sm">${s.theme}</span></div><p class="b-hint">${s.note}.<br>${s.sections.filter(x => !SECTIONS[x.id].fixed || x.id === "hero").map(x => SECTIONS[x.id].label + (x.variant ? " (" + x.variant + ")" : "")).join(" → ")}</p><p class="b-hint b-copy" data-copy="${i}"></p><div class="b-frame" data-i="${i}"></div><button class="k-btn k-btn--block" data-edit="${i}">Use and edit version ${s.key}</button></article>`).join('');
+  v.innerHTML = specs.map((s, i) => `<article class="b-version"><div class="b-version__head"><span class="b-version__name">${s.key} · ${s.label}</span><span class="k-badge k-badge--sm k-badge--brand">fit ${Math.round(s.fit * 100)}%</span><span class="k-badge k-badge--sm">${s.theme}</span></div><p class="b-hint">${s.note}.<br>${s.sections.filter(x => !SECTIONS[x.id].fixed || x.id === "hero").map(x => SECTIONS[x.id].label + (x.variant ? " (" + x.variant + ")" : "")).join(" → ")}</p><div class="b-frame" data-i="${i}"></div><button class="k-btn k-btn--block" data-edit="${i}">Use and edit version ${s.key}</button></article>`).join('');
   v.querySelectorAll('.b-frame').forEach(h => frame(h, specs[+h.dataset.i], 1512));
-  specs.forEach(s => copyFor(s)); // three copywriting calls in parallel, one per version
 }
 $('#versions').addEventListener('click', e => { const b = e.target.closest('[data-edit]'); if (b) edit(+b.dataset.edit); });
 
@@ -52,7 +36,6 @@ function edit(i) { current = i; $('#versions').hidden = true; $('#editor').hidde
 function paint() {
   const s = specs[current], host = $('#stage'); host.classList.toggle('is-mobile', device === 'mobile');
   const y = scrollY; frame(host, s, device === 'mobile' ? 390 : 1512); requestAnimationFrame(() => scrollTo(0, y));
-  $('#copyInfo').textContent = copyLabel(s);
   $('#stageInfo').textContent = `${s.key} · ${s.label} · ${s.copy.angle} voice · ${s.sections.length} sections`;
   document.querySelectorAll('[data-theme-pick]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themePick === s.theme)));
   const on = id => s.sections.find(x => x.id === id);
@@ -64,14 +47,14 @@ function paint() {
 const cur = () => specs[current];
 $('#back').addEventListener('click', () => { $('#editor').hidden = true; $('#versions').hidden = false; $('#versions').querySelectorAll('.b-frame').forEach(h => frame(h, specs[+h.dataset.i], 1512)); });
 $('#themes').addEventListener('click', e => { const b = e.target.closest('[data-theme-pick]'); if (b) { cur().theme = b.dataset.themePick; paint(); } });
-document.addEventListener('click', e => { const b = e.target.closest('[data-cycle]'); if (b && current >= 0) { const k = b.dataset.cycle; const s = cur(), next = (o, v) => { const ks = Object.keys(o); return ks[(ks.indexOf(v) + 1) % ks.length]; }; if (k === 'copy') { copyFor(s); return; } if (k === 'photo') s.photo++; else if (k === 'headline') s.copy.angle = next(ANGLES, s.copy.angle); else if (k === 'structure') { s.strategy = next(STRATEGIES, s.strategy); s.label = STRATEGIES[s.strategy].label; s.copy.angle = STRATEGIES[s.strategy].angle; s.sections = structure(s.strategy, s.signals); } else s.copy[k]++; paint(); if (k === 'structure') copyFor(s, missingCopy(s)); } const d = e.target.closest('[data-device]'); if (d) { device = d.dataset.device; paint(); } });
+document.addEventListener('click', e => { const b = e.target.closest('[data-cycle]'); if (b && current >= 0) { const k = b.dataset.cycle; const s = cur(), next = (o, v) => { const ks = Object.keys(o); return ks[(ks.indexOf(v) + 1) % ks.length]; }; if (k === 'photo') s.photo++; else if (k === 'headline') s.copy.angle = next(ANGLES, s.copy.angle); else if (k === 'structure') { s.strategy = next(STRATEGIES, s.strategy); s.label = STRATEGIES[s.strategy].label; s.copy.angle = STRATEGIES[s.strategy].angle; s.sections = structure(s.strategy, s.signals); } else s.copy[k]++; paint(); } const d = e.target.closest('[data-device]'); if (d) { device = d.dataset.device; paint(); } });
 $('#sections').addEventListener('change', e => { const row = e.target.closest('.b-sec'), id = row.dataset.id, s = cur();
   if (e.target.matches('[data-toggle]')) { if (e.target.checked) { s.sections.push({ id, variant: SECTIONS[id].variants ? Object.keys(SECTIONS[id].variants)[0] : null }); s.sections.sort((a, b) => ORDER.indexOf(a.id) - ORDER.indexOf(b.id)); } else s.sections = s.sections.filter(x => x.id !== id); }
-  if (e.target.matches('[data-variant]')) s.sections.find(x => x.id === id).variant = e.target.value; paint(); copyFor(s, missingCopy(s)); });
+  if (e.target.matches('[data-variant]')) s.sections.find(x => x.id === id).variant = e.target.value; paint(); });
 $('#sections').addEventListener('click', e => { const b = e.target.closest('[data-move]'); if (!b) return; const s = cur(), id = b.closest('.b-sec').dataset.id, i = s.sections.findIndex(x => x.id === id), j = i + +b.dataset.move; if (s.sections[j] && !SECTIONS[s.sections[j].id].fixed) { [s.sections[i], s.sections[j]] = [s.sections[j], s.sections[i]]; paint(); } });
 $('#editForm').addEventListener('submit', async e => { e.preventDefault(); const text = $('#editText').value.trim(); if (!text) return; const out = $('#editResult'); out.textContent = 'Deciding…';
   let res, r; try { res = await decideEdit(text); mode(res); r = applyEdit(cur(), res.answers); } catch (err) { console.error(err); out.textContent = 'Something went wrong applying that change. Try again.'; return; }
-  if (r.done) { specs[current] = r.spec; specs[current].why = cur().why; paint(); out.textContent = `✓ ${r.done} (${Math.round(res.answers.op.probabilities[r.op] * 100)}% · ${res.ms} ms)`; $('#editText').value = ''; copyFor(cur(), missingCopy(cur())); }
+  if (r.done) { specs[current] = r.spec; specs[current].why = cur().why; paint(); out.textContent = `✓ ${r.done} (${Math.round(res.answers.op.probabilities[r.op] * 100)}% · ${res.ms} ms)`; $('#editText').value = ''; }
   else out.textContent = `I couldn’t map that to a change (best guess: ${res.answers.op.choice}, ${Math.round(res.answers.op.probabilities[res.answers.op.choice] * 100)}%). Try naming the section or the change.`; });
 function exportHtml() { return renderDoc(cur(), PUBLIC_BASE, { title: 'Kismet — ' + cur().brief }).replace(/<style>\[data-section\][^<]*<\/style>\n/, ''); }
 $('#export').addEventListener('click', () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([exportHtml()], { type: 'text/html' })); a.download = 'kismet-landing-' + cur().key.toLowerCase() + '.html'; a.click(); });
