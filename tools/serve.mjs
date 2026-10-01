@@ -15,10 +15,12 @@ createServer(async (req, res) => {
     if (req.method !== 'POST') { res.writeHead(405); return res.end(); }
     if (!KEY) { res.writeHead(501, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify({ error: 'TYPESAFE_API_KEY is not set' })); }
     let body = ''; for await (const chunk of req) body += chunk;
+    /* An idle connection to the API can go stale and hang for ~10 s: fail fast and retry once on a fresh one. */
+    const call = ms => fetch('https://api.typesafe.ai/v1/systemone', { method: 'POST', headers: { Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json' }, body, signal: AbortSignal.timeout(ms) });
     try {
-      const r = await fetch('https://api.typesafe.ai/v1/systemone', { method: 'POST', headers: { Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json' }, body });
+      let r; try { r = await call(2500); } catch (e) { console.error('Jev: first attempt failed, retrying ·', String(e.cause || e)); r = await call(5000); }
       res.writeHead(r.status, { 'Content-Type': 'application/json' }); return res.end(await r.text());
-    } catch (e) { res.writeHead(502, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify({ error: String(e) })); }
+    } catch (e) { console.error('Jev: request failed ·', String(e.cause || e)); res.writeHead(502, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify({ error: String(e) })); }
   }
   try {
     let p = normalize(decodeURIComponent(new URL(req.url, 'http://x').pathname)).replace(/^(\.\.[/\\])+/, '');
