@@ -54,7 +54,7 @@
       var t;
       /* single-choice groups: chips, segmented control, card sizes → aria-pressed; tabs → aria-selected */
       if ((t = e.target.closest('[data-k-choice] > *'))) { each(':scope > *', function (x) { x.setAttribute('aria-pressed', String(x === t)); }, t.parentElement); }
-      if ((t = e.target.closest('.k-tabs > .k-tab'))) { each(':scope > .k-tab', function (x) { x.setAttribute('aria-selected', String(x === t)); }, t.parentElement); }
+      if ((t = e.target.closest('.k-tabs > .k-tab'))) { each(':scope > .k-tab', function (x) { x.setAttribute('aria-selected', String(x === t)); }, t.parentElement); if (t.parentElement.hasAttribute('data-k-panels')) { var tabs = [].slice.call(t.parentElement.children), ps = t.parentElement.parentElement.querySelectorAll(':scope > [data-k-panel]'); [].forEach.call(ps, function (x, i) { x.hidden = i !== tabs.indexOf(t); }); } }
       if ((t = e.target.closest('.k-menu > .k-option'))) { each(':scope > .k-option', function (x) { x.setAttribute('aria-selected', String(x === t)); }, t.parentElement); }
       /* quantity stepper: trash at 1 */
       if ((t = e.target.closest('.k-stepper__btn'))) {

@@ -19,6 +19,7 @@ export function questions() {
   for (const [k, e] of Object.entries(ENTITIES)) q[k] = { type: 'choice', instructions: e.instructions, criteria: e.options };
   for (const id of OPTIONAL) q['use_' + id] = { type: 'noul', instructions: SECTIONS[id].when };
   for (const [id, s] of Object.entries(SECTIONS)) if (s.variants && s.variantQuestion) q['variant_' + id] = { type: 'choice', instructions: s.variantQuestion, criteria: s.variants };
+  q.hero_kind = { type: 'choice', instructions: 'Which kind of hero should open this landing page?', criteria: SECTIONS.hero.variantWhen };
   for (const [k, st] of Object.entries(STRATEGIES)) q['fit_' + k] = { type: 'noul', instructions: 'The best approach for this landing page is to: ' + st.describe };
   return q;
 }
@@ -62,7 +63,8 @@ export function localAnswers(brief, qs) {
     else if (id === 'length') { const n = Math.min(2, Math.floor(text.split(/\s+/).length / 9)); const p = { 0: 0.25, 1: 0.5, 2: 0.25 }; p[n] += 0.4; const s = p[0] + p[1] + p[2]; for (const k in p) p[k] /= s; a[id] = { type: 'score', score: +(p[1] + 2 * p[2]).toFixed(2), probabilities: p, confidence: 0.4 }; }
     else if (id === 'has_offer') a[id] = { type: 'noul', noul: KW.use.offer.test(text) ? 0.95 : 0.08 };
     else if (id.startsWith('use_')) { const s = id.slice(4); const hits = KW.use[s] ? (text.match(new RegExp(KW.use[s].source, 'gi')) || []).length : 0; a[id] = { type: 'noul', noul: Math.min(0.97, Math.max(0.35, SECTIONS[s].prior ?? 0.4) + hits * 0.3) }; }
-    else if (id.startsWith('fit_')) { const F = { direct: [/promo|offer|oferta|descuento|\d+ ?%|sale|black friday|buy|coupon|cup[oó]n|deal/, 0.45], story: [/story|historia|brand|marca|launch|lanzamiento|family|community|event|evento|parade|campaign|campa[ñn]a/, 0.5], utility: [/store|tienda|walmart|target|petco|costco|find|locator|register|punto de venta|near|cerca/, 0.3], proof: [/science|ciencia|clinical|vet|proof|trust|review|health|salud|gut/, 0.4], showcase: [/product|producto|catalog|range|topper|treat|collection|new|nuevo|vender|sell/, 0.42], launchpad: [/launch|lanzamiento|new|nuevo|introduc|meet/, 0.3], editorial: [/article|art[ií]culo|explain|explica|science|ciencia|letter|carta|blog|educa/, 0.2] }[id.slice(4)]; const hits = (text.match(new RegExp(F[0].source, 'gi')) || []).length; a[id] = { type: 'noul', noul: Math.min(0.97, F[1] + hits * 0.22) }; }
+    else if (id.startsWith('fit_')) { const F = { direct: [/promo|offer|oferta|descuento|\d+ ?%|sale|black friday|buy|coupon|cup[oó]n|deal/, 0.45], story: [/story|historia|brand|marca|launch|lanzamiento|family|community|event|evento|parade|campaign|campa[ñn]a/, 0.5], utility: [/store|tienda|walmart|target|petco|costco|find|locator|register|punto de venta|near|cerca/, 0.3], proof: [/science|ciencia|clinical|vet|proof|trust|review|health|salud|gut/, 0.4], showcase: [/product|producto|catalog|range|topper|treat|collection|new|nuevo|vender|sell/, 0.42], launchpad: [/launch|lanzamiento|new|nuevo|introduc|meet/, 0.3], editorial: [/article|art[ií]culo|explain|explica|science|ciencia|letter|carta|blog|educa/, 0.2], guide: [/guide|gu[ií]a|how to|c[oó]mo|tips|consejos|switch|transici[oó]n|feeding|tutorial/, 0.2], gathering: [/event|evento|parade|desfile|pop-?up|meetup|community|comunidad|invite|invita|rsvp/, 0.15], buybox: [/buy|compra|product page|pdp|add to cart|carrito|single product|un producto/, 0.25], manifesto: [/manifesto|manifiesto|mission|misi[oó]n|brand|marca|believe|creemos|values|valores/, 0.2] }[id.slice(4)]; const hits = (text.match(new RegExp(F[0].source, 'gi')) || []).length; a[id] = { type: 'noul', noul: Math.min(0.97, F[1] + hits * 0.22) }; }
+    else if (id === 'hero_kind') { const H = { offer: /\d+ ?%|descuento|discount|sale|oferta|coupon|cup[oó]n/, video: /video|film|commercial|comercial/, product: /buy|compra|product page|un producto/, minimal: /manifesto|manifiesto|mission|misi[oó]n/, stack: /guide|gu[ií]a|about|brand|marca/, quiz: /quiz|plan|personal|subscri|suscrip/, event: /event|evento|parade|desfile|pop-?up/, center: /launch|lanzamiento|new|nuevo/, collage: /community|comunidad|range|catalog|colecci/, pagehead: /article|art[ií]culo|legal|faq/, page: /store|tienda|find|locator/, split: /register|detalle|detail/ }; const pr = {}; let s = 0; for (const k of keys) { pr[k] = (k === 'fold' ? 0.5 : 0.1) + (H[k] && H[k].test(text) ? 1 : 0); s += pr[k]; } for (const k in pr) pr[k] /= s; a[id] = choiceAnswer(pr); }
     else if (id === 'variant_hero') a[id] = choiceAnswer(/event|evento|parade|date|fecha|detail|register/.test(text) ? { fold: 0.3, split: 0.7 } : { fold: 0.72, split: 0.28 });
     else if (id === 'variant_marquee') a[id] = choiceAnswer({ accent: 0.45, ink: 0.25, soft: 0.15, brand: 0.15 });
     else if (id.startsWith('headline_')) { const p = {}; keys.forEach((k, i) => { const line = q.criteria[k].toLowerCase(); p[k] = 1 / (i + 1.5) + (/\{retailer\}/.test(line) && KW.goal.find_store.test(text) ? 0.5 : 0) + (/\{offer\}/.test(line) && KW.use.offer.test(text) ? 0.5 : 0); }); const s = Object.values(p).reduce((x, y) => x + y, 0); for (const k in p) p[k] /= s; a[id] = choiceAnswer(p); }
@@ -108,6 +110,7 @@ export function compose(brief, res) {
   const sig = { taken: new Set(), physical, campaign: camp, goal: inStore ? 'find_store' : goalP >= 0.35 ? a.goal.choice : DEFAULT_GOAL[camp], hasOffer: a.has_offer.noul, use: Object.fromEntries(OPTIONAL.filter(id => a['use_' + id]).map(id => [id, a['use_' + id].noul])) };
   const ranked = Object.keys(STRATEGIES).map(k => [k, a['fit_' + k].noul]).sort((x, y) => y[1] - x[1]);
   const themes = rank(a.theme); if (top(a.theme.probabilities)[0][1] < 0.35) themes.unshift(CAMPAIGNS[camp].theme);
+  const heroes = top(a.hero_kind.probabilities).filter(h => h[1] >= 0.15).map(h => h[0]).filter(h => h !== 'offer' || sig.hasOffer > 0.5), usedHeroes = sig.hasOffer > 0.5 ? [] : ['offer'];
   const usedThemes = [], usedAngles = [];
   return ranked.slice(0, 3).map(([sid, fit], i) => {
     const st = STRATEGIES[sid];
@@ -117,6 +120,11 @@ export function compose(brief, res) {
     if (usedAngles.includes(angle)) angle = [st.angle, ...Object.keys(ANGLES)].find(x => !usedAngles.includes(x)); usedAngles.push(angle);
     const spec = { key: 'ABC'[i], label: st.label, note: st.describe, fit, brief, campaign: camp, strategy: sid, slots: sl, signals: sig, theme,
       copy: { angle, cta: i, eyebrow: i, marquee: i }, photo: i, sections: structure(sid, sig) };
+    /* hero: version A opens with Jev's pick; the others keep their strategy's hero unless it is taken, then the next best pick */
+    const h = spec.sections.find(x => x.id === 'hero'); let hero = i === 0 && heroes[0] ? heroes[0] : st.hero;
+    if (usedHeroes.includes(hero)) hero = [st.hero, ...heroes, ...Object.keys(SECTIONS.hero.variants)].find(x => !usedHeroes.includes(x));
+    usedHeroes.push(hero); h.variant = hero;
+    if (hero === 'product') spec.sections = spec.sections.filter(x => x.id !== 'spotlight'); // the hero already is the product spotlight
     spec.why = explain(a, spec);
     return spec;
   });
