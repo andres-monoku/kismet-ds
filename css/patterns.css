@@ -182,7 +182,8 @@
 .k-footer { background: var(--color-bg-footer); color: var(--color-text-primary); overflow: hidden; }
 /* Wordmark: full logo, never cropped, in the footer colour, standing on the colour of the section above (--footer-top). */
 .k-footer__wordmark { display: flex; align-items: flex-end; padding: var(--space-lg) var(--layout-margin) 0; background: var(--footer-top, var(--color-accent-primary)); color: var(--color-bg-footer); overflow: hidden; }
-.k-footer__wordmark .k-logo { width: 100%; max-width: none; flex: none; margin-bottom: -1px; }
+/* the logo shape keeps 3.6% of its height below the baseline (overshoot of round letters): pull it down so the flat feet of the letters sit exactly on the footer */
+.k-footer__wordmark .k-logo { width: 100%; max-width: none; flex: none; margin-bottom: -0.84%; }
 .k-footer__content { display: flex; flex-direction: column; align-items: center; gap: var(--space-2xl); padding: var(--space-xl) var(--layout-margin) var(--space-3xl); text-align: center; }
 .k-footer__signup { display: flex; align-items: center; justify-content: center; width: 100%; min-height: var(--size-field); border-radius: var(--radius-full); background: var(--color-bg-brand); color: var(--color-text-inverse-warm); font-weight: 700; font-size: var(--text-label-xl-size); line-height: var(--text-label-xl-line-height); }
 .k-footer__legal { display: flex; flex-direction: column; align-items: center; gap: var(--space-lg); order: 1; }
