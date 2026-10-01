@@ -120,7 +120,7 @@ export function structure(strategyId, sig) {
   const pick = id => list.filter(x => x.id === id), body = list.filter(x => !['hero', 'announce', 'sticky_cta'].includes(x.id));
   return [...pick('announce'), { id: 'header', variant: null }, ...pick('hero'), ...body, { id: 'footer', variant: null }, ...pick('sticky_cta')];
 }
-export function compose(brief, res) {
+export function compose(brief, res, copyRes) {
   const a = res.answers, sl = slots(brief, a), camp = a.campaign.choice;
   const goalP = a.goal.probabilities[a.goal.choice]; const DEFAULT_GOAL = { retail: 'find_store', launch: 'buy', promo: 'subscribe', event: 'register', subscription: 'quiz', story: 'buy' };
   const physical = !['none', 'chewy', 'amazon'].includes(a.retailer.choice) && a.retailer.confidence > 0.5; const inStore = camp === 'retail' && physical; // a physical retailer always means "help me find it"
@@ -131,7 +131,7 @@ export function compose(brief, res) {
   const shift = Math.floor(Math.random() * 3);
   const themes = rank(a.theme); if (top(a.theme.probabilities)[0][1] < 0.35) themes.unshift(CAMPAIGNS[camp].theme);
   const heroP = a.hero_kind.probabilities, heroKeys = Object.keys(SECTIONS.hero.variants), usedHeroes = [];
-  const usedThemes = [], usedAngles = [];
+  const usedThemes = [], usedAngles = [], ranks = rankBank(copyRes, sl), usedCopy = {};
   return ranked.slice(0, 3).map(([sid, fit], i) => {
     const st = STRATEGIES[sid];
     const freeThemes = themes.filter(t => !usedThemes.includes(t)); const theme = i === 0 ? freeThemes[0] : draw(freeThemes, freeThemes.map((t, n) => 1 / (n + 1))); usedThemes.push(theme);
@@ -143,6 +143,7 @@ export function compose(brief, res) {
     /* hero: drawn from Jev's distribution over the Kismet heroes, nudged toward the strategy's own; never repeated across versions */
     const h = spec.sections.find(x => x.id === 'hero'); const free = heroKeys.filter(k => !usedHeroes.includes(k));
     const hero = draw(free, free.map(k => (heroP[k] ?? 0) + (k === st.hero ? 0.35 : 0.05))); usedHeroes.push(hero); h.variant = hero;
+    spec.bank = { ranks, pick: pickBank(ranks, i, usedCopy), source: copyRes ? copyRes.source : 'none' };
     spec.why = explain(a, spec);
     return spec;
   });
@@ -155,7 +156,63 @@ function explain(a, spec) {
 }
 
 /* ---------- 3 · render ---------- */
-function context(spec) {
+/* ------------------------------------------------------------------ copy bank
+   Every text on the page comes from builder/copybank.js. Jev answers one choice question per slot ("which of these lines fits
+   this request best?") in a single call; the probabilities rank the entries. Version A takes the most probable ones, B and C are
+   drawn from the top of each ranking, and "another headline / voice / CTA" walks down the ranking. Nothing is written at run time. */
+import { BANK } from './copybank.js';
+const SLOT_Q = { headline: 'Which hero headline fits this landing page request best?', sub: 'Which supporting sentence under the headline fits this landing page request best?', eyebrow: 'Which short label above the headline fits this request best?', cta: 'Which main button label fits what the visitor should do on this page?', marquee: 'Which short banner phrase fits this landing page request best?', closing: 'Which closing line fits this landing page request best?', products_desc: 'Which sentence should introduce the product row on this page?', statement: 'Which bold brand statement fits this landing page request best?', split: 'Which explainer block fits this landing page request best?', features: 'Which set of four feature cards fits this landing page request best?', benefits: 'Which set of benefits fits this landing page request best?', zigzag_row: 'Which content row is most relevant to this landing page request?', textcols_title: 'Which title fits a three-column summary on this page?', textcol: 'Which text column is most relevant to this landing page request?', iconlist_title: 'Which title fits a list of reasons on this page?', iconitem: 'Which reason or feature is most relevant to this landing page request?', process: 'Which step-by-step process fits this landing page request best?', card: 'Which article card is most relevant to this landing page request?', prose: 'Which editorial text fits this landing page request best?', accordion: 'Which expandable details block fits this landing page request best?', callout: 'Which note or tip is most relevant to this landing page request?', faq: 'Which question would a visitor of this landing page most likely ask?', ingredients_title: 'Which sentence about the ingredients fits this landing page request best?', inside: 'Which introduction to the ingredient list fits this request best?', story: 'Which about-us text fits this landing page request best?', steps: 'Which set of three quick steps fits this landing page request best?', signup: 'Which email sign-up title fits this landing page request best?' };
+const MULTI = { zigzag_row: 3, textcol: 3, iconitem: 4, card: 3, faq: 5 };
+const ONCE = ['headline', 'sub', 'marquee', 'closing', 'statement', 'eyebrow']; // never repeated across the three versions
+/* normalised bank: slot → [{ key, f, needs, d }] */
+const ENTRIES = Object.fromEntries(Object.entries(BANK).map(([slot, list]) => [slot, list.map((e, i) => { const simple = typeof e === 'string', parts = simple ? e.split(' | ') : null; const d = simple ? parts[0] : e, f = simple ? (parts[1] || '') : e.f, raw = JSON.stringify(d); return { key: 'o' + i, f, d, needs: ['retailer', 'offer', 'name'].filter(v => raw.includes('{' + v + '}')), label: (simple ? parts[0].replace(/\n/g, ' ') : (e.title || e.q || (e.paragraphs && e.paragraphs[0].slice(0, 90)) || '')) + (f ? ` — fits: ${f}` : '') }; })]));
+export const bankSize = () => Object.values(ENTRIES).reduce((n, l) => n + l.length, 0);
+export function copyQuestions() { return Object.fromEntries(Object.keys(ENTRIES).map(slot => ['c_' + slot, { type: 'choice', instructions: SLOT_Q[slot], criteria: Object.fromEntries(ENTRIES[slot].map(e => [e.key, e.label])) }])); }
+export async function decideCopy(brief) {
+  const qs = copyQuestions(), t0 = performance.now();
+  try { const r = await fetch('/api/jev', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ state: brief, model: MODEL, questions: qs }) }); if (!r.ok) throw new Error('HTTP ' + r.status); const j = await r.json(); return { answers: j.answers, source: 'jev', ms: Math.round(performance.now() - t0) }; }
+  catch (e) { // no Jev: rank by how many words of the request's intent appear in each entry's "fits" hint
+    const text = brief.toLowerCase(), H = [[/store|tienda|retail|walmart|target|petco|costco|aisle|pasillo|punto de venta/, 'store retailer physical'], [/nueva tienda|new store|ubicaci[oó]n|location|apertura|opening|abrimos|sucursal/, 'location opening'], [/launch|lanzamiento|new product|nuevo producto|nuevo|new/, 'new product launch'], [/\d+ ?%|descuento|discount|oferta|offer|promo|sale|black friday|cup[oó]n|coupon/, 'discount promotion'], [/event|evento|parade|desfile|pop-?up|fiesta/, 'event'], [/subscri|suscrip|plan/, 'subscription'], [/quiz|recomend/, 'quiz'], [/ingredient|nutrici|nutrition|receta|superfood/, 'ingredients'], [/ciencia|science|cl[ií]nic|estudio|study|proof|prueba/, 'science clinical study'], [/gut|digest|est[oó]mago|stomach|poop/, 'gut digestion'], [/historia|story|fundador|founder|marca|brand|about/, 'brand story founders'], [/compar|versus|vs\b|fresh|fresco|croqueta|kibble/, 'comparison'], [/cambi|switch|transici|gu[ií]a|guide/, 'switching guide'], [/topper/, 'toppers'], [/treat|premio|snack/, 'treats'], [/puppy|cachorro|senior|life stage/, 'puppy life stages'], [/merch|ropa/, 'merch'], [/vet|veterinar/, 'vet']];
+    const words = H.filter(h => h[0].test(text)).flatMap(h => h[1].split(' '));
+    const answers = {}; for (const [slot, list] of Object.entries(ENTRIES)) { const p = {}; let s = 0; for (const e of list) { const f = e.f.toLowerCase(); p[e.key] = 0.05 + words.filter(w => f.includes(w)).length + (/default|general/.test(f) ? 0.4 : 0); s += p[e.key]; } for (const k in p) p[k] /= s; answers['c_' + slot] = choiceAnswer(p); }
+    return { answers, source: 'local', ms: Math.round(performance.now() - t0) };
+  }
+}
+/* rank every slot for this request; an entry that needs {retailer}/{offer}/{name} is dropped when the brief does not give it */
+function rankBank(copyRes, sl) {
+  const have = { retailer: sl.retailer !== 'none', offer: !!sl.offer, name: !!sl.name }, ranks = {};
+  for (const [slot, list] of Object.entries(ENTRIES)) { const a = copyRes && copyRes.answers['c_' + slot], p = (a && a.probabilities) || {};
+    ranks[slot] = list.filter(e => e.needs.every(n => have[n])).map(e => [e.key, p[e.key] ?? 0]).sort((x, y) => y[1] - x[1]); }
+  return ranks;
+}
+function pickBank(ranks, i, used) {
+  const pick = {};
+  for (const [slot, r] of Object.entries(ranks)) { const n = MULTI[slot] || 1; let pool = r.slice(0, Math.max(n + 3, 6));
+    if (ONCE.includes(slot)) { const fresh = r.filter(x => !(used[slot] || []).includes(x[0])); pool = fresh.slice(0, 6); }
+    const likely = pool.filter(x => x[1] >= 0.02); if (likely.length >= n) pool = likely; else pool = pool.slice(0, Math.max(n, 3)); // only lines Jev considers plausible for this request
+    const out = []; if (i === 0) out.push(...pool.slice(0, n).map(x => x[0])); else { const rest = [...pool]; while (out.length < n && rest.length) { const x = draw(rest, rest.map(y => y[1] ** 2 + 1e-6)); out.push(x[0]); rest.splice(rest.indexOf(x), 1); } }
+    (used[slot] = used[slot] || []).push(...out); pick[slot] = n === 1 ? out[0] : out; }
+  return pick;
+}
+/* walk down the ranking of a slot: "another headline", "another CTA"… */
+export function nextPick(spec, slot) { const b = spec.bank; if (!b) return false; const r = b.ranks[slot].map(x => x[0]); if (r.length < 2) return false; b.pick[slot] = r[(r.indexOf(b.pick[slot]) + 1) % r.length]; return true; }
+const entry = (slot, key) => { const e = ENTRIES[slot].find(x => x.key === key); return e && e.d; };
+function context(spec) { const c = baseContext(spec), b = spec.bank; c.copy = {}; if (!b) return c;
+  const F = v => typeof v === 'string' ? fill(v, spec.slots, spec.campaign) : Array.isArray(v) ? v.map(F) : v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, k === 'f' ? x : F(x)])) : v;
+  const one = slot => { const d = entry(slot, b.pick[slot]); return d == null ? null : F(d); }, many = slot => (b.pick[slot] || []).map(k => F(entry(slot, k))).filter(Boolean);
+  const set = (k, v) => { if (v) c[k] = v; }, pair = a => a.map(x => ({ title: x[0], text: x[1] }));
+  set('headline', one('headline')); set('sub', one('sub')); set('eyebrow', one('eyebrow')); set('cta', one('cta')); set('marquee', one('marquee')); set('closing', one('closing')); set('productsDesc', one('products_desc')); set('signupTitle', one('signup'));
+  const sp = one('split'); if (sp) { c.splitTitle = sp.title; c.splitLead = sp.lead; c.splitBullets = sp.bullets; }
+  const st = one('steps'); if (st) { c.stepsTitle = st.title; c.steps = st.steps; }
+  const fq = many('faq'); if (fq.length) c.faq = fq.map(x => [x.q, x.a]);
+  const ft = one('features'), bn = one('benefits'), pr = one('process'), ac = one('accordion'), ins = one('inside'), sy = one('story'), ps = one('prose'), co = one('callout');
+  c.copy = { statement: { text: one('statement') }, ingredients: { title: one('ingredients_title') }, whats_inside: ins, story: sy, prose: ps, callout: co,
+    features: ft && { title: ft.title, items: pair(ft.items) }, benefits: bn, zigzag: { rows: many('zigzag_row') }, text_cols: { title: one('textcols_title'), cols: many('textcol') }, icon_list: { title: one('iconlist_title'), items: many('iconitem') },
+    process: pr && { eyebrow: pr.eyebrow, title: pr.title, steps: pair(pr.steps) }, media_cards: { cards: many('card') }, accordion_media: ac && { eyebrow: ac.eyebrow, title: ac.title, items: ac.items.map(x => ({ q: x[0], a: x[1] })) } };
+  for (const k of Object.keys(c.copy)) if (!c.copy[k]) delete c.copy[k];
+  return c;
+}
+function baseContext(spec) {
   const c = CAMPAIGNS[spec.campaign], sl = spec.slots, pick = (arr, i) => fill(arr[i % arr.length], sl, spec.campaign);
   const photos = Object.values(PHOTOS), products = PRODUCTS[sl.product] || PRODUCTS.food, store = sl.retailer !== 'none';
   const goal = spec.signals.goal, CLOSING = { find_store: 'See you in the pet aisle.', buy: 'Ready when you are.', subscribe: 'Better bowls start today.', signup: 'Be the first to know.', quiz: 'Find their perfect recipe.', register: 'See you there.' };
@@ -229,9 +286,9 @@ export function applyEdit(spec, a) {
   let done = OPS[op];
   if (op === 'theme') s.theme = top(a.theme.probabilities)[0][1] > 0.3 ? a.theme.choice : cyc(THEMES, s.theme);
   else if (op === 'hero_layout') { const h = s.sections[has('hero')]; h.variant = cyc(SECTIONS.hero.variants, h.variant); }
-  else if (op === 'headline_next') s.copy.angle = cyc(ANGLES, s.copy.angle);
+  else if (op === 'headline_next') { if (!nextPick(s, 'headline')) s.copy.angle = cyc(ANGLES, s.copy.angle); nextPick(s, 'sub'); }
   else if (op === 'restructure') { s.signals.taken = new Set(); s.strategy = cyc(STRATEGIES, s.strategy); s.label = STRATEGIES[s.strategy].label; s.copy.angle = STRATEGIES[s.strategy].angle; s.sections = structure(s.strategy, s.signals); }
-  else if (op === 'cta_next') s.copy.cta++;
+  else if (op === 'cta_next') { if (!nextPick(s, 'cta')) s.copy.cta++; }
   else if (op === 'photo_next') s.photo++;
   else if (op === 'marquee_style') { add('marquee'); const m = s.sections[has('marquee')]; m.variant = cyc(SECTIONS.marquee.variants, m.variant); }
   else if (op === 'add_section' && sec !== 'none' && sec !== 'hero') add(sec);

@@ -1,6 +1,6 @@
 /* Kismet Landing Builder — UI. State lives in memory; every change re-renders the preview instantly (no model call
    for manual edits; one Jev call per generated brief and per typed instruction). */
-import { decide, compose, renderDoc, decideEdit, applyEdit, structure, SECTIONS, THEMES, OPTIONAL, ORDER, CAMPAIGNS, STRATEGIES, ANGLES } from './engine.js';
+import { decide, compose, renderDoc, decideEdit, applyEdit, structure, decideCopy, nextPick, bankSize, SECTIONS, THEMES, OPTIONAL, ORDER, CAMPAIGNS, STRATEGIES, ANGLES } from './engine.js';
 
 const $ = s => document.querySelector(s);
 const BASE = new URL('../', location.href).href;
@@ -25,7 +25,8 @@ window.addEventListener('resize', () => document.querySelectorAll('.b-frame').fo
 
 async function generate(brief) {
   $('#ask').classList.add('is-compact'); $('#editor').hidden = true; const v = $('#versions'); v.hidden = false; v.innerHTML = '<p class="b-hint">Deciding…</p>';
-  const res = await decide(brief); last = res; mode(res); specs = compose(brief, res);
+  const [res, copyRes] = await Promise.all([decide(brief), decideCopy(brief)]); // structure and copy are two Jev calls in parallel
+  last = res; mode({ ...res, ms: Math.max(res.ms, copyRes.ms) }); specs = compose(brief, res, copyRes);
   v.innerHTML = specs.map((s, i) => `<article class="b-version"><div class="b-version__head"><span class="b-version__name">${s.key} · ${s.label}</span><span class="k-badge k-badge--sm k-badge--brand">fit ${Math.round(s.fit * 100)}%</span><span class="k-badge k-badge--sm">${s.theme}</span></div><p class="b-hint">${s.note}.<br>${s.sections.filter(x => !SECTIONS[x.id].fixed || x.id === "hero").map(x => SECTIONS[x.id].label + (x.variant ? " (" + x.variant + ")" : "")).join(" → ")}</p><div class="b-frame" data-i="${i}"></div><button class="k-btn k-btn--block" data-edit="${i}">Use and edit version ${s.key}</button></article>`).join('');
   v.querySelectorAll('.b-frame').forEach(h => frame(h, specs[+h.dataset.i], 1512));
 }
@@ -47,7 +48,7 @@ function paint() {
 const cur = () => specs[current];
 $('#back').addEventListener('click', () => { $('#editor').hidden = true; $('#versions').hidden = false; $('#versions').querySelectorAll('.b-frame').forEach(h => frame(h, specs[+h.dataset.i], 1512)); });
 $('#themes').addEventListener('click', e => { const b = e.target.closest('[data-theme-pick]'); if (b) { cur().theme = b.dataset.themePick; paint(); } });
-document.addEventListener('click', e => { const b = e.target.closest('[data-cycle]'); if (b && current >= 0) { const k = b.dataset.cycle; const s = cur(), next = (o, v) => { const ks = Object.keys(o); return ks[(ks.indexOf(v) + 1) % ks.length]; }; if (k === 'photo') s.photo++; else if (k === 'headline') s.copy.angle = next(ANGLES, s.copy.angle); else if (k === 'structure') { s.strategy = next(STRATEGIES, s.strategy); s.label = STRATEGIES[s.strategy].label; s.copy.angle = STRATEGIES[s.strategy].angle; s.sections = structure(s.strategy, s.signals); } else s.copy[k]++; paint(); } const d = e.target.closest('[data-device]'); if (d) { device = d.dataset.device; paint(); } });
+document.addEventListener('click', e => { const b = e.target.closest('[data-cycle]'); if (b && current >= 0) { const k = b.dataset.cycle; const s = cur(), next = (o, v) => { const ks = Object.keys(o); return ks[(ks.indexOf(v) + 1) % ks.length]; }; if (k === 'photo') s.photo++; else if (k === 'headline') { if (!nextPick(s, 'headline')) s.copy.angle = next(ANGLES, s.copy.angle); nextPick(s, 'sub'); nextPick(s, 'marquee'); } else if (k === 'structure') { s.strategy = next(STRATEGIES, s.strategy); s.label = STRATEGIES[s.strategy].label; s.copy.angle = STRATEGIES[s.strategy].angle; s.sections = structure(s.strategy, s.signals); } else if (k === 'cta') { if (!nextPick(s, 'cta')) s.copy.cta++; } else s.copy[k]++; paint(); } const d = e.target.closest('[data-device]'); if (d) { device = d.dataset.device; paint(); } });
 $('#sections').addEventListener('change', e => { const row = e.target.closest('.b-sec'), id = row.dataset.id, s = cur();
   if (e.target.matches('[data-toggle]')) { if (e.target.checked) { s.sections.push({ id, variant: SECTIONS[id].variants ? Object.keys(SECTIONS[id].variants)[0] : null }); s.sections.sort((a, b) => ORDER.indexOf(a.id) - ORDER.indexOf(b.id)); } else s.sections = s.sections.filter(x => x.id !== id); }
   if (e.target.matches('[data-variant]')) s.sections.find(x => x.id === id).variant = e.target.value; paint(); });
