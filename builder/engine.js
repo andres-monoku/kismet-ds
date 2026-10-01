@@ -4,6 +4,7 @@
    3. render(spec)      → HTML made only of design-system components.
    4. editQuestions / applyEdit → live iteration: Jev classifies the instruction, code applies it.
    If the Jev endpoint is not available, a local keyword scorer returns answers in the same shape ("demo mode"). */
+import { TONE_COLORS } from './theme-colors.js';
 import { CAMPAIGNS, SECTIONS, ENTITIES, THEMES, ORDER, OPTIONAL, PHOTOS, PRODUCTS, ANGLES, LEADS, CLOSERS, STRATEGIES, STRIPS } from './registry.js';
 
 const MODEL = 'jev-latest';
@@ -153,7 +154,8 @@ function context(spec) {
 }
 /* Page rhythm: a standalone marquee becomes the title of the section after it; every body section gets a colour band that differs
    from its neighbours, a wave into the next band, and — every other section at most — a marquee that names it. */
-export function rhythm(sections, c) {
+export function rhythm(sections, c, theme = 'electric') {
+  const hex = TONE_COLORS[theme] || TONE_COLORS.electric, same = (a, b) => a && b && hex[a] === hex[b]; // two tones can be the same colour in a theme
   const out = []; let prev = null, prev2 = null, sinceMq = 9;
   const titles = (s, i) => s.id === 'marquee' && sections[i + 1] && !STRIPS.includes(sections[i + 1].id);
   sections.forEach((s, i) => { if (titles(s, i)) sections[i + 1]._mq = true; });
@@ -161,7 +163,8 @@ export function rhythm(sections, c) {
   list.forEach((s, i) => {
     if (STRIPS.includes(s.id)) { out.push({ s }); prev2 = prev; prev = null; sinceMq++; return; }
     const sec = SECTIONS[s.id], tones = sec.tones;
-    const tone = tones.find(t => t !== prev && t !== prev2) || tones.find(t => t !== prev) || tones[0];
+    const all = [...tones, ...Object.keys(hex).filter(t => !tones.includes(t) && t !== 'ink')];
+    const tone = all.find(t => !same(t, prev) && !same(t, prev2)) || all.find(t => !same(t, prev)) || tones[0];
     const next = list[i + 1], wave = !!next && !STRIPS.includes(next.id);
     const label = typeof sec.mq === 'function' ? sec.mq(c) : sec.mq; const mq = label && (s._mq || sinceMq >= 2) ? (s._mq && c.marquee && s.id !== 'reviews' && s.id !== 'story' && s.id !== 'stories' ? c.marquee : label) : null;
     sinceMq = mq ? 0 : sinceMq + 1; delete s._mq;
@@ -170,7 +173,7 @@ export function rhythm(sections, c) {
   return out;
 }
 const mqHtml = text => `<div class="k-marquee" aria-hidden="true"><div class="k-marquee__track"><span class="k-icon k-icon--burst"></span><span class="k-marquee__item">${String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;')}</span></div></div>`;
-export function renderBody(spec) { const c = context(spec); return rhythm(spec.sections.map(s => ({ ...s })), c).map(({ s, tone, wave, mq }) => tone
+export function renderBody(spec) { const c = context(spec); return rhythm(spec.sections.map(s => ({ ...s })), c, spec.theme).map(({ s, tone, wave, mq }) => tone
   ? `<div data-section="${s.id}" class="k-band k-band--${tone}${wave ? ' k-band--wave' : ''}${mq ? ' k-band--mq' : ''}">${mq ? mqHtml(mq) : ''}${SECTIONS[s.id].render(c, s.variant)}</div>`
   : `<div data-section="${s.id}">${SECTIONS[s.id].render(c, s.variant)}</div>`).join('\n'); }
 export function renderDoc(spec, base, { title = 'Kismet landing' } = {}) {
