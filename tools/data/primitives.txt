@@ -1,0 +1,14 @@
+white #ffffff
+black #000000
+transparent #00000000
+neutral #f7f7f7 #f0f0f0 #e2e2e2 #d9d9d9 #b3b2b1 #8f8c8c #6f6d6c #504f4f #333333 #262626 #1b1b1b
+sand #f8f7f2 #f2f1ea #e6e5dc #dad9cd #bdbcb1 #a1a097 #86857c #6c6b63 #53524b #3b3b35 #25241f
+night #f3f8f8 #d7dfde #bbc6c6 #a1aead #869696 #6d7f7f #556968 #3d5353 #263f3e #0f2b2b #081b1b
+kale #effaf7 #cfe3de #b0cdc6 #92b7ae #74a197 #558c81 #35776b #036356 #02493f #0a3931 #0d2a24
+mint #eafcf4 #c9f0e0 #a7e3cc #83d7b8 #58caa5 #06bd92 #04a07d #028164 #00634c #034636 #022c20
+turquoise #e9fbfd #c1eef4 #97e0ea #66d2e0 #00c4d6 #009dac #008490 #0f7373 #065a5a #014141 #012a2a
+coral #fff4f1 #fed9d0 #febdad #ff9e88 #fe7c60 #f95736 #d8421f #b23112 #8e2104 #6a1501 #460b01
+salmon #fef4f2 #fdd3ca #f8b1a4 #fd9789 #ff7b6f #e25c4f #c14a3f #a13930 #812821 #641813 #470806
+pink #fef4f4 #ffd8d8 #ffbabc #fc9ca1 #de878b #c17276 #a55e62 #8a4a4f #6f383c #56262a #3d1519
+sun #fbf7e7 #f9edbf #f8e393 #f6d85f #ebc945 #e0ba22 #ba9906 #937904 #6f5a03 #4d3e02 #2d2301
+orange #fff2e4 #f9dab2 #f9c78c #fab363 #fb9d30 #d9841d #b86d02 #955703 #744303 #552f00 #371d01

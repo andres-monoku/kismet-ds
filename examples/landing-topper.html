@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en" data-theme="electric">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gut Gravy launch — Kismet prototype</title>
+  <link rel="stylesheet" href="../css/kismet.css">
+  <script src="../js/kismet.js" defer></script>
+</head>
+<body>
+<div class="k-page">
+
+  <!-- Header: mobile bar below 1024px, promo band + desktop nav above -->
+  <header class="k-header">
+    <div class="k-header__promo">
+      <span>Free shipping on $50+</span><span class="k-icon k-icon--burst"></span>
+      <span>Subscribe &amp; Save 30% on your first order + Free Gift with order two</span><span class="k-icon k-icon--burst"></span>
+      <span>Try Kismet Risk-free. 100% Money-back Guarantee</span>
+    </div>
+    <div class="k-header__bar">
+      <div class="k-header__side">
+        <button class="k-header__action k-header__menu" aria-label="Menu"><span class="k-icon k-icon--menu"></span></button>
+        <nav class="k-header__links" aria-label="Primary">
+          <a href="#">Shop <span class="k-icon k-icon--chevron-down"></span></a><a href="#">About</a><a href="#">Ingredients</a>
+          <a href="#">Tails <span class="k-icon k-icon--chevron-down"></span></a><a href="#">Find a Store</a>
+        </nav>
+      </div>
+      <a href="#" class="k-logo k-header__logo" aria-label="Kismet"></a>
+      <div class="k-header__side k-header__side--end">
+        <a href="#" class="k-header__action" aria-label="My dogs"><span class="k-icon k-icon--dog"></span></a>
+        <a href="#" class="k-header__action" aria-label="Cart"><span class="k-icon k-icon--cart"></span><span class="k-header__count">2</span></a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 1 · Hero (Fold: photo + mandatory overlay) -->
+  <section class="k-fold" style="background-image: url('../assets/img/hero-picnic.jpg')">
+    <div class="k-fold__content">
+      <div class="k-fold__text">
+        <h1 class="k-fold__title">Pour on<br>the good stuff</h1>
+        <p class="k-fold__desc">New Gut Gravy: a bone-broth pour-over topper with pre + probiotics. Launch week only — 20% off when you add it to any topper.</p>
+      </div>
+      <div class="k-fold__actions"><a href="#bowl" class="k-wavy">Shop the launch</a></div>
+    </div>
+  </section>
+
+  <!-- press band + marquee -->
+  <div class="k-logos" aria-label="As seen on">
+    <div class="k-logos__track">
+      <img src="../assets/img/press-today.svg" alt="Today"><img src="../assets/img/press-drew.svg" alt="The Drew Barrymore Show"><img src="../assets/img/press-tonight-show.svg" alt="The Tonight Show"><img src="../assets/img/press-parade.svg" alt="Parade"><img src="../assets/img/press-fast-company.svg" alt="Fast Company"><img src="../assets/img/press-people.svg" alt="People">
+    </div>
+  </div>
+  <div class="k-marquee k-marquee--accent" aria-hidden="true">
+    <div class="k-marquee__track">
+      <span class="k-icon k-icon--burst"></span><span class="k-marquee__item">New topper</span>
+      <span class="k-icon k-icon--burst"></span><span class="k-marquee__item">20% off launch week</span>
+    </div>
+  </div>
+
+  <!-- 2 · What it is (50/50) -->
+  <section class="k-split">
+    <img class="k-media k-split__media" src="../assets/img/product-salmon-sticks.jpg" alt="Gut Gravy pouch">
+    <div class="k-split__content">
+      <p class="k-eyebrow">New · Pour-over topper</p>
+      <h2 class="k-display k-split__title">Meet Gut Gravy.</h2>
+      <p class="k-lead">A slow-simmered bone broth you pour over any bowl. It adds moisture, flavor and a daily dose of gut support — and it pairs perfectly with Shakers and Nugs.</p>
+      <ul class="k-bullets">
+        <li><span class="k-icon k-icon--check"></span>Real bone broth, human-grade ingredients</li>
+        <li><span class="k-icon k-icon--check"></span>Pre + probiotics for digestion</li>
+        <li><span class="k-icon k-icon--check"></span>Shelf-stable — no fridge needed</li>
+      </ul>
+      <a href="#bowl" class="k-wavy">Add Gut Gravy</a>
+    </div>
+  </section>
+
+  <!-- 3 · Build your bowl: new product next to the toppers -->
+  <section class="k-section k-product-row" id="bowl">
+    <div class="k-product-row__head">
+      <div class="k-product-row__titles">
+        <h2 class="k-product-row__title">Better together with our toppers</h2>
+        <p class="k-product-row__desc">Add Gut Gravy to Shakers or Nugs and save 20% on the whole bundle during launch week.</p>
+      </div>
+      <a href="#" class="k-btn k-btn--neutral">See all toppers <span class="k-icon k-icon--arrow-right"></span></a>
+    </div>
+    <div class="k-product-row__list">
+      <article class="k-card k-card--simple">
+        <div class="k-card__media">
+          <img src="../assets/img/product-salmon-sticks.jpg" alt="">
+          <span class="k-card__rating">4.8 <span class="k-icon k-icon--star"></span></span><span class="k-card__tag">New</span>
+          <div class="k-card__info"><div class="k-card__price"><span class="k-card__amount">$16.99</span></div><h3 class="k-card__name">Gut Gravy Pour-Over Topper</h3></div>
+        </div>
+        <div class="k-card__body"><div class="k-card__actions"><button class="k-card__cta">Add to cart</button></div></div>
+      </article>
+      <article class="k-card k-card--simple">
+        <div class="k-card__media">
+          <img src="../assets/img/product-beef-squares.jpg" alt="">
+          <span class="k-card__rating">4.9 <span class="k-icon k-icon--star"></span></span><span class="k-card__tag">Best Seller</span>
+          <div class="k-card__info"><div class="k-card__price"><span class="k-card__amount">$17.49</span></div><h3 class="k-card__name">Shakers for Skin &amp; Coat</h3></div>
+        </div>
+        <div class="k-card__body"><div class="k-card__actions"><button class="k-card__cta">Add to cart</button></div></div>
+      </article>
+      <article class="k-card k-card--simple">
+        <div class="k-card__media">
+          <img src="../assets/img/product-nugs.jpg" alt="">
+          <span class="k-card__rating">4.8 <span class="k-icon k-icon--star"></span></span><span class="k-card__tag">Pairs well</span>
+          <div class="k-card__info"><div class="k-card__price"><span class="k-card__amount">$12.99</span></div><h3 class="k-card__name">Freeze-Dried Nugs</h3></div>
+        </div>
+        <div class="k-card__body"><div class="k-card__actions"><button class="k-card__cta">Add to cart</button></div></div>
+      </article>
+    </div>
+    <!-- mobile rule: slider navigation right below the cards -->
+    <div class="k-slider-nav">
+      <button class="k-slider-nav__btn" data-dir="prev" aria-label="Previous" disabled><span class="k-icon k-icon--chevron-left"></span></button>
+      <button class="k-slider-nav__btn" data-dir="next" aria-label="Next"><span class="k-icon k-icon--chevron-right"></span></button>
+    </div>
+  </section>
+
+  <!-- 4 · How to serve -->
+  <section class="k-steps">
+    <div class="k-steps__head"><p class="k-eyebrow">How to serve</p><h2 class="k-display k-steps__title">Pour. Shake. Serve.</h2></div>
+    <div class="k-steps__list">
+      <div class="k-steps__item"><img src="../assets/img/product-salmon-sticks.jpg" alt=""><h3 class="k-display">Pour the gravy.</h3><p>One pouch over dry food — warm it up for picky eaters.</p></div>
+      <div class="k-steps__item"><img src="../assets/img/product-beef-squares.jpg" alt=""><h3 class="k-display">Shake a topper.</h3><p>Add Shakers or Nugs for extra protein and crunch.</p></div>
+      <div class="k-steps__item"><img src="../assets/img/product-chicken.jpg" alt=""><h3 class="k-display">Serve and watch.</h3><p>Clean bowls, happy guts. Most dogs notice in the first week.</p></div>
+    </div>
+    <a href="#bowl" class="k-wavy">Build my bowl</a>
+  </section>
+
+  <!-- 5 · Launch offer signup -->
+  <section class="k-signup">
+    <p class="k-eyebrow">Launch week only</p>
+    <h2 class="k-display k-signup__title">Get 20% off Gut Gravy</h2>
+    <p class="k-lead">We'll email your code — use it with any topper.</p>
+    <form class="k-signup__form" onsubmit="return false">
+      <label class="k-field"><span class="k-field__box"><span class="k-field__text"><span class="k-field__label">Enter your email</span><input class="k-field__input" type="email" placeholder=" "></span></span></label>
+      <button class="k-wavy" type="submit">Send my code</button>
+    </form>
+    <p class="k-signup__legal">By signing up you agree to receive emails from Kismet. Unsubscribe anytime.</p>
+  </section>
+
+  <!-- Footer -->
+  <footer class="k-footer">
+    <div class="k-footer__wordmark"><span class="k-logo" role="img" aria-label="Kismet"></span></div>
+    <div class="k-footer__content">
+      <a href="#" class="k-footer__signup">Sign Up</a>
+      <div class="k-footer__legal">
+        <div class="k-footer__legal-links"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">*Offer T&amp;C</a></div>
+        <p class="k-footer__copy">© 2026 Kismet, Inc.</p>
+      </div>
+      <div class="k-footer__cols">
+        <div class="k-footer__col"><h2 class="k-footer__heading">Explore</h2><div class="k-footer__links"><a href="#">Shop All</a><a href="#">About Us</a><a href="#">Ingredients</a><a href="#">Tails</a><a href="#">Quiz</a><a href="#">Find a Store</a></div></div>
+        <div class="k-footer__col"><h2 class="k-footer__heading">Support</h2><div class="k-footer__links"><a href="#">FAQs</a><a href="#">Account</a><a href="#">Shipping &amp; Returns</a><a href="#">Contact Us</a></div></div>
+      </div>
+    </div>
+  </footer>
+</div>
+</body>
+</html>
