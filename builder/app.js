@@ -53,7 +53,7 @@ $('#sections').addEventListener('change', e => { const row = e.target.closest('.
   if (e.target.matches('[data-variant]')) s.sections.find(x => x.id === id).variant = e.target.value; paint(); });
 $('#sections').addEventListener('click', e => { const b = e.target.closest('[data-move]'); if (!b) return; const s = cur(), id = b.closest('.b-sec').dataset.id, i = s.sections.findIndex(x => x.id === id), j = i + +b.dataset.move; if (s.sections[j] && !SECTIONS[s.sections[j].id].fixed) { [s.sections[i], s.sections[j]] = [s.sections[j], s.sections[i]]; paint(); } });
 $('#editForm').addEventListener('submit', async e => { e.preventDefault(); const text = $('#editText').value.trim(); if (!text) return; const out = $('#editResult'); out.textContent = 'Deciding…';
-  const res = await decideEdit(text); mode(res); const r = applyEdit(cur(), res.answers);
+  let res, r; try { res = await decideEdit(text); mode(res); r = applyEdit(cur(), res.answers); } catch (err) { console.error(err); out.textContent = 'Something went wrong applying that change. Try again.'; return; }
   if (r.done) { specs[current] = r.spec; specs[current].why = cur().why; paint(); out.textContent = `✓ ${r.done} (${Math.round(res.answers.op.probabilities[r.op] * 100)}% · ${res.ms} ms)`; $('#editText').value = ''; }
   else out.textContent = `I couldn’t map that to a change (best guess: ${res.answers.op.choice}, ${Math.round(res.answers.op.probabilities[res.answers.op.choice] * 100)}%). Try naming the section or the change.`; });
 function exportHtml() { return renderDoc(cur(), PUBLIC_BASE, { title: 'Kismet — ' + cur().brief }).replace(/<style>\[data-section\][^<]*<\/style>\n/, ''); }
