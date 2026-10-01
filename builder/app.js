@@ -11,7 +11,7 @@ let specs = [], current = -1, device = 'desktop', last = null;
 /* Copy: Jev decides the page in milliseconds and it shows right away with template copy; Claude then writes the real copy for
    the blocks on the page (a few seconds) and the preview refreshes. Without ANTHROPIC_API_KEY the template copy stays. */
 import { COPY } from '../library/copy.js';
-const copyLabel = s => !s._copy ? '' : s._copy.state === 'writing' ? 'Writing copy…' : s._copy.state === 'ok' ? `Copy by Claude · ${(s._copy.ms / 1000).toFixed(1)} s` : s._copy.state === 'off' ? 'Template copy (add ANTHROPIC_API_KEY to .env for AI copy)' : `Template copy (copywriter failed: ${s._copy.reason})`;
+const copyLabel = s => !s._copy ? '' : s._copy.state === 'writing' ? 'Writing copy…' : s._copy.state === 'ok' ? `Copy by Claude · ${(s._copy.ms / 1000).toFixed(0)} s` : s._copy.state === 'off' ? 'Template copy (no copywriter configured)' : `Template copy (copywriter failed: ${s._copy.reason})`;
 function showCopy(s) { const i = specs.indexOf(s); const el = document.querySelector(`[data-copy="${i}"]`); if (el) el.textContent = copyLabel(s); if (i === current && !$('#editor').hidden) $('#copyInfo').textContent = copyLabel(s); }
 async function copyFor(s, only) {
   if (only && (!s.ai || !only.length)) return; // nothing to add, or the copywriter is not available
