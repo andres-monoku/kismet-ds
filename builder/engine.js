@@ -64,7 +64,7 @@ export function localAnswers(brief, qs) {
     else if (id === 'length') { const n = Math.min(2, Math.floor(text.split(/\s+/).length / 9)); const p = { 0: 0.25, 1: 0.5, 2: 0.25 }; p[n] += 0.4; const s = p[0] + p[1] + p[2]; for (const k in p) p[k] /= s; a[id] = { type: 'score', score: +(p[1] + 2 * p[2]).toFixed(2), probabilities: p, confidence: 0.4 }; }
     else if (id === 'has_offer') a[id] = { type: 'noul', noul: KW.use.offer.test(text) ? 0.95 : 0.08 };
     else if (id.startsWith('use_')) { const s = id.slice(4); const hits = KW.use[s] ? (text.match(new RegExp(KW.use[s].source, 'gi')) || []).length : 0; a[id] = { type: 'noul', noul: Math.min(0.97, Math.max(0.35, SECTIONS[s].prior ?? 0.4) + hits * 0.3) }; }
-    else if (id.startsWith('fit_')) { const F = { direct: [/promo|offer|oferta|descuento|\d+ ?%|sale|black friday|buy|coupon|cup[oó]n|deal/, 0.45], story: [/story|historia|brand|marca|launch|lanzamiento|family|community|event|evento|parade|campaign|campa[ñn]a/, 0.5], utility: [/store|tienda|walmart|target|petco|costco|find|locator|register|punto de venta|near|cerca/, 0.3], proof: [/science|ciencia|clinical|vet|proof|trust|review|health|salud|gut/, 0.4], showcase: [/product|producto|catalog|range|topper|treat|collection|new|nuevo|vender|sell/, 0.42], launchpad: [/launch|lanzamiento|new|nuevo|introduc|meet/, 0.3], editorial: [/article|art[ií]culo|explain|explica|science|ciencia|letter|carta|blog|educa/, 0.2], guide: [/guide|gu[ií]a|how to|c[oó]mo|tips|consejos|switch|transici[oó]n|feeding|tutorial/, 0.2], gathering: [/event|evento|parade|desfile|pop-?up|meetup|community|comunidad|invite|invita|rsvp/, 0.15], buybox: [/buy|compra|product page|pdp|add to cart|carrito|single product|un producto/, 0.25], manifesto: [/manifesto|manifiesto|mission|misi[oó]n|brand|marca|believe|creemos|values|valores/, 0.2] }[id.slice(4)]; const hits = (text.match(new RegExp(F[0].source, 'gi')) || []).length; a[id] = { type: 'noul', noul: Math.min(0.97, F[1] + hits * 0.22) }; }
+    else if (id.startsWith('fit_')) { const F = { direct: [/promo|offer|oferta|descuento|\d+ ?%|sale|black friday|buy|coupon|cup[oó]n|deal/, 0.45], story: [/story|historia|brand|marca|launch|lanzamiento|family|community|event|evento|parade|campaign|campa[ñn]a/, 0.5], utility: [/store|tienda|walmart|target|petco|costco|find|locator|register|punto de venta|near|cerca/, 0.3], proof: [/science|ciencia|clinical|vet|proof|trust|review|health|salud|gut/, 0.4], showcase: [/product|producto|catalog|range|topper|treat|collection|new|nuevo|vender|sell/, 0.42], launchpad: [/launch|lanzamiento|new|nuevo|introduc|meet/, 0.3], editorial: [/article|art[ií]culo|explain|explica|science|ciencia|letter|carta|blog|educa/, 0.2], guide: [/guide|gu[ií]a|how to|c[oó]mo|tips|consejos|switch|transici[oó]n|feeding|tutorial/, 0.2], gathering: [/event|evento|parade|desfile|pop-?up|meetup|community|comunidad|invite|invita|rsvp/, 0.15], buybox: [/buy|compra|product page|pdp|add to cart|carrito|single product|un producto/, 0.25], manifesto: [/manifesto|manifiesto|mission|misi[oó]n|brand|marca|believe|creemos|values|valores/, 0.2], inside: [/ingredient|ingrediente|nutrition|nutrici[oó]n|what.?s in|qu[eé] contiene|made of|superfood|receta|recipe/, 0.15] }[id.slice(4)]; const hits = (text.match(new RegExp(F[0].source, 'gi')) || []).length; a[id] = { type: 'noul', noul: Math.min(0.97, F[1] + hits * 0.22) }; }
     else if (id === 'hero_kind') { const H = { offer: /\d+ ?%|descuento|discount|sale|oferta|coupon|cup[oó]n/, video: /video|film|commercial|comercial/, product: /buy|compra|product page|un producto/, minimal: /manifesto|manifiesto|mission|misi[oó]n/, stack: /guide|gu[ií]a|about|brand|marca/, quiz: /quiz|plan|personal|subscri|suscrip/, event: /event|evento|parade|desfile|pop-?up/, center: /launch|lanzamiento|new|nuevo/, collage: /community|comunidad|range|catalog|colecci/, pagehead: /article|art[ií]culo|legal|faq/, page: /store|tienda|find|locator/, split: /register|detalle|detail/ }; const pr = {}; let s = 0; for (const k of keys) { pr[k] = (k === 'fold' ? 0.5 : 0.1) + (H[k] && H[k].test(text) ? 1 : 0); s += pr[k]; } for (const k in pr) pr[k] /= s; a[id] = choiceAnswer(pr); }
     else if (id === 'variant_hero') a[id] = choiceAnswer(/event|evento|parade|date|fecha|detail|register/.test(text) ? { fold: 0.3, split: 0.7 } : { fold: 0.72, split: 0.28 });
     else if (id === 'variant_marquee') a[id] = choiceAnswer({ accent: 0.45, ink: 0.25, soft: 0.15, brand: 0.15 });
@@ -90,7 +90,7 @@ const TONE_ANGLE = { playful: 'playful', clinical: 'clinical', urgent: 'urgent',
 /* Build the section list of one strategy, then let the evidence adjust it:
    goal and offer inject sections, very low probabilities remove them, very high ones add them. */
 /* blocks rebuilt 1:1 from the final Figma designs — the builder leans on them */
-const SIGNATURE = ['products', 'ingredients', 'stats', 'compare', 'progress', 'reviews', 'story', 'stories', 'usp', 'faq', 'spotlight', 'media_cards'];
+const SIGNATURE = ['products', 'ingredients', 'whats_inside', 'stats', 'compare', 'progress', 'reviews', 'story', 'stories', 'usp', 'faq', 'spotlight', 'media_cards'];
 /* weighted random draw */
 const draw = (items, weights) => { let r = Math.random() * weights.reduce((x, y) => x + y, 0); for (let i = 0; i < items.length; i++) if ((r -= weights[i]) <= 0) return items[i]; return items[items.length - 1]; };
 export function structure(strategyId, sig) {
@@ -155,7 +155,29 @@ function explain(a, spec) {
 }
 
 /* ---------- 3 · render ---------- */
-function context(spec) {
+/* Copywriting (optional): Claude writes the texts for the blocks on the page. The page is usable before it answers; when it does,
+   spec.ai = { page: {...}, <blockId>: {...} } and the next render uses it. Returns { ok, reason } and never throws. */
+import { COPY } from '../library/copy.js';
+export async function writeCopy(spec, only) {
+  const ids = spec.sections.map(s => s.id).filter(id => COPY[id] || ['hero', 'cta', 'steps', 'signup', 'offer'].includes(id));
+  const want = (only || ids).filter(id => COPY[id]); if (!want.length && only) return { ok: true, skipped: true };
+  const t0 = performance.now();
+  try {
+    const r = await fetch('/api/copy', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ brief: spec.brief, strategy: `${spec.label} — ${spec.note}`, voice: ANGLES[spec.copy.angle] || spec.copy.angle, sections: only ? want : spec.sections.map(s => s.id) }) });
+    const j = await r.json().catch(() => ({})); if (!r.ok) return { ok: false, status: r.status, reason: j.error || 'HTTP ' + r.status };
+    spec.ai = only ? { ...(spec.ai || {}), ...Object.fromEntries(Object.entries(j.copy).filter(([k]) => k !== 'page')) } : j.copy;
+    return { ok: true, ms: Math.round(performance.now() - t0), model: j.model };
+  } catch (e) { return { ok: false, reason: String(e) }; }
+}
+function context(spec) { const c = baseContext(spec), ai = spec.ai; if (!ai) return c;
+  const pg = ai.page || {}, s = v => typeof v === 'string' && v.trim() ? v.trim() : null;
+  for (const k of ['eyebrow', 'headline', 'sub', 'cta', 'marquee', 'closing']) if (s(pg[k])) c[k] = k === 'headline' ? s(pg[k]).replace(/\\n/g, '\n') : s(pg[k]);
+  if (ai.faq && Array.isArray(ai.faq.items) && ai.faq.items.length) c.faq = ai.faq.items.filter(x => x && x.q && x.a).map(x => [x.q, x.a]);
+  if (ai.products && s(ai.products.desc)) c.productsDesc = s(ai.products.desc);
+  if (ai.split) { if (s(ai.split.title)) c.splitTitle = s(ai.split.title); if (s(ai.split.lead)) c.splitLead = s(ai.split.lead); if (Array.isArray(ai.split.bullets) && ai.split.bullets.length) c.splitBullets = ai.split.bullets.map(String); }
+  c.copy = ai; return c;
+}
+function baseContext(spec) {
   const c = CAMPAIGNS[spec.campaign], sl = spec.slots, pick = (arr, i) => fill(arr[i % arr.length], sl, spec.campaign);
   const photos = Object.values(PHOTOS), products = PRODUCTS[sl.product] || PRODUCTS.food, store = sl.retailer !== 'none';
   const goal = spec.signals.goal, CLOSING = { find_store: 'See you in the pet aisle.', buy: 'Ready when you are.', subscribe: 'Better bowls start today.', signup: 'Be the first to know.', quiz: 'Find their perfect recipe.', register: 'See you there.' };
@@ -167,6 +189,7 @@ function context(spec) {
     steps: store ? [['Head to the pet aisle.', 'Kismet sits next to the premium dry food.'], ['Spot the coral bag.', 'Food, toppers and treats — all in stock.'], ['Scan for your deal.', 'The QR on the shelf tag unlocks your offer.']] : [['Tell us about your dog.', '30-second quiz: breed, age, weight, sensitivities.'], ['We ship to your door.', 'Free on $50+. Dry, shelf-stable — no fridge.'], ['Skip or cancel anytime.', 'Manage everything from your account.']],
     offerShort: (sl.offer || '20% off').replace(/ off/i, '') + (/(%|\$)/.test(sl.offer || '20%') ? ' off' : ''), offerTitle: `${sl.offer ? sl.offer[0].toUpperCase() + sl.offer.slice(1) : '20% off'} ${store ? 'at ' + sl.retailerLabel : 'your first order'}`, offerCode: (sl.offer.match(/\d+/) || ['20'])[0],
     signupTitle: sl.offer ? `Get ${sl.offer}` : 'Get our launch offer',
+    copy: {},
     faq: [[store ? `Which ${sl.retailerLabel} stores carry Kismet?` : 'Is Kismet clinically proven?', store ? 'Use the store locator to check stock before you go.' : 'Yes — 96% of dogs showed improved gut health in 45 days.'], ['Is it the same recipe as online?', 'Yes — the same vet-developed recipes, made in the U.S.A.'], ['Can I still subscribe?', 'Of course. Subscribe on kismetpets.com to save 30%.']] };
 }
 /* Page rhythm: a standalone marquee becomes the title of the section after it; every body section gets a colour band that differs

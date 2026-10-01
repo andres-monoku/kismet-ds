@@ -331,3 +331,15 @@
 .k-uspcard__item b { color: var(--k-promo); }
 @media (min-width: 1024px) { .k-cmp .k-cmp__price b { color: var(--k-promo); } }
 .k-cmp__row--head .k-logo { color: var(--k-promo); }
+
+/* What's inside — every ingredient and what it does */
+.k-inside { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-sm); }
+.k-inside__item { display: flex; flex-direction: column; gap: var(--space-sm); padding: var(--space-md); border-radius: var(--radius-xl); background: var(--color-bg-surface); color: var(--k-ink); }
+.k-inside__item img, .k-inside__dot { width: 64px; height: 64px; object-fit: contain; }
+.k-inside__dot { display: inline-grid; place-items: center; border-radius: var(--radius-full); background: var(--color-bg-muted); color: var(--k-brandtext); }
+.k-inside__item h3 { font-weight: 500; font-size: var(--text-heading-sm-size); line-height: 1.1; letter-spacing: -0.03em; text-box: none; }
+.k-inside__item ul { display: flex; flex-direction: column; gap: 6px; color: var(--k-ink-2); font-size: var(--text-body-sm-size); line-height: 1.3; }
+.k-inside__item li { padding-left: 14px; position: relative; text-box: none; }
+.k-inside__item li::before { content: ""; position: absolute; left: 0; top: 0.5em; width: 6px; height: 6px; border-radius: 50%; background: var(--k-promo); }
+@media (min-width: 700px) { .k-inside { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--layout-gutter); } .k-inside__item { padding: var(--space-lg); } }
+@media (min-width: 1024px) { .k-inside { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
