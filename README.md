@@ -37,6 +37,14 @@ No build step, no dependencies.
 | `assets/` | Brand fonts (Sans Plomb, Apercu), photos and press logos. |
 | `tools/` | Token / icon / shape generators and the preview server. |
 
+## Loyalty points prototype
+
+`examples/loyalty-prototype.html` — presentation shell (state, device and theme switches) around `examples/loyalty.html`.
+Two states of one page: **logged out** (landing rhythm: title marquees, bands, waves, product marquee, big wordmark on the footer) and
+**logged in** (account area, profile style: banner, tabs, points card, rewards, ways to earn, activity). The dog icon in the header opens
+the profile menu (`.k-pmenu`). Styles: `css/loyalty.css`; behaviour: `js/loyalty.js` (state, menu, add to cart, copy link, marquee).
+Open `examples/loyalty.html?state=in` to land on the logged-in view, add `&menu=1` to open the profile menu.
+
 ## Rules (same as in Figma)
 
 1. **Mobile first.** Base values are the Mobile mode; Desktop applies from `1024px`.

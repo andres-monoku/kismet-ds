@@ -78,10 +78,10 @@
 .k-luse__rate { font-size: var(--text-heading-xl-size); line-height: var(--text-heading-xl-line-height); font-weight: 500; }
 .k-luse__body { font-size: var(--text-body-lg-size); line-height: var(--text-body-lg-line-height); }
 .k-lrewards { display: grid; gap: var(--space-xl); grid-template-columns: minmax(0, 1fr); width: 100%; list-style: none; text-align: center; }
-.k-lreward { display: flex; flex-direction: column; gap: var(--space-sm); padding-top: var(--space-md); border-top: var(--border-width-sm) solid color-mix(in srgb, var(--band-fg) 35%, transparent); }
+.k-lreward { display: flex; flex-direction: column; align-items: center; gap: var(--space-sm); text-align: center; }
 .k-lreward__off { font-family: var(--font-display); font-style: oblique; font-weight: 400; letter-spacing: 0; color: var(--band-mark); font-size: var(--text-display-2xl-size); line-height: var(--text-display-2xl-line-height); text-box: trim-both cap alphabetic; padding-bottom: 0.1em; }
 .k-lreward__cost { font-size: var(--text-heading-lg-size); line-height: var(--text-heading-lg-line-height); font-weight: 500; }
-@media (min-width: 1024px) { .k-lrewards { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--layout-gutter); text-align: left; } }
+@media (min-width: 1024px) { .k-lrewards { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--layout-gutter); } }
 
 /* refer a friend + product marquee */
 .k-lrefer { display: flex; flex-direction: column; align-items: center; gap: var(--space-md); max-width: 640px; margin-inline: auto; text-align: center; }
@@ -119,7 +119,8 @@
 .k-ptab[aria-selected="true"] { background: var(--color-bg-product-1); color: var(--color-text-inverse); font-weight: 700; }
 .k-ptab__d { display: none; }
 @media (min-width: 1024px) {
-  .k-ptabs { margin-inline: 0; padding: 0; gap: 0; box-shadow: inset 0 -1px 0 var(--color-border-subtle); }
+  .k-ptabs { display: none; }
+  .k-ptabs--unused { margin-inline: 0; padding: 0; gap: 0; box-shadow: inset 0 -1px 0 var(--color-border-subtle); }
   .k-ptab { height: 57px; padding-inline: var(--space-md); border-radius: 0; background: none; font-size: var(--text-heading-md-size); color: var(--color-text-secondary); }
   .k-ptab:hover { background: var(--color-bg-subtle); }
   .k-ptab[aria-selected="true"] { background: none; color: var(--color-text-primary); font-weight: 500; box-shadow: inset 0 calc(-1 * var(--border-width-lg)) 0 var(--color-border-strong); }

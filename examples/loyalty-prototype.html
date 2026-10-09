@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en" data-theme="electric">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Loyalty Points — prototype for approval</title>
+  <link rel="stylesheet" href="../css/kismet.css">
+  <style>
+    html, body { height: 100%; }
+    body { display: flex; flex-direction: column; background: var(--color-bg-inverse); color: var(--color-text-inverse); }
+    .pbar { flex: none; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-sm) var(--space-lg); padding: var(--space-sm) var(--space-lg); background: var(--color-bg-inverse); border-bottom: 1px solid color-mix(in srgb, var(--color-text-inverse) 18%, transparent); }
+    .pbar__t { display: flex; flex-direction: column; gap: 2px; }
+    .pbar__t b { font-family: var(--font-display); font-style: oblique; font-weight: 400; font-size: 22px; line-height: 1; color: var(--color-accent-secondary); }
+    .pbar__t span { font-size: 13px; opacity: .75; }
+    .pbar__g { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-md); }
+    .pseg { display: flex; padding: 3px; border-radius: var(--radius-full); background: color-mix(in srgb, var(--color-text-inverse) 12%, transparent); }
+    .pseg button { height: 34px; padding: 0 var(--space-md); border: 0; border-radius: var(--radius-full); background: none; color: var(--color-text-inverse); font: inherit; font-weight: 500; font-size: 14px; cursor: pointer; }
+    .pseg button[aria-pressed="true"] { background: var(--color-accent-secondary); color: var(--color-bg-inverse); font-weight: 700; }
+    .pseg button:focus-visible, .psel:focus-visible { outline: 2px solid var(--color-accent-secondary); outline-offset: 2px; }
+    .plab { display: flex; align-items: center; gap: var(--space-xs); font-size: 13px; opacity: .9; }
+    .psel { height: 34px; padding: 0 var(--space-sm); border-radius: var(--radius-full); border: 1px solid color-mix(in srgb, var(--color-text-inverse) 30%, transparent); background: transparent; color: var(--color-text-inverse); font: inherit; font-size: 14px; }
+    .psel option { color: #000; }
+    .pstage { flex: 1; min-height: 0; display: flex; justify-content: center; align-items: stretch; padding: 0; background: color-mix(in srgb, var(--color-bg-inverse) 88%, #fff); }
+    .pstage iframe { border: 0; background: #fff; width: 100%; height: 100%; }
+    .pstage.is-mobile { align-items: center; padding: var(--space-lg); }
+    .pstage.is-mobile iframe { width: 393px; height: min(852px, 100%); border-radius: 36px; box-shadow: 0 0 0 10px #000, 0 24px 60px rgb(0 0 0 / .45); }
+    .phint { font-size: 13px; opacity: .8; max-width: 38ch; }
+    @media (max-width: 760px) { .phint { display: none; } }
+  </style>
+</head>
+<body>
+  <div class="pbar">
+    <div class="pbar__t"><b>Loyalty Points</b><span>Prototype for approval · KISDEV · Kismet design system</span></div>
+    <div class="pbar__g">
+      <div class="pseg" role="group" aria-label="State" id="seg-state"><button type="button" data-state="out" aria-pressed="true">Logged out</button><button type="button" data-state="in" aria-pressed="false">Logged in</button></div>
+      <div class="pseg" role="group" aria-label="Device" id="seg-dev"><button type="button" data-dev="desktop" aria-pressed="true">Desktop</button><button type="button" data-dev="mobile" aria-pressed="false">Mobile</button></div>
+      <label class="plab">Theme <select class="psel" id="theme"><option value="electric">Electric</option><option value="submarine">Submarine</option><option value="salad">Salad</option><option value="skittles">Skittles</option><option value="lego">Lego</option></select></label>
+      <p class="phint">Click the dog icon in the header to open the profile menu. “Join now” / “Log in” sign you in.</p>
+    </div>
+  </div>
+  <div class="pstage" id="stage"><iframe id="frame" title="Loyalty points page" src="loyalty.html?embed=1"></iframe></div>
+<script>
+(function () {
+  var frame = document.getElementById('frame'), stage = document.getElementById('stage'), state = 'out', theme = 'electric';
+  function post() { try { frame.contentWindow.postMessage({ type: 'kismet-proto', state: state, theme: theme }, '*'); } catch (e) {} }
+  function mark(sel, attr, val) { [].forEach.call(document.querySelectorAll(sel + ' button'), function (b) { b.setAttribute('aria-pressed', String(b.getAttribute(attr) === val)); }); }
+  document.getElementById('seg-state').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; state = b.getAttribute('data-state'); mark('#seg-state', 'data-state', state); post(); });
+  document.getElementById('seg-dev').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; var d = b.getAttribute('data-dev'); stage.classList.toggle('is-mobile', d === 'mobile'); mark('#seg-dev', 'data-dev', d); });
+  document.getElementById('theme').addEventListener('change', function (e) { theme = e.target.value; document.documentElement.setAttribute('data-theme', theme); post(); });
+  window.addEventListener('message', function (e) { var d = e.data; if (!d) return; if (d.type === 'kismet-proto-state') { state = d.state; mark('#seg-state', 'data-state', state); } if (d.type === 'kismet-proto-ready') post(); });
+  frame.addEventListener('load', post);
+})();
+</script>
+</body>
+</html>
