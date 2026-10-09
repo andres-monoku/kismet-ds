@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en" data-theme="electric">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Loyalty Points v2 — prototype for approval</title>
+  <link rel="stylesheet" href="../css/kismet.css">
+  <style>
+    html, body { height: 100%; }
+    body { display: flex; flex-direction: column; background: var(--color-bg-inverse); color: var(--color-text-inverse); }
+    .pbar { flex: none; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-sm) var(--space-lg); padding: var(--space-sm) var(--space-lg); background: var(--color-bg-inverse); border-bottom: 1px solid color-mix(in srgb, var(--color-text-inverse) 18%, transparent); }
+    .pbar__t { display: flex; flex-direction: column; gap: 2px; }
+    .pbar__t b { font-family: var(--font-display); font-style: oblique; font-weight: 400; font-size: 22px; line-height: 1; color: var(--color-accent-secondary); }
+    .pbar__t span { font-size: 13px; opacity: .75; }
+    .pbar__g { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-md); }
+    .pseg { display: flex; padding: 3px; border-radius: var(--radius-full); background: color-mix(in srgb, var(--color-text-inverse) 12%, transparent); }
+    .pseg button { height: 34px; padding: 0 var(--space-md); border: 0; border-radius: var(--radius-full); background: none; color: var(--color-text-inverse); font: inherit; font-weight: 500; font-size: 14px; cursor: pointer; }
+    .pseg button[aria-pressed="true"] { background: var(--color-accent-secondary); color: var(--color-bg-inverse); font-weight: 700; }
+    .pseg button:focus-visible, .psel:focus-visible { outline: 2px solid var(--color-accent-secondary); outline-offset: 2px; }
+    .plab { display: flex; align-items: center; gap: var(--space-xs); font-size: 13px; opacity: .9; }
+    .psel { height: 34px; padding: 0 var(--space-sm); border-radius: var(--radius-full); border: 1px solid color-mix(in srgb, var(--color-text-inverse) 30%, transparent); background: transparent; color: var(--color-text-inverse); font: inherit; font-size: 14px; }
+    .psel option { color: #000; }
+    .pstage { flex: 1; min-height: 0; display: flex; justify-content: center; align-items: stretch; padding: 0; background: color-mix(in srgb, var(--color-bg-inverse) 88%, #fff); }
+    .pstage iframe { border: 0; background: #fff; width: 100%; height: 100%; }
+    .pstage.is-mobile { align-items: center; padding: var(--space-lg); }
+    .pstage.is-mobile iframe { width: 393px; height: min(852px, 100%); border-radius: 36px; box-shadow: 0 0 0 10px #000, 0 24px 60px rgb(0 0 0 / .45); }
+    .pnotes { height: 34px; padding: 0 var(--space-md); border-radius: var(--radius-full); border: 1px solid color-mix(in srgb, var(--color-text-inverse) 30%, transparent); background: transparent; color: var(--color-text-inverse); font: inherit; font-size: 14px; cursor: pointer; }
+    .pnotes[aria-expanded="true"] { background: var(--color-accent-secondary); color: var(--color-bg-inverse); }
+    .pnotes:focus-visible { outline: 2px solid var(--color-accent-secondary); outline-offset: 2px; }
+    .nbox { position: absolute; z-index: 20; right: var(--space-lg); top: 76px; width: min(460px, calc(100vw - 32px)); max-height: calc(100% - 100px); overflow: auto; padding: var(--space-lg); border-radius: var(--radius-xl); background: var(--color-bg-surface); color: var(--color-text-primary); box-shadow: var(--shadow-modal); font-size: 14px; line-height: 1.45; }
+    .nbox[hidden] { display: none; }
+    .nbox h2 { font-size: 18px; margin: 0 0 var(--space-xs); }
+    .nbox h3 { font-size: 13px; letter-spacing: .04em; text-transform: uppercase; color: var(--color-text-secondary); margin: var(--space-md) 0 var(--space-2xs); }
+    .nbox ul { margin: 0; padding-left: 1.1em; display: grid; gap: 4px; }
+    .phint { font-size: 13px; opacity: .8; max-width: 38ch; }
+    @media (max-width: 760px) { .phint { display: none; } }
+  </style>
+</head>
+<body>
+  <div class="pbar">
+    <div class="pbar__t"><b>Loyalty Points · v2</b><span>Prototype for approval · Kismet design system</span></div>
+    <div class="pbar__g">
+      <div class="pseg" role="group" aria-label="State" id="seg-state"><button type="button" data-state="out" aria-pressed="true">Logged out</button><button type="button" data-state="join" aria-pressed="false">Not a member</button><button type="button" data-state="in" aria-pressed="false">Member</button></div>
+      <div class="pseg" role="group" aria-label="Device" id="seg-dev"><button type="button" data-dev="desktop" aria-pressed="true">Desktop</button><button type="button" data-dev="mobile" aria-pressed="false">Mobile</button></div>
+      <label class="plab">Theme <select class="psel" id="theme"><option value="electric">Electric</option><option value="submarine">Submarine</option><option value="salad">Salad</option><option value="skittles">Skittles</option><option value="lego">Lego</option></select></label>
+      <button class="pnotes" type="button" id="notes-btn" aria-expanded="false" aria-controls="notes">What changed</button><p class="phint">Dog icon: profile menu. “Log in” signs you in as a member; “Not a member” shows the join step. “View activity” opens the history.</p>
+    </div>
+  </div>
+  <div class="pstage" id="stage" style="position:relative">
+  <div class="nbox" id="notes" hidden role="region" aria-label="What changed in version 2">
+    <h2>What changed in v2</h2>
+    <h3>Applied from the Yotpo review</h3>
+    <ul>
+      <li>New state: logged in but not a member yet (“You’re a step away from rewards”, optional terms checkbox, join button).</li>
+      <li>Points card now matches Yotpo: “Hi Ben!”, the point balance and two buttons. The “Worth $12.50” line and the progress bar are gone.</li>
+      <li>Recent activity list replaced by a “View activity” button that opens the history dialog (Date, Action, Points, Status, Expires).</li>
+      <li>“Your rewards” is now “Ways to redeem”: read-only list, no per-customer status. Redeeming happens at checkout.</li>
+      <li>Referral link is hidden: only the “Copy my referral link” button.</li>
+      <li>Copy: step 1 is “Join the club and earn 100 points”, and the “Join” tile now says 100 points too (the demo showed 100 and 50 for the same action).</li>
+    </ul>
+    <h3>Follow-ups</h3>
+    <ul>
+      <li>The “Worth $12.50” line and a progress bar can be built in the theme later, once the program is live to test.</li>
+      <li>Tiles and rewards are the Yotpo demo values; the real list comes from the rules Kismet configures. Clicking a tile (logged in) opens Yotpo modals that can be restyled, not redesigned.</li>
+      <li>If redeeming moves onto the page: Redeem, confirmation, generated code, points deducted at once. Needs its own screens.</li>
+    </ul>
+  </div>
+<iframe id="frame" title="Loyalty points page" src="loyalty-v2.html?embed=1"></iframe></div>
+<script>
+(function () {
+  var frame = document.getElementById('frame'), stage = document.getElementById('stage'), state = 'out', theme = 'electric';
+  function post() { try { frame.contentWindow.postMessage({ type: 'kismet-proto', state: state, theme: theme }, '*'); } catch (e) {} }
+  function mark(sel, attr, val) { [].forEach.call(document.querySelectorAll(sel + ' button'), function (b) { b.setAttribute('aria-pressed', String(b.getAttribute(attr) === val)); }); }
+  document.getElementById('seg-state').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; state = b.getAttribute('data-state'); mark('#seg-state', 'data-state', state); post(); });
+  document.getElementById('seg-dev').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; var d = b.getAttribute('data-dev'); stage.classList.toggle('is-mobile', d === 'mobile'); mark('#seg-dev', 'data-dev', d); });
+  var nb=document.getElementById('notes-btn'),nx=document.getElementById('notes'); nb.addEventListener('click',function(){var o=nx.hidden;nx.hidden=!o;nb.setAttribute('aria-expanded',String(o));}); document.getElementById('theme').addEventListener('change', function (e) { theme = e.target.value; document.documentElement.setAttribute('data-theme', theme); post(); });
+  window.addEventListener('message', function (e) { var d = e.data; if (!d) return; if (d.type === 'kismet-proto-state') { state = d.state; mark('#seg-state', 'data-state', state); } if (d.type === 'kismet-proto-ready') post(); });
+  frame.addEventListener('load', post);
+})();
+</script>
+</body>
+</html>

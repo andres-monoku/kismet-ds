@@ -45,6 +45,8 @@ Two states of one page: **logged out** (landing rhythm: title marquees, bands, w
 the profile menu (`.k-pmenu`). Styles: `css/loyalty.css`; behaviour: `js/loyalty.js` (state, menu, add to cart, copy link, marquee).
 Open `examples/loyalty.html?state=in` to land on the logged-in view, add `&menu=1` to open the profile menu.
 
+**v2 (Yotpo review):** `examples/loyalty-prototype-v2.html` — adds the *not a member yet* state, a points card without invented data, read-only *Ways to redeem*, the rewards-history dialog and a button-only referral. Styles in `css/loyalty-v2.css`, behaviour in `js/loyalty-v2.js`.
+
 ## Rules (same as in Figma)
 
 1. **Mobile first.** Base values are the Mobile mode; Desktop applies from `1024px`.
