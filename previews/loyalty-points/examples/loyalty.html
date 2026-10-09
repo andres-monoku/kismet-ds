@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en" data-theme="electric">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Loyalty Points — Kismet</title>
+  <link rel="stylesheet" href="../css/kismet.css">
+  <script src="../js/kismet.js" defer></script>
+  <script src="../js/loyalty.js" defer></script>
+</head>
+<body data-state="out">
+<div class="k-page k-page-loyalty">
+
+  <!-- Header: simplified bar when logged out, full header when logged in. The dog icon opens the profile menu. -->
+  <header class="k-header">
+    <div class="k-header__promo">
+      <span>Free shipping on $50+</span><span class="k-icon k-icon--burst"></span>
+      <span>Subscribe &amp; Save 30% on your first order + Free Gift with order two</span><span class="k-icon k-icon--burst"></span>
+      <span>Try Kismet Risk-free. 100% Money-back Guarantee</span>
+    </div>
+    <div class="k-header__bar">
+      <div class="k-header__side">
+        <button class="k-header__action k-header__menu" aria-label="Menu" type="button"><span class="k-icon k-icon--menu"></span></button>
+        <nav class="k-header__links" aria-label="Primary">
+          <a href="#">Shop <span class="k-icon k-icon--chevron-down"></span></a><a href="#">About</a><a href="#">Ingredients</a>
+          <a href="#">Tails <span class="k-icon k-icon--chevron-down"></span></a><a href="#">Find a Store</a>
+        </nav>
+      </div>
+      <a href="#" class="k-logo k-header__logo" aria-label="Kismet"></a>
+      <div class="k-header__side k-header__side--end">
+        <div class="k-pmenu-wrap">
+          <button class="k-header__action" id="profile-btn" type="button" aria-label="My profile" aria-haspopup="menu" aria-expanded="false" aria-controls="pmenu"><span class="k-icon k-icon--dog"></span></button>
+          <div class="k-pmenu" id="pmenu" role="menu" aria-label="Profile" hidden>
+            <div data-only="out" hidden>
+              <div class="k-pmenu__login"><a class="k-btn k-btn--md k-btn--block" href="#" data-login role="menuitem">Log in</a></div>
+              <hr class="k-pmenu__rule">
+              <a class="k-pmenu__item" href="#" role="menuitem" data-goto="loyalty" aria-current="page"><span class="k-icon k-icon--star"></span>Loyalty Points</a>
+            </div>
+            <div data-only="in" hidden>
+              <a class="k-pmenu__item" href="#" role="menuitem" data-goto="loyalty" aria-current="page"><span class="k-icon k-icon--star"></span>My Loyalty Points</a>
+              <a class="k-pmenu__item" href="#" role="menuitem" data-goto="account"><span class="k-icon k-icon--user"></span>My Account</a>
+            </div>
+          </div>
+        </div>
+        <a href="#" class="k-header__action" aria-label="Cart"><span class="k-icon k-icon--cart"></span><span class="k-header__count">2</span></a>
+      </div>
+    </div>
+  </header>
+
+<main>
+
+<!-- ============ LOGGED OUT ============ -->
+<div data-only="out">
+
+  <section class="k-fold k-fold--page" style="background-image: url('../assets/img/loyalty-hero.jpg'); background-position: 50% 40%">
+    <div class="k-fold__content">
+      <div class="k-fold__text">
+        <h1 class="k-fold__title">Join the club</h1>
+        <p class="k-fold__desc">Earn points on every order and unlock rewards for you and your dog.</p>
+      </div>
+      <div class="k-fold__actions"><a href="#" class="k-wavy" data-login>Join Now</a></div>
+    </div>
+  </section>
+
+  <div class="k-band k-band--sun k-band--wave" id="how">
+    <div class="k-marquee k-marquee--plain" data-k-ready="1" aria-hidden="true"><div class="k-marquee__track"><span class="k-icon k-icon--burst"></span><span class="k-marquee__item">How it works</span><span class="k-icon k-icon--burst"></span><span class="k-marquee__item">How it works</span></div></div>
+    <section class="k-sec"><div class="k-sec__inner">
+      <h2 class="k-visually-hidden">How it works</h2>
+      <ol class="k-lsteps">
+        <li class="k-lsteps__item"><span class="k-lsteps__num" aria-hidden="true">01</span><h3 class="k-lsteps__title">Sign up</h3><p class="k-lsteps__text">Create an account and earn 100 points.</p></li>
+        <li class="k-lsteps__item"><span class="k-lsteps__num" aria-hidden="true">02</span><h3 class="k-lsteps__title">Earn points</h3><p class="k-lsteps__text">Earn points every time you shop.</p></li>
+        <li class="k-lsteps__item"><span class="k-lsteps__num" aria-hidden="true">03</span><h3 class="k-lsteps__title">Redeem points</h3><p class="k-lsteps__text">Redeem points for exclusive rewards.</p></li>
+      </ol>
+    </div></section>
+  </div>
+
+  <div class="k-band k-band--page k-band--wave" id="earn">
+    <div class="k-marquee k-marquee--plain" data-k-ready="1" aria-hidden="true"><div class="k-marquee__track"><span class="k-icon k-icon--burst"></span><span class="k-marquee__item">Ways to earn</span><span class="k-icon k-icon--burst"></span><span class="k-marquee__item">Ways to earn</span></div></div>
+    <section class="k-sec"><div class="k-sec__inner">
+      <h2 class="k-visually-hidden">Ways to earn</h2>
+      <ul class="k-ltiles "><li class="k-ltile"><div class="k-ltile__in"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M14.5 9.2c-.4-1-1.4-1.5-2.5-1.5-1.4 0-2.4.8-2.4 1.9 0 2.6 5 1.2 5 3.9 0 1.1-1.1 1.9-2.6 1.9-1.2 0-2.2-.6-2.6-1.6M12 6v1.7M12 16.3V18"/></svg><b class="k-ltile__pts">1 point for every $1 spent</b><span class="k-ltile__what">Make a purchase</span></div></li><li class="k-ltile"><div class="k-ltile__in"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.6"/><path d="M5 19.5c.8-3.6 3.5-5.4 7-5.4s6.2 1.8 7 5.4"/></svg><b class="k-ltile__pts">50 points</b><span class="k-ltile__what">Join our program</span></div></li><li class="k-ltile"><div class="k-ltile__in"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20h14v-6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2z"/><path d="M5 16.5c2 1.5 3.5-1.5 7 0s5 1.5 7 0M12 12V8.5M12 5.2c.8.9 1.2 1.6 0 2.6-1.2-1-.8-1.7 0-2.6z"/></svg><b class="k-ltile__pts">100 points</b><span class="k-ltile__what">Birthday reward</span></div></li><li class="k-ltile"><div class="k-ltile__in"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4.5"/><circle cx="12" cy="12" r="3.6"/><path d="M16.8 7.2h.01"/></svg><b class="k-ltile__pts">10 points</b><span class="k-ltile__what">Follow us on Instagram</span></div></li><li class="k-ltile"><div class="k-ltile__in"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 5l6 5.5-6 5.5v-3.2c-4 0-7 1-9 4.7.5-5 3.5-9 9-9.5z"/></svg><b class="k-ltile__pts">10 points</b><span class="k-ltile__what">Share on Facebook</span></div></li><li class="k-ltile"><div class="k-ltile__in"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M10 8.7v6.6l5.4-3.3z"/></svg><b class="k-ltile__pts">125 points</b><span class="k-ltile__what">Add video to review</span></div></li><li class="k-ltile"><div class="k-ltile__in"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l2.4 5 5.5.7-4 3.8 1 5.4-4.9-2.7L7.1 18.9l1-5.4-4-3.8L9.6 9z"/></svg><b class="k-ltile__pts">75 points</b><span class="k-ltile__what">Leave a review</span></div></li><li class="k-ltile"><div class="k-ltile__in"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h2.4l1.7 9.2h8.6L18.6 8H7.2"/><circle cx="9.6" cy="18.4" r="1.2"/><circle cx="16.2" cy="18.4" r="1.2"/></svg><b class="k-ltile__pts">150 points</b><span class="k-ltile__what">Complete an action</span></div></li><li class="k-ltile"><div class="k-ltile__in"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v16l-2.5-1.6-2.5 1.6-2.5-1.6L7 20zM9.5 8.5h5M9.5 12h5"/></svg><b class="k-ltile__pts">1 point for every $1 spent</b><span class="k-ltile__what">Upload receipt</span></div></li><li class="k-ltile"><div class="k-ltile__in"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2.5"/><circle cx="9" cy="10" r="1.6"/><path d="M5 17l4.5-4.5 3.5 3.5 2.5-2.5L19 17"/></svg><b class="k-ltile__pts">100 points</b><span class="k-ltile__what">Add photo to review</span></div></li></ul>
+    </div></section>
+  </div>
+
+  <div class="k-band k-band--brand k-band--wave" id="use">
+    <div class="k-marquee k-marquee--plain" data-k-ready="1" aria-hidden="true"><div class="k-marquee__track"><span class="k-icon k-icon--burst"></span><span class="k-marquee__item">How to use your points</span><span class="k-icon k-icon--burst"></span><span class="k-marquee__item">How to use your points</span></div></div>
+    <section class="k-sec"><div class="k-sec__inner k-luse">
+      <h2 class="k-visually-hidden">How to use your points</h2>
+      <div class="k-luse__intro"><p class="k-luse__rate">100 points equals $1</p><p class="k-luse__body">Redeeming your points is easy! Just log in, and choose an eligible reward at checkout.</p></div>
+      <ul class="k-lrewards">
+        <li class="k-lreward"><span class="k-lreward__off">$5 off</span><span class="k-lreward__cost">500 points</span></li>
+        <li class="k-lreward"><span class="k-lreward__off">$10 off</span><span class="k-lreward__cost">1,000 points</span></li>
+        <li class="k-lreward"><span class="k-lreward__off">$15 off</span><span class="k-lreward__cost">1,500 points</span></li>
+      </ul>
+    </div></section>
+  </div>
+
+  <div class="k-band k-band--aqua" id="refer">
+    <div class="k-marquee k-marquee--brand" data-k-ready="1" aria-hidden="true"><div class="k-marquee__track"><span class="k-icon k-icon--burst"></span><span class="k-marquee__item">Refer a friend</span><span class="k-icon k-icon--burst"></span><span class="k-marquee__item">Refer a friend</span></div></div>
+    <section class="k-sec"><div class="k-sec__inner">
+      <div class="k-lrefer">
+        <h2 class="k-lrefer__title">Give $10 off, get 200 points</h2>
+        <p class="k-lrefer__body">Give your friends $10 off their first purchase of $45, and get 200 points for each successful referral.</p>
+        <a href="#" class="k-wavy" data-login>Log in</a>
+      </div>
+    </div></section>
+    <div class="k-pmarq" aria-label="Kismet products"><div class="k-pmarq__track"><article class="k-card k-card--simple k-card--mobile"><div class="k-card__media"><img src="../assets/img/product-chicken.jpg" alt="" loading="lazy"><div class="k-card__info"><div class="k-card__price"><span class="k-card__amount">$21.99</span></div><h3 class="k-card__name">Chicken &amp; Barley Dog Food</h3></div></div><div class="k-card__body"><div class="k-card__actions"><button class="k-card__cta" type="button">Add to cart</button></div></div></article><article class="k-card k-card--simple k-card--mobile"><div class="k-card__media"><img src="../assets/img/product-salmon.jpg" alt="" loading="lazy"><div class="k-card__info"><div class="k-card__price"><span class="k-card__amount">$24.99</span></div><h3 class="k-card__name">Salmon &amp; Brown Rice Dog Food</h3></div></div><div class="k-card__body"><div class="k-card__actions"><button class="k-card__cta" type="button">Add to cart</button></div></div></article><article class="k-card k-card--simple k-card--mobile"><div class="k-card__media k-card__media--cutout"><img src="../assets/img/lp-multivitamin.jpg" alt="" loading="lazy"><div class="k-card__info"><div class="k-card__price"><span class="k-card__amount">$17.99</span></div><h3 class="k-card__name">Daily Multivitamin · Chicken Topper</h3></div></div><div class="k-card__body"><div class="k-card__actions"><button class="k-card__cta" type="button">Add to cart</button></div></div></article><article class="k-card k-card--simple k-card--mobile"><div class="k-card__media k-card__media--cutout"><img src="../assets/img/lp-hip-joint.jpg" alt="" loading="lazy"><div class="k-card__info"><div class="k-card__price"><span class="k-card__amount">$17.99</span></div><h3 class="k-card__name">Daily Hip &amp; Joint · Chicken Topper</h3></div></div><div class="k-card__body"><div class="k-card__actions"><button class="k-card__cta" type="button">Add to cart</button></div></div></article><article class="k-card k-card--simple k-card--mobile"><div class="k-card__media k-card__media--cutout"><img src="../assets/img/product-nugs.jpg" alt="" loading="lazy"><div class="k-card__info"><div class="k-card__price"><span class="k-card__amount">$28.99</span></div><h3 class="k-card__name">Chicken &amp; Sweet Potato Nugs</h3></div></div><div class="k-card__body"><div class="k-card__actions"><button class="k-card__cta" type="button">Add to cart</button></div></div></article></div></div>
+  </div>
+
+</div>
+
+<!-- ============ LOGGED IN · profile style ============ -->
+<div class="k-lin" data-only="in">
+  <section class="k-pbanner" style="background-image: url('../assets/img/hero-picnic.jpg')">
+    <div class="k-pbanner__inner">
+      <span class="k-pbanner__avatar"><span class="k-icon k-icon--user"></span></span>
+      <div><h1 class="k-pbanner__hi">Hi Ben!</h1><button class="k-pbanner__out" type="button" data-logout>Log Out <span class="k-icon k-icon--logout"></span></button></div>
+    </div>
+  </section>
+
+  <div class="k-lin__body">
+    <nav class="k-ptabs" aria-label="My account">
+      <a class="k-ptab" href="#" data-soon><span class="k-ptab__d">Dogs</span><span class="k-ptab__m">My Dogs</span></a>
+      <a class="k-ptab" href="#" data-soon><span class="k-ptab__d">Purchases</span><span class="k-ptab__m">My Orders</span></a>
+      <a class="k-ptab" href="#" data-soon><span class="k-ptab__d">Subscriptions</span><span class="k-ptab__m">My Subscriptions</span></a>
+      <a class="k-ptab" href="#" aria-selected="true" aria-current="page"><span class="k-ptab__d">Loyalty Points</span><span class="k-ptab__m">My Loyalty</span></a>
+      <a class="k-ptab k-ptab--mobile-only" href="#" data-soon>Settings</a>
+    </nav>
+
+    <div class="k-lover">
+      <section class="k-lcard k-lcard--lg" aria-labelledby="pts-h">
+        <p class="k-leyebrow" id="pts-h">Your points</p>
+        <p class="k-lpoints"><span class="k-lpoints__n">1,250</span><span class="k-lpoints__u">points</span></p>
+        <p class="k-lcard__value">Worth $12.50 at checkout</p>
+        <div class="k-lprogress">
+          <div class="k-lprogress__track" role="progressbar" aria-valuemin="0" aria-valuemax="1500" aria-valuenow="1250" aria-label="Progress to your next reward"><span class="k-lprogress__fill" data-pct="83.3"></span></div>
+          <p class="k-lprogress__labels"><span>250 points to your next reward</span><b>$15 off · 1,500</b></p>
+        </div>
+        <a class="k-btn k-btn--md" href="#" data-goto="shop">Shop now</a>
+      </section>
+      <section class="k-lcard k-lcard--lg" aria-labelledby="ref-h">
+        <p class="k-leyebrow" id="ref-h">Refer a friend</p>
+        <h2 class="k-lrefer-card__title">Give $10 off, get 200 points</h2>
+        <p>Give your friends $10 off their first purchase of $45, and get 200 points for each successful referral.</p>
+        <div class="k-llink"><span>kismetpets.com/r/ben</span><button class="k-btn k-btn--sm" type="button" data-copy="https://kismetpets.com/r/ben">Copy link</button></div>
+      </section>
+    </div>
+
+    <section class="k-lsec" aria-labelledby="rew-h">
+      <h2 class="k-lsec__title" id="rew-h">Your rewards</h2>
+      <ul class="k-lrew">
+        <li><div class="k-lcard"><span class="k-badge k-badge--success">Available</span><span class="k-lrew__off">$5 off</span><span class="k-lrew__cost">500 points</span><a class="k-btn k-btn--md k-btn--block" href="#" data-use-reward>Use at checkout</a></div></li>
+        <li><div class="k-lcard"><span class="k-badge k-badge--success">Available</span><span class="k-lrew__off">$10 off</span><span class="k-lrew__cost">1,000 points</span><a class="k-btn k-btn--md k-btn--block" href="#" data-use-reward>Use at checkout</a></div></li>
+        <li class="is-locked"><div class="k-lcard"><span class="k-badge">250 points to go</span><span class="k-lrew__off">$15 off</span><span class="k-lrew__cost">1,500 points</span><a class="k-btn k-btn--md k-btn--block k-btn--secondary" href="#" data-goto="shop">Keep earning</a></div></li>
+      </ul>
+    </section>
+
+    <section class="k-lsec" aria-labelledby="earn-h">
+      <h2 class="k-lsec__title" id="earn-h">Ways to earn</h2>
+      <ul class="k-ltiles k-ltiles--grid"><li class="k-ltile"><div class="k-ltile__in"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M14.5 9.2c-.4-1-1.4-1.5-2.5-1.5-1.4 0-2.4.8-2.4 1.9 0 2.6 5 1.2 5 3.9 0 1.1-1.1 1.9-2.6 1.9-1.2 0-2.2-.6-2.6-1.6M12 6v1.7M12 16.3V18"/></svg><b class="k-ltile__pts">1 point for every $1 spent</b><span class="k-ltile__what">Make a purchase</span></div></li><li class="k-ltile"><div class="k-ltile__in"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.6"/><path d="M5 19.5c.8-3.6 3.5-5.4 7-5.4s6.2 1.8 7 5.4"/></svg><b class="k-ltile__pts">50 points</b><span class="k-ltile__what">Join our program</span></div></li><li class="k-ltile"><div class="k-ltile__in"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20h14v-6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2z"/><path d="M5 16.5c2 1.5 3.5-1.5 7 0s5 1.5 7 0M12 12V8.5M12 5.2c.8.9 1.2 1.6 0 2.6-1.2-1-.8-1.7 0-2.6z"/></svg><b class="k-ltile__pts">100 points</b><span class="k-ltile__what">Birthday reward</span></div></li><li class="k-ltile"><div class="k-ltile__in"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4.5"/><circle cx="12" cy="12" r="3.6"/><path d="M16.8 7.2h.01"/></svg><b class="k-ltile__pts">10 points</b><span class="k-ltile__what">Follow us on Instagram</span></div></li><li class="k-ltile"><div class="k-ltile__in"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 5l6 5.5-6 5.5v-3.2c-4 0-7 1-9 4.7.5-5 3.5-9 9-9.5z"/></svg><b class="k-ltile__pts">10 points</b><span class="k-ltile__what">Share on Facebook</span></div></li><li class="k-ltile"><div class="k-ltile__in"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M10 8.7v6.6l5.4-3.3z"/></svg><b class="k-ltile__pts">125 points</b><span class="k-ltile__what">Add video to review</span></div></li><li class="k-ltile"><div class="k-ltile__in"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l2.4 5 5.5.7-4 3.8 1 5.4-4.9-2.7L7.1 18.9l1-5.4-4-3.8L9.6 9z"/></svg><b class="k-ltile__pts">75 points</b><span class="k-ltile__what">Leave a review</span></div></li><li class="k-ltile"><div class="k-ltile__in"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h2.4l1.7 9.2h8.6L18.6 8H7.2"/><circle cx="9.6" cy="18.4" r="1.2"/><circle cx="16.2" cy="18.4" r="1.2"/></svg><b class="k-ltile__pts">150 points</b><span class="k-ltile__what">Complete an action</span></div></li><li class="k-ltile"><div class="k-ltile__in"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v16l-2.5-1.6-2.5 1.6-2.5-1.6L7 20zM9.5 8.5h5M9.5 12h5"/></svg><b class="k-ltile__pts">1 point for every $1 spent</b><span class="k-ltile__what">Upload receipt</span></div></li><li class="k-ltile"><div class="k-ltile__in"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2.5"/><circle cx="9" cy="10" r="1.6"/><path d="M5 17l4.5-4.5 3.5 3.5 2.5-2.5L19 17"/></svg><b class="k-ltile__pts">100 points</b><span class="k-ltile__what">Add photo to review</span></div></li></ul>
+    </section>
+
+    <section class="k-lsec" aria-labelledby="act-h">
+      <h2 class="k-lsec__title" id="act-h">Recent activity</h2>
+      <ul class="k-lact"><li><span class="k-lact__t"><b>Order #KP-20418</b><span>Oct 2, 2026</span></span><span class="k-lact__pts">+32 points</span></li><li><span class="k-lact__t"><b>Product review</b><span>Sep 21, 2026</span></span><span class="k-lact__pts">+75 points</span></li><li><span class="k-lact__t"><b>Birthday reward</b><span>Sep 12, 2026</span></span><span class="k-lact__pts">+100 points</span></li><li><span class="k-lact__t"><b>Joined the club</b><span>Aug 28, 2026</span></span><span class="k-lact__pts">+50 points</span></li></ul>
+    </section>
+  </div>
+</div>
+
+</main>
+
+<div id="footer-top" style="--footer-top:var(--color-bg-brand-secondary)">
+  <footer class="k-footer">
+    <div class="k-footer__wordmark"><span class="k-logo" role="img" aria-label="Kismet"></span></div>
+    <div class="k-footer__content">
+      <a href="#" class="k-footer__signup">Sign Up</a>
+      <div class="k-footer__legal">
+        <div class="k-footer__legal-links"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">*Offer T&amp;C</a></div>
+        <p class="k-footer__copy">© 2026 Kismet, Inc.</p>
+      </div>
+      <div class="k-footer__cols">
+        <div class="k-footer__col"><h2 class="k-footer__heading">Explore</h2><div class="k-footer__links"><a href="#">Shop All</a><a href="#">About Us</a><a href="#">Ingredients</a><a href="#">Tails</a><a href="#">Quiz</a><a href="#">Find a Store</a></div></div>
+        <div class="k-footer__col"><h2 class="k-footer__heading">Support</h2><div class="k-footer__links"><a href="#">FAQs</a><a href="#">Account</a><a href="#">Shipping &amp; Returns</a><a href="#">Contact Us</a></div></div>
+      </div>
+    </div>
+  </footer>
+</div>
+</div>
+
+<div class="k-protoswitch" role="group" aria-label="Prototype state"><button type="button" data-set-state="out" aria-pressed="true">Logged out</button><button type="button" data-set-state="in" aria-pressed="false">Logged in</button></div>
+</body>
+</html>

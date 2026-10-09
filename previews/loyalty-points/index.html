@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Loyalty Points Prototype</title>
+<style>
+  :root { --bg: #0f2b2b; --bar: #0f2b2b; --fg: #f8f7f2; --muted: #b9c6c2; --accent: #f6d85f; --line: #2c4a47; --stage: #1a3a38; color-scheme: dark; }
+  html, body { height: 100%; }
+  body { margin: 0; padding-inline: 0; display: flex; flex-direction: column; background: var(--bg); color: var(--fg); font-family: "Helvetica Neue", Arial, sans-serif; }
+  .bar { flex: none; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 20px; padding: 12px 16px; background: var(--bar); border-bottom: 1px solid var(--line); }
+  .ttl { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .ttl b { font-size: 20px; line-height: 1.1; font-weight: 800; font-style: italic; letter-spacing: -.01em; color: var(--accent); }
+  .ttl span { font-size: 12.5px; color: var(--muted); }
+  .grp { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+  .seg { display: flex; padding: 3px; border-radius: 999px; background: #ffffff1f; }
+  .seg button { height: 34px; padding: 0 14px; border: 0; border-radius: 999px; background: none; color: var(--fg); font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: #0f2b2b; font-weight: 700; }
+  .lab { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  select { height: 34px; padding: 0 10px; border-radius: 999px; border: 1px solid #ffffff4d; background: transparent; color: var(--fg); font: inherit; font-size: 14px; }
+  select option { color: #000; }
+  a.open { font-size: 13px; color: var(--accent); }
+  button:focus-visible, select:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .stage { flex: 1; min-height: 0; display: flex; justify-content: center; background: var(--stage); }
+  .stage iframe { border: 0; width: 100%; height: 100%; background: #fff; }
+  .stage.is-mobile { align-items: center; padding: 20px 16px; }
+  .stage.is-mobile iframe { width: 393px; max-width: 100%; height: min(852px, 100%); border-radius: 36px; box-shadow: 0 0 0 10px #000, 0 24px 60px #00000073; }
+  .hint { margin: 0; font-size: 12.5px; color: var(--muted); max-width: 40ch; }
+  @media (max-width: 820px) { .hint { display: none; } }
+</style>
+<div class="bar">
+  <div class="ttl"><b>Loyalty Points</b><span>Prototype for approval · Kismet design system</span></div>
+  <div class="grp">
+    <div class="seg" role="group" aria-label="State" id="seg-state"><button type="button" data-state="out" aria-pressed="true">Logged out</button><button type="button" data-state="in" aria-pressed="false">Logged in</button></div>
+    <div class="seg" role="group" aria-label="Device" id="seg-dev"><button type="button" data-dev="desktop" aria-pressed="true">Desktop</button><button type="button" data-dev="mobile" aria-pressed="false">Mobile</button></div>
+    <label class="lab" for="theme">Theme <select id="theme"><option value="electric">Electric</option><option value="submarine">Submarine</option><option value="salad">Salad</option><option value="skittles">Skittles</option><option value="lego">Lego</option></select></label>
+    <p class="hint">Click the dog icon in the page header to open the profile menu. “Join Now” and “Log in” sign you in.</p>
+    <a class="open" href="examples/loyalty.html" target="_blank" rel="noopener">Open full page ↗</a>
+  </div>
+</div>
+<div class="stage" id="stage"><iframe id="frame" title="Loyalty points page" src="examples/loyalty.html#embed"></iframe></div>
+<script>
+(function () {
+  var frame = document.getElementById('frame'), stage = document.getElementById('stage'), state = 'out', theme = 'electric';
+  function post() { try { frame.contentWindow.postMessage({ type: 'kismet-proto', state: state, theme: theme }, '*'); } catch (e) {} }
+  function mark(sel, attr, val) { [].forEach.call(document.querySelectorAll(sel + ' button'), function (b) { b.setAttribute('aria-pressed', String(b.getAttribute(attr) === val)); }); }
+  document.getElementById('seg-state').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; state = b.getAttribute('data-state'); mark('#seg-state', 'data-state', state); post(); });
+  document.getElementById('seg-dev').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; var d = b.getAttribute('data-dev'); stage.classList.toggle('is-mobile', d === 'mobile'); mark('#seg-dev', 'data-dev', d); });
+  document.getElementById('theme').addEventListener('change', function (e) { theme = e.target.value; post(); });
+  window.addEventListener('message', function (e) { var d = e.data; if (!d) return; if (d.type === 'kismet-proto-state') { state = d.state; mark('#seg-state', 'data-state', state); } if (d.type === 'kismet-proto-ready') post(); });
+  frame.addEventListener('load', post);
+})();
+</script>
+
+</html>
