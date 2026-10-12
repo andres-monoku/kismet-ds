@@ -26,6 +26,7 @@
 .k-ljoin { position: relative; display: grid; gap: 0; padding: 0; border-radius: var(--radius-xl); background: var(--color-bg-quiz); color: var(--color-text-primary); overflow: hidden; }
 .k-ljoin .k-leyebrow { color: var(--color-text-primary); }
 .k-ljoin__body { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-md); max-width: 640px; padding: var(--space-md) var(--space-lg) var(--space-lg); }
+.k-ljoin__head { margin-bottom: var(--space-xs); }
 .k-ljoin__head { display: flex; flex-direction: column; gap: var(--space-sm); }
 .k-ljoin__title { font-family: var(--font-display); font-style: oblique; font-weight: 400; letter-spacing: 0; text-transform: uppercase; font-size: var(--text-display-sm-size); line-height: var(--text-display-sm-line-height); text-box: trim-both cap alphabetic; padding-bottom: .08em; }
 .k-ljoin__text { font-size: var(--text-body-lg-size); line-height: var(--text-body-lg-line-height); max-width: 46ch; text-wrap: pretty; }
@@ -35,7 +36,8 @@
 .k-ljoin__consent:has(input:focus-visible) input { outline: 3px solid var(--color-border-focus); outline-offset: 2px; }
 .k-ljoin__photo { margin: 0; height: 150px; overflow: hidden; background: var(--color-bg-muted); }
 .k-ljoin__photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
-.k-wavy[aria-disabled="true"] { opacity: .45; pointer-events: none; }
+.k-btn[aria-disabled="true"] { background: var(--color-action-disabled-bg); color: var(--color-action-disabled-text); cursor: not-allowed; }
+.k-ljoin__cta { margin-top: var(--space-xs); }
 @media (min-width: 1024px) {
   .k-ljoin { grid-template-columns: minmax(0, 1fr) minmax(0, 46%); align-items: stretch; }
   .k-ljoin__body { justify-content: center; padding: var(--space-xl) var(--space-2xl) var(--space-xl) var(--layout-margin); }
@@ -104,3 +106,5 @@ button.k-ltile__in:focus-visible, button.k-ltile__in.is-focus { outline: 3px sol
 .k-bdate { display: flex; flex-direction: column; gap: var(--space-2xs); font-weight: 700; font-size: var(--text-label-md-size); }
 .k-bdate input { height: var(--size-field); padding: 0 var(--space-md); border: var(--border-width-sm) solid var(--color-border-default); border-radius: var(--radius-md); background: var(--color-bg-surface); color: var(--color-text-primary); font: inherit; font-weight: 400; font-size: var(--text-body-lg-size); }
 .k-bdate input:focus-visible { outline: none; box-shadow: var(--shadow-focus-ring); border-color: var(--color-border-strong); }
+
+.k-pbanner__hi { text-shadow: none; }

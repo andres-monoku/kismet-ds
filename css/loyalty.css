@@ -103,7 +103,7 @@
 .k-pbanner__inner { display: flex; align-items: center; gap: var(--space-lg); width: 100%; max-width: 1400px; margin-inline: auto; }
 .k-pbanner__avatar { display: grid; place-items: center; flex: none; width: 72px; height: 72px; border-radius: var(--radius-full); background: var(--color-bg-surface-warm); border: 2px solid var(--color-border-subtle); color: var(--color-text-secondary); }
 .k-pbanner__avatar .k-icon { width: 32px; height: 32px; }
-.k-pbanner__hi { font-family: var(--font-display); font-style: oblique; font-weight: 400; letter-spacing: 0; color: var(--color-text-on-accent); font-size: var(--text-display-md-size); line-height: var(--text-display-md-line-height); text-shadow: var(--shadow-title); }
+.k-pbanner__hi { font-family: var(--font-display); font-style: oblique; font-weight: 400; letter-spacing: 0; color: var(--color-text-on-accent); font-size: var(--text-display-md-size); line-height: var(--text-display-md-line-height); text-shadow: none; }
 .k-pbanner__out { display: inline-flex; align-items: center; gap: var(--space-xs); margin-top: var(--space-xs); padding: 0; background: none; border: 0; color: var(--color-text-inverse); font: inherit; font-size: var(--text-body-md-size); cursor: pointer; }
 .k-pbanner__out .k-icon { width: 14px; height: 14px; }
 .k-pbanner__out:hover { text-decoration: underline; }
