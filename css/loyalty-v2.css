@@ -30,10 +30,11 @@
 .k-ljoin__head { display: flex; flex-direction: column; gap: var(--space-sm); }
 .k-ljoin__title { font-family: var(--font-display); font-style: oblique; font-weight: 400; letter-spacing: 0; text-transform: uppercase; font-size: var(--text-display-sm-size); line-height: var(--text-display-sm-line-height); text-box: trim-both cap alphabetic; padding-bottom: .08em; }
 .k-ljoin__text { font-size: var(--text-body-lg-size); line-height: var(--text-body-lg-line-height); max-width: 46ch; text-wrap: pretty; }
-.k-ljoin__consent { display: grid; grid-template-columns: 24px minmax(0, 1fr); align-items: start; column-gap: var(--space-sm); font-size: var(--text-body-md-size); line-height: var(--text-body-md-line-height); cursor: pointer; }
-.k-ljoin__consent input { width: 24px; height: 24px; margin: 0; margin-top: calc((var(--text-body-md-line-height) - 24px) / 2); accent-color: var(--color-bg-brand); cursor: pointer; }
+/* consent uses the kit's .k-check; only the text layout is set here (the box stays 16px, aligned with the first line) */
+.k-ljoin__consent { align-items: flex-start; line-height: var(--text-body-md-line-height); }
+.k-ljoin__consent .k-check__box { margin-top: calc((var(--text-body-md-line-height) - 16px) / 2); }
+.k-ljoin__consent .k-check__box { border-color: var(--color-border-strong); }
 .k-ljoin__consent a { text-decoration: underline; text-underline-offset: 3px; }
-.k-ljoin__consent:has(input:focus-visible) input { outline: 3px solid var(--color-border-focus); outline-offset: 2px; }
 .k-ljoin__photo { margin: 0; height: 150px; overflow: hidden; background: var(--color-bg-muted); }
 .k-ljoin__photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
 .k-btn[aria-disabled="true"] { background: var(--color-action-disabled-bg); color: var(--color-action-disabled-text); cursor: not-allowed; }
