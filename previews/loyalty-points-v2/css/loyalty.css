@@ -14,16 +14,7 @@
 .k-band--brand { --band-bg: var(--color-bg-brand); --band-fg: var(--color-text-inverse); --band-title: var(--color-text-inverse); --band-accent: var(--color-accent-secondary); --band-mark: var(--color-accent-secondary); --band-mark-2: var(--color-accent-secondary); --band-link: var(--color-text-inverse);
   --color-border-default: color-mix(in srgb, var(--color-text-inverse) 30%, transparent); --color-border-strong: var(--color-text-inverse); }
 
-/* ---------- header: the simplified bar (logged out) — burger, logo, dog, cart; same at every width ---------- */
-[data-state="out"] .k-header__promo { display: none; }
-[data-state="out"] .k-header__links { display: none; }
-[data-state="out"] .k-header__menu { display: inline-flex; }
-[data-state="out"] .k-header__bar { min-height: 70px; padding: var(--space-sm) 20px; }
-[data-state="out"] .k-header__logo { width: 93px; }
-[data-state="out"] .k-header__side { gap: var(--space-2xs); }
-[data-state="out"] .k-header__action { width: 42px; height: 42px; }
-[data-state="out"] .k-header__action .k-icon { width: 26px; height: 26px; }
-[data-state="out"] .k-header__count { top: 0; right: 0; }
+/* ---------- header: the standard Kismet header at every state (promo band + links on desktop, mobile bar below 1024px) ---------- */
 
 /* ---------- profile dropdown (dog icon) ---------- */
 .k-pmenu-wrap { position: relative; display: inline-flex; }
