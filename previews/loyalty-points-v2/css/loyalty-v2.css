@@ -79,3 +79,25 @@
   .k-htable .is-num { text-align: right; } .k-htable th.is-num { text-align: right; }
 }
 body.has-modal { overflow: hidden; }
+
+/* referral button: the button itself shows the result (text + icon + colour), no toast. Same width, same height. */
+.k-copybtn.is-copied { --btn-bg: var(--color-bg-brand); --btn-bg-hover: var(--color-bg-brand); --btn-bg-pressed: var(--color-bg-brand); --btn-fg: var(--color-text-inverse); }
+.k-copybtn .k-icon { width: var(--size-icon-sm); height: var(--size-icon-sm); }
+
+/* "Ways to earn" tiles when logged in are buttons: hover, focus and pressed read as actions (no size change) */
+button.k-ltile__in { appearance: none; position: relative; width: 100%; border: 0; font: inherit; color: inherit; cursor: pointer; transition: background-color var(--duration-fast) var(--easing-standard); }
+.k-ltile__go { position: absolute; top: var(--space-xs); right: var(--space-xs); width: var(--size-icon-sm) !important; height: var(--size-icon-sm) !important; opacity: .45; transition: opacity var(--duration-fast) var(--easing-standard); }
+button.k-ltile__in:hover, button.k-ltile__in.is-hover { background: var(--color-bg-promo-subtle) !important; }
+button.k-ltile__in:hover .k-ltile__go, button.k-ltile__in.is-hover .k-ltile__go, button.k-ltile__in:focus-visible .k-ltile__go { opacity: 1; }
+button.k-ltile__in:active, button.k-ltile__in.is-pressed { background: color-mix(in srgb, var(--color-bg-promo-subtle) 80%, var(--color-text-primary)) !important; }
+button.k-ltile__in:focus-visible, button.k-ltile__in.is-focus { outline: 3px solid var(--color-border-focus); outline-offset: 2px; }
+.k-ltile:has(button.k-ltile__in:focus-visible) { outline: 0; }
+
+/* action popup (birthday): same overlay + panel as the history popup */
+.k-modal__panel--sm { width: 100%; }
+@media (min-width: 1024px) { .k-modal__panel--sm { width: min(480px, 100%); } }
+.k-modal__form { display: flex; flex-direction: column; gap: var(--space-md); padding-bottom: var(--space-lg); }
+.k-modal__form p { font-size: var(--text-body-lg-size); line-height: var(--text-body-lg-line-height); }
+.k-bdate { display: flex; flex-direction: column; gap: var(--space-2xs); font-weight: 700; font-size: var(--text-label-md-size); }
+.k-bdate input { height: var(--size-field); padding: 0 var(--space-md); border: var(--border-width-sm) solid var(--color-border-default); border-radius: var(--radius-md); background: var(--color-bg-surface); color: var(--color-text-primary); font: inherit; font-weight: 400; font-size: var(--text-body-lg-size); }
+.k-bdate input:focus-visible { outline: none; box-shadow: var(--shadow-focus-ring); border-color: var(--color-border-strong); }

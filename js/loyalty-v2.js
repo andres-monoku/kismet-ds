@@ -77,9 +77,9 @@
   document.addEventListener('change', function (e) { if (e.target.id === 'consent') syncJoin(); });
 
   /* ---------- rewards history dialog ---------- */
-  var modal = $('#history'), lastFocus = null;
+  var modal = null, lastFocus = null;
   function focusables() { return $$('button, a[href], input, [tabindex]:not([tabindex="-1"])', modal).filter(function (n) { return !n.disabled && n.offsetParent !== null; }); }
-  function openModal(trigger) { if (!modal) return; lastFocus = trigger || document.activeElement; modal.hidden = false; body.classList.add('has-modal'); var c = $('[data-close-modal]', modal); if (c) c.focus(); }
+  function openModal(trigger, id) { modal = $('#' + (id || 'history')); if (!modal) return; lastFocus = trigger || document.activeElement; modal.hidden = false; body.classList.add('has-modal'); var c = $('[data-close-modal]', modal); if (c) c.focus(); }
   function closeModal(refocus) { if (!modal || modal.hidden) return; modal.hidden = true; body.classList.remove('has-modal'); if (refocus && lastFocus && lastFocus.focus) lastFocus.focus(); }
   document.addEventListener('keydown', function (e) {
     if (!modal || modal.hidden) return;
@@ -94,7 +94,8 @@
     if ((t = e.target.closest('[data-join]'))) { e.preventDefault(); if (t.getAttribute('aria-disabled') === 'true') { toast('Please accept the terms to join'); return; } setState('in'); toast('Welcome to the club — 100 points added'); return; }
     if ((t = e.target.closest('[data-open-history]'))) { e.preventDefault(); openModal(t); return; }
     if ((t = e.target.closest('[data-close-modal]')) || e.target.classList.contains('k-modal__scrim')) { closeModal(true); return; }
-    if ((t = e.target.closest('.k-ltile')) && body.getAttribute('data-state') !== 'out') { toast('Opens the Yotpo action modal (restyled, not redesigned)'); return; }
+    if ((t = e.target.closest('[data-action]'))) { var a = t.getAttribute('data-action'); if (a === 'birthday') openModal(t, 'birthday'); else if (a === 'instagram') toast('Opens Kismet on Instagram in a new tab'); else if (a === 'review') toast('Opens the review action (Yotpo popup)'); else toast('Opens the action in Yotpo'); return; }
+    if ((t = e.target.closest('[data-save-birthday]'))) { closeModal(true); toast('Birthday saved — your 100 points arrive on the day'); return; }
     if ((t = e.target.closest('[data-login]'))) { e.preventDefault(); setState(q.get('member') === '0' ? 'join' : 'in'); toast('Signed in as Ben — prototype'); return; }
     if ((t = e.target.closest('[data-logout]'))) { e.preventDefault(); setState('out'); toast('Logged out'); return; }
     if ((t = e.target.closest('[data-goto]'))) {
@@ -104,7 +105,13 @@
       return;
     }
     if ((t = e.target.closest('[data-soon]'))) { e.preventDefault(); toast('That tab is not part of this prototype'); return; }
-    if ((t = e.target.closest('[data-copy]'))) { e.preventDefault(); try { navigator.clipboard.writeText(t.getAttribute('data-copy')); } catch (x) {} var old = t.textContent; t.textContent = 'Copied'; setTimeout(function () { t.textContent = old; }, 1600); toast('Referral link copied'); return; }
+    if ((t = e.target.closest('[data-copy]'))) {
+      e.preventDefault(); try { navigator.clipboard.writeText(t.getAttribute('data-copy')); } catch (x) {}
+      if (t.classList.contains('is-copied')) return;
+      var lab = t.querySelector('.k-copybtn__label'), prev = lab ? lab.textContent : null; t.style.minWidth = t.offsetWidth + 'px'; t.classList.add('is-copied');
+      if (lab) { lab.textContent = 'Copied'; var ic = document.createElement('span'); ic.className = 'k-icon k-icon--check'; ic.setAttribute('aria-hidden', 'true'); t.insertBefore(ic, lab); t._ic = ic; }
+      setTimeout(function () { t.classList.remove('is-copied'); if (lab) lab.textContent = prev; if (t._ic) { t._ic.remove(); t._ic = null; } t.style.minWidth = ''; }, 2000); return;
+    }
     if ((t = e.target.closest('.k-card__cta'))) {
       e.preventDefault(); if (t.dataset.busy) return; t.dataset.busy = '1'; var label = t.textContent; t.textContent = 'Added'; t.setAttribute('aria-live', 'polite');
       cart++; $$('.k-header__count').forEach(function (c) { c.textContent = cart; });
