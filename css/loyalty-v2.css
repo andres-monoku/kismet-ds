@@ -30,9 +30,7 @@
 .k-ljoin__head { display: flex; flex-direction: column; gap: var(--space-sm); }
 .k-ljoin__title { font-family: var(--font-display); font-style: oblique; font-weight: 400; letter-spacing: 0; text-transform: uppercase; font-size: var(--text-display-sm-size); line-height: var(--text-display-sm-line-height); text-box: trim-both cap alphabetic; padding-bottom: .08em; }
 .k-ljoin__text { font-size: var(--text-body-lg-size); line-height: var(--text-body-lg-line-height); max-width: 46ch; text-wrap: pretty; }
-/* consent uses the kit's .k-check; only the text layout is set here (the box stays 16px, aligned with the first line) */
-.k-ljoin__consent { align-items: flex-start; line-height: var(--text-body-md-line-height); }
-.k-ljoin__consent .k-check__box { margin-top: calc((var(--text-body-md-line-height) - 16px) / 2); }
+/* consent is the kit's .k-check, untouched (16px box, centred on the text); only the surface needs a visible border */
 .k-ljoin__consent .k-check__box { border-color: var(--color-border-strong); }
 .k-ljoin__consent a { text-decoration: underline; text-underline-offset: 3px; }
 .k-ljoin__photo { margin: 0; height: 150px; overflow: hidden; background: var(--color-bg-muted); }
