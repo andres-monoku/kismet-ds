@@ -25,21 +25,22 @@
 /* NOT A MEMBER YET — full-bleed photo, calm sage card */
 .k-ljoin { position: relative; display: grid; gap: 0; padding: 0; border-radius: var(--radius-xl); background: var(--color-bg-quiz); color: var(--color-text-primary); overflow: hidden; }
 .k-ljoin .k-leyebrow { color: var(--color-text-primary); }
-.k-ljoin__body { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-lg); max-width: 640px; padding: var(--space-lg) var(--space-lg) var(--space-xl); }
+.k-ljoin__body { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-md); max-width: 640px; padding: var(--space-md) var(--space-lg) var(--space-lg); }
 .k-ljoin__head { display: flex; flex-direction: column; gap: var(--space-sm); }
-.k-ljoin__title { font-family: var(--font-display); font-style: oblique; font-weight: 400; letter-spacing: 0; text-transform: uppercase; font-size: var(--text-display-md-size); line-height: var(--text-display-md-line-height); text-box: trim-both cap alphabetic; padding-bottom: .08em; }
+.k-ljoin__title { font-family: var(--font-display); font-style: oblique; font-weight: 400; letter-spacing: 0; text-transform: uppercase; font-size: var(--text-display-sm-size); line-height: var(--text-display-sm-line-height); text-box: trim-both cap alphabetic; padding-bottom: .08em; }
 .k-ljoin__text { font-size: var(--text-body-lg-size); line-height: var(--text-body-lg-line-height); max-width: 46ch; text-wrap: pretty; }
 .k-ljoin__consent { display: grid; grid-template-columns: 24px minmax(0, 1fr); align-items: start; column-gap: var(--space-sm); font-size: var(--text-body-md-size); line-height: var(--text-body-md-line-height); cursor: pointer; }
 .k-ljoin__consent input { width: 24px; height: 24px; margin: 0; margin-top: calc((var(--text-body-md-line-height) - 24px) / 2); accent-color: var(--color-bg-brand); cursor: pointer; }
 .k-ljoin__consent a { text-decoration: underline; text-underline-offset: 3px; }
 .k-ljoin__consent:has(input:focus-visible) input { outline: 3px solid var(--color-border-focus); outline-offset: 2px; }
-.k-ljoin__photo { margin: 0; height: 220px; overflow: hidden; background: var(--color-bg-muted); }
+.k-ljoin__photo { margin: 0; height: 150px; overflow: hidden; background: var(--color-bg-muted); }
 .k-ljoin__photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
 .k-wavy[aria-disabled="true"] { opacity: .45; pointer-events: none; }
 @media (min-width: 1024px) {
   .k-ljoin { grid-template-columns: minmax(0, 1fr) minmax(0, 46%); align-items: stretch; }
-  .k-ljoin__body { justify-content: center; padding: var(--space-3xl) var(--space-3xl) var(--space-3xl) var(--layout-margin); }
-  .k-ljoin__photo { order: 2; height: auto; min-height: 420px; }
+  .k-ljoin__body { justify-content: center; padding: var(--space-xl) var(--space-2xl) var(--space-xl) var(--layout-margin); }
+  .k-ljoin__photo { order: 2; height: auto; min-height: 0; position: relative; }
+  .k-ljoin__photo img { position: absolute; inset: 0; }
 }
 
 /* REWARDS HISTORY — dialog. Desktop: table in a centred panel. Mobile: bottom sheet, each row becomes a card. */
