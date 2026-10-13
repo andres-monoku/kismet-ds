@@ -1,0 +1,109 @@
+/* Kismet design system — Loyalty points v2 (Yotpo feedback).
+   Three states: out · join (logged in, not a member yet) · in (member). Adds: join card with consent, points card without invented data,
+   read-only rewards, rewards-history dialog (Date / Action / Points / Status / Expires). Tokens only. */
+
+[data-state="out"] [data-only]:not([data-only~="out"]),
+[data-state="join"] [data-only]:not([data-only~="join"]),
+[data-state="in"] [data-only]:not([data-only~="in"]) { display: none !important; }
+[data-state="join"] .k-footer__wordmark { display: none; }
+
+/* points card (Yotpo: "Hi {name}! {N} points" + two buttons) */
+.k-lcard__actions { display: flex; flex-wrap: wrap; gap: var(--space-xs); }
+.k-lcard__actions .k-btn { align-self: auto; }
+.k-lcard .k-lcard__actions { align-self: stretch; }
+.k-lpoints-card { justify-content: center; }
+.k-lpoints-card .k-lpoints { margin-block: var(--space-2xs); }
+
+/* referral card: button only (Yotpo short links are generated per customer, so the URL stays hidden) */
+.k-lrefer-card .k-btn { align-self: flex-start; }
+
+/* read-only rewards */
+.k-lrew--plain .k-lcard { align-items: center; text-align: center; gap: var(--space-xs); padding-block: var(--space-xl); }
+.k-lrew--plain .k-lrew__off { font-size: var(--text-display-xl-size); }
+.k-lsec__note { font-size: var(--text-body-lg-size); line-height: var(--text-body-lg-line-height); max-width: 60ch; }
+
+/* NOT A MEMBER YET — full-bleed photo, calm sage card */
+.k-ljoin { position: relative; display: grid; gap: 0; padding: 0; border-radius: var(--radius-xl); background: var(--color-bg-quiz); color: var(--color-text-primary); overflow: hidden; }
+.k-ljoin .k-leyebrow { color: var(--color-text-primary); }
+.k-ljoin__body { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-md); max-width: 640px; padding: var(--space-md) var(--space-lg) var(--space-lg); }
+.k-ljoin__head { margin-bottom: var(--space-xs); }
+.k-ljoin__head { display: flex; flex-direction: column; gap: var(--space-sm); }
+.k-ljoin__title { font-family: var(--font-display); font-style: oblique; font-weight: 400; letter-spacing: 0; text-transform: uppercase; font-size: var(--text-display-sm-size); line-height: var(--text-display-sm-line-height); text-box: trim-both cap alphabetic; padding-bottom: .08em; }
+.k-ljoin__text { font-size: var(--text-body-lg-size); line-height: var(--text-body-lg-line-height); max-width: 46ch; text-wrap: pretty; }
+/* consent is the kit's .k-check, untouched (16px box, centred on the text); only the surface needs a visible border */
+.k-ljoin__consent .k-check__box { border-color: var(--color-border-strong); }
+.k-ljoin__consent a { text-decoration: underline; text-underline-offset: 3px; }
+.k-ljoin__photo { margin: 0; height: 150px; overflow: hidden; background: var(--color-bg-muted); }
+.k-ljoin__photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
+.k-btn[aria-disabled="true"] { background: var(--color-action-disabled-bg); color: var(--color-action-disabled-text); cursor: not-allowed; }
+.k-ljoin__cta { margin-top: var(--space-xs); }
+@media (min-width: 1024px) {
+  .k-ljoin { grid-template-columns: minmax(0, 1fr) minmax(0, 46%); align-items: stretch; }
+  .k-ljoin__body { justify-content: center; padding: var(--space-xl) var(--space-2xl) var(--space-xl) var(--layout-margin); }
+  .k-ljoin__photo { order: 2; height: auto; min-height: 0; position: relative; }
+  .k-ljoin__photo img { position: absolute; inset: 0; }
+}
+
+/* REWARDS HISTORY — dialog. Desktop: table in a centred panel. Mobile: bottom sheet, each row becomes a card. */
+.k-modal { position: fixed; inset: 0; z-index: 100; display: grid; align-items: end; justify-items: center; }
+.k-modal[hidden] { display: none; }
+.k-modal__scrim { position: absolute; inset: 0; background: color-mix(in srgb, var(--color-bg-inverse) 62%, transparent); animation: k-fade var(--duration-base) var(--easing-standard); }
+.k-modal__panel { position: relative; display: flex; flex-direction: column; width: 100%; max-height: 90%; border-radius: var(--radius-xl) var(--radius-xl) 0 0; background: var(--color-bg-surface); color: var(--color-text-primary); box-shadow: var(--shadow-modal); overflow: hidden; animation: k-sheet var(--duration-base) var(--easing-standard); }
+.k-modal__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); padding: var(--space-lg) var(--space-lg) var(--space-md); }
+.k-modal__title { font-size: var(--text-heading-xl-size); line-height: var(--text-heading-xl-line-height); font-weight: 500; }
+.k-modal__body { overflow: auto; padding: 0 var(--space-lg) var(--space-lg); }
+.k-modal__foot { padding: var(--space-md) var(--space-lg); border-top: var(--border-width-sm) solid var(--color-border-subtle); font-size: var(--text-body-md-size); color: var(--color-text-secondary); }
+@keyframes k-fade { from { opacity: 0; } }
+@keyframes k-sheet { from { transform: translateY(24px); opacity: 0; } }
+.k-htable { width: 100%; border-collapse: collapse; font-size: var(--text-body-md-size); line-height: var(--text-body-md-line-height); }
+.k-htable thead { display: none; }
+.k-htable tbody, .k-htable tr, .k-htable td { display: block; }
+.k-htable tr { padding: var(--space-md) 0; border-top: var(--border-width-sm) solid var(--color-border-subtle); }
+.k-htable td { display: flex; justify-content: space-between; gap: var(--space-md); padding: var(--space-3xs) 0; }
+.k-htable td::before { content: attr(data-label); color: var(--color-text-secondary); }
+.k-htable td.is-action { font-weight: 500; font-size: var(--text-heading-md-size); line-height: var(--text-heading-md-line-height); }
+.k-htable td.is-action::before { display: none; }
+.k-htable .is-pts { font-weight: 700; color: var(--color-text-brand); }
+.k-htable .is-pts.is-neg { color: var(--color-text-primary); }
+@media (min-width: 1024px) {
+  .k-modal { align-items: center; padding: var(--space-lg); }
+  .k-modal__panel { width: min(960px, 100%); max-height: min(720px, 100%); border-radius: var(--radius-xl); }
+  .k-modal__head { padding: var(--space-xl) var(--space-xl) var(--space-md); }
+  .k-modal__body { padding: 0 var(--space-xl) var(--space-lg); }
+  .k-modal__foot { padding-inline: var(--space-xl); }
+  .k-htable thead { display: table-header-group; }
+  .k-htable tbody { display: table-row-group; } .k-htable tr { display: table-row; padding: 0; } .k-htable td { display: table-cell; padding: var(--space-md) var(--space-sm); vertical-align: middle; }
+  .k-htable td::before { display: none; }
+  .k-htable th { padding: var(--space-xs) var(--space-sm); text-align: left; font-weight: 700; font-size: var(--text-label-md-size); color: var(--color-text-secondary); background: var(--color-bg-muted); }
+  .k-htable th:first-child { border-radius: var(--radius-md) 0 0 var(--radius-md); } .k-htable th:last-child { border-radius: 0 var(--radius-md) var(--radius-md) 0; }
+  .k-htable tbody tr { border-top: var(--border-width-sm) solid var(--color-border-subtle); }
+  .k-htable td.is-action { font-size: var(--text-body-lg-size); }
+  .k-htable .is-num { text-align: right; } .k-htable th.is-num { text-align: right; }
+}
+body.has-modal { overflow: hidden; }
+
+/* referral button: the button itself shows the result (text + icon + colour), no toast. Same width, same height. */
+.k-copybtn.is-copied { --btn-bg: var(--color-bg-brand); --btn-bg-hover: var(--color-bg-brand); --btn-bg-pressed: var(--color-bg-brand); --btn-fg: var(--color-text-inverse); }
+.k-copybtn .k-icon { width: var(--size-icon-sm); height: var(--size-icon-sm); }
+
+/* "Ways to earn" tiles when logged in are buttons: hover, focus and pressed read as actions (no size change) */
+button.k-ltile__in { appearance: none; position: relative; width: 100%; border: 0; font: inherit; color: inherit; cursor: pointer; transition: box-shadow var(--duration-fast) var(--easing-standard); }
+.k-ltile__go { position: absolute; top: var(--space-xs); right: var(--space-xs); width: var(--size-icon-sm) !important; height: var(--size-icon-sm) !important; opacity: .45; transition: opacity var(--duration-fast) var(--easing-standard); }
+button.k-ltile__in:hover, button.k-ltile__in.is-hover { box-shadow: inset 0 0 0 100vmax color-mix(in srgb, var(--color-text-primary) 6%, transparent); }
+button.k-ltile__in:hover .k-ltile__go, button.k-ltile__in.is-hover .k-ltile__go, button.k-ltile__in:focus-visible .k-ltile__go { opacity: 1; }
+button.k-ltile__in:active, button.k-ltile__in.is-pressed { box-shadow: inset 0 0 0 100vmax color-mix(in srgb, var(--color-text-primary) 12%, transparent); }
+button.k-ltile__in:focus-visible .k-ltile__go { opacity: 1; }
+button.k-ltile__in:active, button.k-ltile__in.is-pressed { background: color-mix(in srgb, var(--color-bg-promo-subtle) 80%, var(--color-text-primary)) !important; }
+button.k-ltile__in:focus-visible, button.k-ltile__in.is-focus { outline: 3px solid var(--color-border-focus); outline-offset: 2px; }
+.k-ltile:has(button.k-ltile__in:focus-visible) { outline: 0; }
+
+/* action popup (birthday): same overlay + panel as the history popup */
+.k-modal__panel--sm { width: 100%; }
+@media (min-width: 1024px) { .k-modal__panel--sm { width: min(480px, 100%); } }
+.k-modal__form { display: flex; flex-direction: column; gap: var(--space-md); padding-bottom: var(--space-lg); }
+.k-modal__form p { font-size: var(--text-body-lg-size); line-height: var(--text-body-lg-line-height); }
+.k-bdate { display: flex; flex-direction: column; gap: var(--space-2xs); font-weight: 700; font-size: var(--text-label-md-size); }
+.k-bdate input { height: var(--size-field); padding: 0 var(--space-md); border: var(--border-width-sm) solid var(--color-border-default); border-radius: var(--radius-md); background: var(--color-bg-surface); color: var(--color-text-primary); font: inherit; font-weight: 400; font-size: var(--text-body-lg-size); }
+.k-bdate input:focus-visible { outline: none; box-shadow: var(--shadow-focus-ring); border-color: var(--color-border-strong); }
+
+.k-pbanner__hi { text-shadow: none; }
