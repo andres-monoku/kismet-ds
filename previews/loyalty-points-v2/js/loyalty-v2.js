@@ -87,6 +87,14 @@
     if (e.key === 'Tab') { var f = focusables(); if (!f.length) return; var first = f[0], last = f[f.length - 1]; if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); } }
   });
 
+  /* ---------- mobile product row: arrows move one card (the kit's slider script would measure the track wrapper) ---------- */
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.k-pmarq-nav .k-slider-nav__btn'); if (!b) return;
+    e.stopPropagation();
+    var list = b.closest('.k-pmarq-nav').previousElementSibling, card = list.querySelector('.k-card'); if (!card) return;
+    list.scrollBy({ left: (b.dataset.dir === 'prev' ? -1 : 1) * (card.offsetWidth + 12), behavior: 'smooth' });
+  }, true);
+
   /* ---------- actions ---------- */
   var cart = 2;
   document.addEventListener('click', function (e) {

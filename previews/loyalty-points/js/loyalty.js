@@ -68,6 +68,14 @@
     });
   }
 
+  /* ---------- mobile product row: arrows move one card (the kit's slider script would measure the track wrapper) ---------- */
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.k-pmarq-nav .k-slider-nav__btn'); if (!b) return;
+    e.stopPropagation();
+    var list = b.closest('.k-pmarq-nav').previousElementSibling, card = $('.k-card', list); if (!card) return;
+    list.scrollBy({ left: (b.dataset.dir === 'prev' ? -1 : 1) * (card.offsetWidth + 12), behavior: 'smooth' });
+  }, true);
+
   /* ---------- actions ---------- */
   var cart = 2;
   document.addEventListener('click', function (e) {

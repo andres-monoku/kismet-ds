@@ -167,3 +167,18 @@
 .k-protoswitch button[aria-pressed="true"] { background: var(--color-accent-secondary); color: var(--color-text-primary); }
 .is-embed .k-protoswitch { display: none; }
 .k-button-reset { all: unset; box-sizing: border-box; cursor: pointer; }
+
+/* orphans: wrap short words onto the last line instead of leaving one alone */
+.k-luse__rate, .k-luse__body, .k-lrefer__body, .k-lsec__note { text-wrap: balance; }
+:is(.k-band, .k-sec) p { text-wrap: pretty; }
+/* mobile: the product row is swiped or moved with the arrows, never auto-scrolling */
+.k-pmarq-nav { display: none; }
+@media (max-width: 767px) {
+  .k-pmarq { overflow-x: auto; scroll-snap-type: x mandatory; gap: var(--space-sm); padding-inline: var(--layout-margin); scroll-padding-inline: var(--layout-margin); padding-bottom: 0; scrollbar-width: none; }
+  .k-band > .k-pmarq { padding-bottom: 0; }
+  .k-pmarq::-webkit-scrollbar { display: none; }
+  .k-pmarq__track { display: contents; animation: none; }
+  .k-pmarq__track[aria-hidden="true"] { display: none; }
+  .k-pmarq .k-card { scroll-snap-align: start; }
+  .k-pmarq-nav { display: flex; padding-bottom: var(--band-gap, var(--space-2xl)); }
+}
