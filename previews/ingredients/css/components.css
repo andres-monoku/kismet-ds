@@ -257,3 +257,7 @@
 .k-stepper--sm .k-stepper__value { font-size: var(--text-heading-xs-size); line-height: var(--text-heading-xs-line-height); }
 .k-stepper--lg .k-stepper__btn { height: var(--size-control-lg); max-width: 88px; }
 .k-stepper__btn:disabled { background: var(--color-bg-subtle); border-color: var(--color-border-subtle); color: var(--color-text-disabled); pointer-events: none; }
+
+/* field: no gap while the input is collapsed, so the resting label sits in the vertical centre */
+.k-field__text { gap: 0; }
+.k-field__box:focus-within .k-field__text, .k-field__box:has(.k-field__input:not(:placeholder-shown)) .k-field__text, .k-field.is-filled .k-field__text, .k-field.is-focus .k-field__text { gap: var(--space-xs); }

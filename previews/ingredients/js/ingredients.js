@@ -94,4 +94,49 @@
   window.addEventListener('message', function (e) { var d = e.data; if (d && d.type === 'kismet-proto' && d.theme && window.Kismet) window.Kismet.setTheme(d.theme); });
   if (window.parent !== window) window.parent.postMessage({ type: 'kismet-proto-ready' }, '*');
   if (location.hash.indexOf('open=') > -1) { var n = decodeURIComponent(location.hash.split('open=')[1]); var t = $$('.k-icard').filter(function (c) { return $('.k-icard__name', c).textContent.trim() === n; })[0]; if (t) setTimeout(function () { open(t); }, 300); }
+
+  /* ---------- Find by product: pick a product, its ingredients light up (proposal data; production = product tags) ---------- */
+  var PI = { /* product → ingredients inside it */
+    chicken: ['Real Chicken', 'Barley', 'Beet Pulp', 'Carrots', 'Kale', 'Apples', 'Cranberries', 'Pre & Probiotics', 'Rosemary Extract'],
+    salmon:  ['Real Salmon', 'Brown Rice', 'Beet Pulp', 'Carrots', 'Kale', 'Apples', 'Cranberries', 'Pre & Probiotics', 'Rosemary Extract'],
+    multi:   ['Real Chicken', 'Carrots', 'Kale', 'Cranberries', 'Pre & Probiotics'],
+    hip:     ['Real Chicken', 'Apples', 'Rosemary Extract'],
+    nugs:    ['Real Chicken', 'Sweet Potato', 'Carrots'],
+    sticks:  ['Real Salmon', 'Rosemary Extract']
+  };
+  function finder() {
+    var box = $('#finder'); if (!box) return;
+    var grid = box.parentNode, list = $('.k-ifind__list', box), input = $('.k-field__input', box), empty = $('.k-ifind__empty', box), res = $('.k-ifind__result', box), count = $('.k-ifind__count', box), cur = null, orig = null;
+    function nm(c) { return $('.k-icard__name', c).textContent.trim(); }
+    list.innerHTML = Object.keys(P).map(function (k) { return '<li data-k="' + k + '"><button class="k-ifind__p" type="button" aria-pressed="false" data-k="' + k + '"><img src="../assets/img/' + P[k].i + '" alt="">' + P[k].n.replace(/ Recipe$/, '') + '</button></li>'; }).join('');
+    function show(k) {
+      cur = k; grid.classList.toggle('is-filtered', !!k);
+      $$('.k-ifind__p', box).forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-k') === k)); });
+      var n = 0, cards = $$('.k-icard', grid), first = cards.map(function (c) { return c.getBoundingClientRect(); });
+      if (!orig) orig = cards.slice();
+      cards.forEach(function (c) { var on = !!k && PI[k].indexOf(nm(c)) > -1; c.classList.toggle('is-in', on); if (on) n++; });
+      /* the product's ingredients come first (in the product's own order), the others follow in the page order */
+      var lit = k ? PI[k].map(function (name) { return orig.filter(function (c) { return nm(c) === name; })[0]; }).filter(Boolean) : [];
+      lit.concat(orig.filter(function (c) { return lit.indexOf(c) < 0; })).forEach(function (c) { grid.appendChild(c); });
+      /* FLIP: glide every card from where it was to where it is now */
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && cards[0].animate) {
+        var moved = 0;
+        cards.forEach(function (c, i) {
+          var a = first[i], b = c.getBoundingClientRect(), dx = a.left - b.left, dy = a.top - b.top; if (!dx && !dy) return;
+          var rank = $$('.k-icard', grid).indexOf(c);
+          c.animate([{ transform: 'translate(' + dx + 'px,' + dy + 'px)' }, { transform: 'none' }], { duration: 720, delay: Math.min(rank, 11) * 28, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' });
+          moved++;
+        });
+      }
+      res.hidden = !k; if (k) count.textContent = P[k].n + ' is made with ' + n + ' of these ingredients.';
+    }
+    list.addEventListener('click', function (e) { var b = e.target.closest('.k-ifind__p'); if (!b) return; var k = b.getAttribute('data-k'); show(cur === k ? null : k); });
+    $('.k-ifind__clear', box).addEventListener('click', function () { show(null); input.value = ''; input.dispatchEvent(new Event('input')); input.focus(); });
+    input.addEventListener('input', function () {
+      var v = input.value.trim().toLowerCase(), any = 0;
+      $$('li', list).forEach(function (li) { var ok = !v || P[li.getAttribute('data-k')].n.toLowerCase().indexOf(v) > -1; li.hidden = !ok; if (ok) any++; });
+      empty.hidden = !!any;
+    });
+  }
+  finder();
 })();

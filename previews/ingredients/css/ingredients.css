@@ -190,3 +190,35 @@ body.has-blade { overflow: hidden; }
 .k-blade__head { gap: var(--space-xs); padding: var(--space-lg) var(--space-md) var(--space-md); }
 .k-blade__navtitle { font-size: var(--text-heading-xl-size); line-height: var(--text-heading-xl-line-height); font-weight: 500; }
 @media (min-width: 1024px) { .k-blade__head { padding: var(--space-2xl) var(--space-xl) var(--space-md); } .k-blade__body { padding-inline: var(--space-xl); } .k-blade__track { margin-inline: calc(-1 * var(--space-xl)); padding-inline: var(--space-xl); scroll-padding-inline: var(--space-xl); } }
+
+/* ===== Find by product — first column of the ingredient grid ===== */
+.k-ifind { grid-column: 1 / -1; }
+.k-ifind__in { display: flex; flex-direction: column; gap: var(--space-md); height: 100%; padding: var(--space-lg) var(--space-md); border-radius: var(--radius-xl); background: var(--color-bg-surface); color: var(--k-ink); }
+.k-ifind__title { font-size: var(--text-heading-xl-size); line-height: var(--text-heading-xl-line-height); font-weight: 500; }
+.k-ifind__lead { font-size: var(--text-body-lg-size); line-height: var(--text-body-lg-line-height); text-wrap: balance; }
+.k-ifind__list { display: flex; gap: var(--space-xs); margin-inline: calc(var(--space-md) * -1); padding: 2px var(--space-md); overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; list-style: none; }
+.k-ifind__list::-webkit-scrollbar { display: none; }
+.k-ifind__list li { flex: none; scroll-snap-align: start; }
+.k-ifind__p { display: flex; align-items: center; gap: var(--space-sm); width: 100%; padding: var(--space-xs) var(--space-md) var(--space-xs) var(--space-xs); border: var(--border-width-sm) solid var(--color-border-subtle); border-radius: var(--radius-full); background: var(--color-bg-page); color: inherit; font: inherit; font-weight: 500; font-size: var(--text-body-md-size); text-align: left; cursor: pointer; white-space: nowrap; transition: background-color var(--duration-fast) var(--easing-standard), border-color var(--duration-fast) var(--easing-standard); }
+.k-ifind__p:hover { background: var(--color-bg-subtle); border-color: var(--color-border-default); }
+.k-ifind__p:focus-visible { outline: 3px solid var(--color-border-focus); outline-offset: 2px; }
+.k-ifind__p[aria-pressed="true"] { background: var(--color-bg-brand); border-color: var(--color-bg-brand); color: var(--color-text-inverse); }
+.k-ifind__p img { flex: none; width: 44px; height: 44px; border-radius: var(--radius-full); object-fit: cover; background: var(--color-bg-muted); }
+.k-ifind__empty { font-size: var(--text-body-md-size); color: var(--color-text-secondary); }
+.k-ifind__result { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-xs); padding-top: var(--space-md); border-top: var(--border-width-sm) solid var(--color-border-subtle); }
+.k-ifind__count { font-size: var(--text-body-lg-size); line-height: var(--text-body-lg-line-height); font-weight: 500; }
+.k-ifind__clear { padding: 0; border: 0; background: none; color: var(--color-text-brand); font: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.k-ifind__clear:focus-visible { outline: 3px solid var(--color-border-focus); outline-offset: 2px; border-radius: var(--radius-xs); }
+/* ingredients of the chosen product stay in front, the rest rest softly — never crossed out */
+.k-icard { transition: opacity var(--duration-normal) var(--easing-standard); }
+.k-igrid.is-filtered .k-icard:not(.is-in) { opacity: .38; }
+.k-igrid.is-filtered .k-icard.is-in { box-shadow: 0 0 0 3px var(--color-bg-brand); }
+@media (min-width: 1024px) {
+  .k-ifind { grid-column: 1; grid-row: 1 / span 4; }
+  .k-ifind__in { position: sticky; top: var(--space-lg); height: auto; max-height: calc(100vh - var(--space-2xl)); overflow: auto; padding: var(--space-lg); }
+  .k-ifind__list { flex-direction: column; margin-inline: 0; padding: 0; overflow: visible; }
+  .k-ifind__list li { flex: none; }
+}
+@media (prefers-reduced-motion: reduce) { .k-icard { transition: none; } }
+.k-ifind__result[hidden], .k-ifind__empty[hidden], .k-ifind__list li[hidden] { display: none; }
+.k-ifind__clear { margin-top: var(--space-sm); }
