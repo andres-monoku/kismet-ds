@@ -83,7 +83,7 @@
 }
 
 /* the ticker sits at the foot of the hero, visible before any scroll */
-.k-nhero__mq { order: 3; padding-block: var(--space-md) !important; border-top: var(--border-width-sm) solid color-mix(in srgb, var(--band-fg) 25%, transparent); }
+.k-nhero__mq { order: 3; padding-block: var(--space-md) !important; }
 
 /* air around the marquee titles, in every band */
 .k-page-nydp .k-band > .k-marquee:not(.k-nhero__mq) { padding-top: calc(var(--band-gap) + var(--space-xl)); }
@@ -93,3 +93,9 @@
 /* the button sits under the field, same width */
 .k-nhero__row .k-btn, .k-ncode__row .k-btn { width: 100%; justify-content: center; }
 .k-ncode__row { max-width: 520px; margin-inline: auto; }
+
+/* centred section titles: one step bigger than the kit default so they hold their own */
+.k-page-nydp .k-nget .k-title, .k-page-nydp .k-nrules .k-title { font-size: var(--text-display-md-size); line-height: var(--text-display-md-line-height); }
+@media (min-width: 1024px) { .k-page-nydp .k-nget .k-title, .k-page-nydp .k-nrules .k-title { font-size: var(--text-display-xl-size); line-height: var(--text-display-xl-line-height); } }
+/* the brand's display titles are slanted (as the Ingredients and Loyalty titles) */
+.k-page-nydp .k-nget .k-title, .k-page-nydp .k-nrules .k-title { font-style: oblique; }
